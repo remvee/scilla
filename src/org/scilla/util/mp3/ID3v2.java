@@ -34,7 +34,7 @@ import org.scilla.util.mp3.id3v2.*;
  *
  * @see <a href="http://www.id3.org/id3v2.3.0.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 public class ID3v2 {
     boolean tagAvailable = false;
@@ -315,6 +315,16 @@ public class ID3v2 {
 	    }
         }
     }
+    /**
+     * Remove all frames.
+     */
+    public void removeFrames () {
+        frames = new Vector();
+    }
+    /**
+     * Add a new frame.
+     * @param frame a frame
+     */
     public void addFrame (Frame frame) {
         frames.add(frame);
     }
