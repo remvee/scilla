@@ -99,7 +99,7 @@ throws IOException
 		    || s.toLowerCase().indexOf("cover") != -1)
 		{
 		    s = s.replace(' ', '+');
-		    background = urlHead+s+"?scale=640x480&outputtype=jpg";
+		    background = urlHead+s+"?scale=300x200&outputtype=jpg";
 		}
 		imgVec.add(fname);
 	    }
