@@ -38,7 +38,7 @@ import org.scilla.util.Semaphore;
  * taken from the scilla configuration.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public class QueuedProcess {
     private static final Log log = LogFactory.getLog(QueuedProcess.class);
@@ -47,10 +47,11 @@ public class QueuedProcess {
     public static final String MAX_RUNNERS_KEY = "converters.osprocess.runners.sem";
     public static final String WRAPPER_KEY = "converters.osprocess.wrapper.exec";
 
-    private int exitValue = -1;
-    private Process proc;
-    private OutputLog stdout;
-    private OutputLog stderr;
+    private volatile int exitValue = -1;
+    private volatile Thread thrd = null;
+    private volatile Throwable crash = null;
+    private volatile OutputLog stdout;
+    private volatile OutputLog stderr;
 
     private static Semaphore sem = null;
     private static int maxRunners = 5;
@@ -126,41 +127,51 @@ public class QueuedProcess {
         }
 
         // execute process
-        try {
-	    sem.decr();
-	    log.debug("process started");
-            proc = Runtime.getRuntime().exec(args, envp, dir);
-	} catch (Throwable ex) {
-	    log.error("process execution failed", ex);
-            sem.incr();
+	final String[] args_ = args;
+	final String[] envp_ = envp;
+	final File dir_ = dir;
+	thrd = new Thread () {
+	    public void run () {
+		try {
+		    sem.decr();
+		    log.debug("process started");
+		    Process proc = Runtime.getRuntime().exec(args_, envp_, dir_);
 
-	    if (ex instanceof IOException) {
-		throw (IOException) ex;
+		    // redirect stdout and stderr
+		    stdout = new OutputLog(proc.getInputStream());
+		    stdout.start();
+		    stderr = new OutputLog(proc.getErrorStream());
+		    stderr.start();
+
+		    // wait for process to finish
+		    proc.waitFor();
+		    // record exit value
+		    exitValue = proc.exitValue();
+		} catch (Throwable ex) {
+		    log.error("process execution failed", ex);
+
+		    // record exception
+		    crash = ex;
+		} finally {
+		    log.debug("process finished");
+		    sem.incr();
+		}
 	    }
-        }
-
-        // redirect stdout and stderr
-        stdout = new OutputLog(proc.getInputStream());
-        stdout.start();
-        stderr = new OutputLog(proc.getErrorStream());
-        stderr.start();
+	};
+	thrd.start();
     }
 
     /**
      * Wait for process to finish.
      */
     public synchronized void waitFor () {
-        if (proc != null) {
+        if (thrd != null) {
             try {
-                proc.waitFor();
+                thrd.join();
             } catch (InterruptedException e) {
 		// will never happen
 	    }
-	    log.debug("process finished");
-            sem.incr();
-
-            exitValue = proc.exitValue();
-            proc = null;
+            thrd = null;
         }
     }
 
