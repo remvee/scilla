@@ -30,7 +30,7 @@ import java.util.*;
  * language and identifier like <TT>COMM</TT> and <TT>USLT</TT>.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class TextFrame extends Frame
 {
@@ -116,7 +116,7 @@ public class TextFrame extends Frame
     {
 	frameId = id;
 	type = PLAIN;
-	this.enc = enc;
+	this.enc = enc != null ? enc : "ISO-8859-1";
 	this.text = text;
     }
 
