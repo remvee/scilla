@@ -32,7 +32,7 @@ package org.scilla;
  *   <LI>debug</LI>
  * </OL>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @author R.W. van 't Veer
  */
 public interface Logger
@@ -40,8 +40,9 @@ public interface Logger
     /**
      * Configure logger interface.
      * @param obj a configuration object
+     * @throws Exception when configuration fails
      */
-    public void configure (Object obj);
+    public void configure () throws Exception;
 
     /**
      * If <CODE>assertion</CODE> parameter is <CODE>false</CODE>,

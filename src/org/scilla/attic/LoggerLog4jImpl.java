@@ -25,22 +25,28 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.w3c.dom.Element;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Document;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 
+
 /**
  * The scilla log4j logger implementation.
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @author R.W. van 't Veer
  */
 public class LoggerLog4jImpl implements Logger
 {
     Category cat;
+
+    public static final String LOG4J_PROPERTY_FILE = "org/scilla/log4j.properties";
+    public static final String LOG4J_XML_FILE      = "org/scilla/log4j.xml";
 
     public LoggerLog4jImpl () { }
 
@@ -54,19 +60,76 @@ public class LoggerLog4jImpl implements Logger
 	return new LoggerLog4jImpl(Category.getInstance(clazz));
     }
 
-    public void configure (Object obj)
+    /**
+     * Configure log4j.  First by trying <CODE>LOG4J_XML_FILE</CODE>,
+     * if that fails <CODE>LOG4J_PROPERTY_FILE</CODE> and if that
+     * fails <CODE>BasicConfigurator</CODE> is used.
+     * @see #LOG4J_XML_FILE
+     * @see org.apache.log4j.xml.DOMConfigurator
+     * @see #LOG4J_PROPERTIES_FILE
+     * @see org.apache.log4j.PropertyConfigurator
+     * @see org.apache.log4j.BasicConfigurator
+     */
+    public void configure ()
+    throws Exception
     {
-	if (obj instanceof Properties)
+	ClassLoader cl = this.getClass().getClassLoader();
+	boolean configured = false;
+
+	if (! configured) // configure from xml file
 	{
-	    PropertyConfigurator.configure((Properties) obj);
+	    InputStream in = null;
+	    try
+	    {
+		in = cl.getResourceAsStream(LOG4J_XML_FILE);
+		if (in != null)
+		{
+		    DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		    Document d = db.parse(in);
+		    DOMConfigurator.configure(d.getDocumentElement());
+		    configured = true;
+		}
+	    }
+	    catch (Exception e)
+	    {
+		e.printStackTrace();
+	    }
+	    finally
+	    {
+		if (in != null)
+		{
+		    try { in.close(); }
+		    catch (IOException e) { e.printStackTrace(); }
+		}
+	    }
 	}
-	else if (obj instanceof Element)
+
+	if (! configured) // configure from properties file
 	{
-	    DOMConfigurator.configure((Element) obj);
-	}
-	else
-	{
-	    BasicConfigurator.configure();
+	    InputStream in = null;
+	    try
+	    {
+		in = cl.getResourceAsStream(LOG4J_PROPERTY_FILE);
+		if (in != null)
+		{
+		    Properties prop = new Properties();
+		    prop.load(in);
+		    PropertyConfigurator.configure(prop);
+		    configured = true;
+		}
+	    }
+	    catch (IOException e)
+	    {
+		e.printStackTrace();
+	    }
+	    finally
+	    {
+		if (in != null)
+		{
+		    try { in.close(); }
+		    catch (IOException e) { e.printStackTrace(); }
+		}
+	    }
 	}
     }
 

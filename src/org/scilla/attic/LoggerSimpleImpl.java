@@ -26,7 +26,7 @@ import java.io.PrintStream;
 /**
  * The scilla simple logger implementation.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @author R.W. van 't Veer
  */
 public class LoggerSimpleImpl implements Logger
@@ -47,7 +47,7 @@ public class LoggerSimpleImpl implements Logger
 	return new LoggerSimpleImpl(clazz.getName());
     }
 
-    public void configure (Object obj) { /* nop */ }
+    public void configure () throws Exception { /* nop */ }
 
     public void assert (boolean assertion, String msg)
     {
