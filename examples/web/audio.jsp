@@ -93,6 +93,7 @@
 			    <td>
 				<table width="100%" class="tracklist">
 				    <c:forEach var="track" items="${dir.tracks}" varStatus="stat">
+					<scilla:playlist id="track" var="playlist"/>
 					<tr>
 					    <td align="right"><c:out value="${stat.count}"/></td>
 					    <c:if test="${dir.numOfArtists > 1}">
@@ -111,7 +112,9 @@
 						</td>
 					    </c:if>
 					    <td>
-						<div class="title"><c:out value="${track.title}"/></div>
+						<a class="title" href='<c:out value="${playlist}"/>'>
+						    <c:out value="${track.title}"/>
+						</a>
 					    </td>
 					    <c:if test="${dir.numOfRecordingDates > 1}">
 						<td>
@@ -122,7 +125,6 @@
 						<c:out value="${track.time}"/>
 					    </td>
 					    <td>
-						<scilla:playlist id="track" var="playlist"/>
 						<a href='<c:out value="${playlist}"/>'>
 						    <scilla:img src="images/speaker.png" border="0" alt="Play">
 							<scilla:par key="scale" value="14x14"/>

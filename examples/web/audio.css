@@ -27,6 +27,9 @@ div.content {
     font-weight: bold;
     padding: 2%;
 }
+a {
+    text-decoration: none;
+}
 .directories a {
     font-weight: bold;
     text-decoration: none;
