@@ -28,7 +28,7 @@ import java.util.*;
  * Representation of picture frame (<TT>APIC</TT>).
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class PictureFrame extends Frame
 {
@@ -36,15 +36,7 @@ public class PictureFrame extends Frame
     int picType;
     String descr;
     byte[] picData;
-/*
-     Text encoding      $xx
-     MIME type          <text string> $00
-     Picture type       $xx
-     Description        <text string according to encoding> $00 (00)
-     Picture data       <binary data>
-*/
 
-static int num = 0;
     /**
      * Constructor for a picture frame.
      * @param data buffer of tag data
