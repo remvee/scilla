@@ -9,6 +9,7 @@ For version 1.0:
 - ImageInfo
     - add support for GIF comments and maybe other types (JPEG
       already implemented)
+    - JPEG APP1 Exif
 - org.scilla.info.AudioInfo
     - handle shn files
 - org.scilla.converter.ExternalConverter.java
