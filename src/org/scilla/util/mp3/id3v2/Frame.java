@@ -30,7 +30,7 @@ import org.scilla.util.mp3.ID3v2;
  * Basic representation of a frame.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class Frame {
     /* length of frame */
@@ -135,17 +135,8 @@ public class Frame {
         int i = offset;
 
         // read frame identifier
-        StringBuffer sb = new StringBuffer();
-        sb.append((char)data[i++]);
-        sb.append((char)data[i++]);
-        sb.append((char)data[i++]);
-        if (minor == 2) {
-            // translate v2.2 ID to v2.3
-            frameId = (String) t2to3Map.get(sb.toString());
-        } else {
-            sb.append((char)data[i++]);
-            frameId = sb.toString();
-        }
+        frameId = readFrameId(data, i, minor);
+        i += minor == 2 ? 3 : 4;
 
         // read frame size
         switch (minor) {
@@ -255,5 +246,21 @@ public class Frame {
         result += unsynchronisation ? " unsynchronisation" : "";
         result += dataLengthIndicator ? " dataLengthIndicator" : "";
         return result;
+    }
+    
+    /**
+     * Read frame ID from byte array.  ID3v2.2 identifiers will be translated to
+     * their ID3v2.3 equivalent.
+     * @param data an array of bytes
+     * @param offset offset in array
+     * @param minor the minor version of tag
+     * @return an ID
+     */
+    public static String readFrameId (byte[] data, int offset, int minor) {
+        String id = new String(data, offset, minor == 2 ? 3 : 4);
+        if (minor == 2) {
+            id = (String) t2to3Map.get(id);
+        }
+        return id;
     }
 }

@@ -34,7 +34,7 @@ import org.scilla.util.mp3.id3v2.*;
  *
  * @see <a href="http://www.id3.org/id3v2.3.0.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public class ID3v2 {
     boolean tagAvailable = false;
@@ -55,6 +55,11 @@ public class ID3v2 {
 
     // list of frames
     List frames = new Vector();
+
+    /**
+     * Expression to match a valid frame id.
+     */
+    private static final String ID_TAG_REGEX = "^[A-Z0-9]*$";
 
     public ID3v2 (File f)
     throws Exception {
@@ -107,17 +112,13 @@ public class ID3v2 {
         int bytesRead = 0;
         frames = new Vector();
         while (bytesRead < tagSize) {
-            if (!  Character.isLetterOrDigit((char)tagData[bytesRead])) {
-                break;
-	    }
-
             // read frame identifier
-            StringBuffer sb = new StringBuffer();
-            sb.append((char)tagData[bytesRead]);
-            sb.append((char)tagData[bytesRead+1]);
-            sb.append((char)tagData[bytesRead+2]);
-            sb.append((char)tagData[bytesRead+3]);
-            String id = sb.toString();
+            String id = Frame.readFrameId(tagData, bytesRead, minor);
+
+            // sanity check
+            if (id == null || !id.matches(ID_TAG_REGEX)) {
+                break;
+            }
 
             // determine frame type
             Frame frame;
