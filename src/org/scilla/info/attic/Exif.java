@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * EXIF.
  *
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  * @author R.W. van 't Veer
  */
 public class Exif extends HashMap {
@@ -176,16 +176,19 @@ public class Exif extends HashMap {
             int tag = field.getTag();
             
             switch (tag) {
-                case EXIF_T_MAKE:
-                    make = field;
-                    break;
-                case EXIF_T_MAKERNOTE:
-                    makernote = field;
-                    break;
-                default:
-                    Object key = labels.get(new Integer(field.getTag()));
-                    Object val = field.getValue();
-                    put(key, val);
+            case EXIF_T_MAKE:
+                make = field;
+                break;
+            case EXIF_T_MAKERNOTE:
+                makernote = field;
+                break;
+            default:
+                Object key = labels.get(new Integer(field.getTag()));
+                if (key == null) {
+                    key = "EXIF#" + field.getTag();
+                }
+                Object val = field.getValue();
+                put(key, val);
             }
         }
         
@@ -196,7 +199,7 @@ public class Exif extends HashMap {
                 try {
                     putAll(maker.getTags(data, makernote, tiff.isLittleEndian()));
                 } catch (Exception ex) {
-                    // TODO log failure
+                    // TODO log this exception (debug)
                 }
             }
         }
