@@ -22,22 +22,12 @@
 package org.scilla;
 
 import java.util.Enumeration;
-import java.util.Properties;
-import java.util.Vector;
-import java.util.StringTokenizer;
-import java.io.InputStream;
-import java.io.IOException;
-
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Category;
-
-import org.scilla.converter.*;
 
 /**
  * The scilla configuration.
  *
  * @see org.scilla.ConfigFactory#get()
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @author R.W. van 't Veer
  */
 public interface Config
