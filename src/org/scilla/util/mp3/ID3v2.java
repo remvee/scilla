@@ -34,7 +34,7 @@ import org.scilla.util.mp3.id3v2.*;
  *
  * @see <a href="http://www.id3.org/id3v2.3.0.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class ID3v2
 {
@@ -272,10 +272,24 @@ public class ID3v2
 	}
 	return result;
     }
+    /**
+     * Set given frame as only frame with ID of given frame.
+     * @param frame frame to replace all existing frames of it's
+     * kind.
+     */
     public void setFrame (Frame frame)
     {
-	Frame f = getFrame(frame.getID());
-	if (f != null) frames.remove(f);
+	// TODO: not thread save
+	Iterator it = frames.iterator();
+	while (it.hasNext())
+	{
+	    Frame f = (Frame) it.next();
+	    if (f.getID().equals(frame.getID())) it.remove();
+	}
+	frames.add(frame);
+    }
+    public void addFrame (Frame frame)
+    {
 	frames.add(frame);
     }
 

@@ -30,7 +30,7 @@ import org.scilla.util.mp3.id3v2.*;
  * MP3 tag commandline utillity.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class Tagger
 {
@@ -40,6 +40,8 @@ public class Tagger
 	commandMap.put("-help", HelpCommand.class);
 	commandMap.put("-1to2", V1ToV2Command.class);
 	commandMap.put("-2to1", V2ToV1Command.class);
+	commandMap.put("-v2settextframe", V2SetTextFrameCommand.class);
+	commandMap.put("-v2addtextframe", V2AddTextFrameCommand.class);
 	commandMap = Collections.unmodifiableMap(commandMap);
     }
 
@@ -298,5 +300,36 @@ class V2ToV1Command extends Command
 	// TODO TRCK
 	// TODO TCON
 	// TODO COMM/TXXX
+    }
+}
+
+class V2SetTextFrameCommand extends Command
+{
+    public V2SetTextFrameCommand () { args = new String[2]; }
+    public String getDescription ()
+    {
+	return
+	    "Create text frame with P1 as identifier and P2 as content.  All\n"+
+	    "other frames with the given identifier will be deleted.";
+    }
+    public void execute (ID3v1 v1tag, ID3v2 v2tag)
+    throws Exception
+    {
+	v2tag.setFrame(new TextFrame(args[0], null, args[1]));
+    }
+}
+
+class V2AddTextFrameCommand extends Command
+{
+    public V2AddTextFrameCommand () { args = new String[2]; }
+    public String getDescription ()
+    {
+	return
+	    "Create text frame with P1 as identifier and P2 as content.";
+    }
+    public void execute (ID3v1 v1tag, ID3v2 v2tag)
+    throws Exception
+    {
+	v2tag.addFrame(new TextFrame(args[0], null, args[1]));
     }
 }
