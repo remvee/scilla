@@ -1,7 +1,6 @@
 <homepage>
     <title>Scilla - media server</title>
     <location>http://www.xs4all.nl/~rwvtveer/scilla</location>
-    <email>rwvtveer@xs4all.nl</email>
     <description>
 	Scilla answers media file requests and takes conversion
 	parameters for various media converters.  Manipulated media
@@ -127,7 +126,7 @@
     <section>
         <title>Bug reports etc.</title>
 	<para><![CDATA[
-            Please email <A HREF="mailto:rwvtveer@xs4all.nl">me</A> if you
+            Please send an email to rwvtveer<EM>at</EM>xs4all.nl if you
             find a problem not mentioned in
             <A href="projects/scilla/TODO">TODO</A>.    Please include
             information about the version you are using.
