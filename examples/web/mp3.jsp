@@ -6,7 +6,8 @@ void streamLinks (ServletRequest request, JspWriter out, String path)
 throws IOException
 {
     String pathEncoded = URLEncoder.encode(path);
-    if (request.getRemoteHost().equals("localhost"))
+    if (request.getRemoteHost().equals("localhost")
+	    || request.getRemoteHost().equals("127.0.0.1"))
     {
 	out.println("<A href=\"servlet/playlist.m3u?f=file&d="+pathEncoded+"\">Play</A>");
     }
