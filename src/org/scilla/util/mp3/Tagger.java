@@ -30,7 +30,7 @@ import org.scilla.util.mp3.id3v2.*;
  * MP3 tag commandline utillity.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class Tagger
 {
@@ -264,7 +264,7 @@ class HelpCommand extends Command
 
 class V1ToV2Command extends Command
 {
-    public String getDescription () { return "Write ID3v1 tag from available ID3v2 tag."; }
+    public String getDescription () { return "Write ID3v2 tag from available ID3v1 tag."; }
     public void execute (ID3v1 v1tag, ID3v2 v2tag)
     throws Exception
     {
@@ -280,7 +280,7 @@ class V1ToV2Command extends Command
 
 class V2ToV1Command extends Command
 {
-    public String getDescription () { return "Write ID3v2 tag from available ID3v1 tag."; }
+    public String getDescription () { return "Write ID3v1 tag from available ID3v2 tag."; }
     public void execute (ID3v1 v1tag, ID3v2 v2tag)
     throws Exception
     {
