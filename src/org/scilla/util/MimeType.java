@@ -21,9 +21,10 @@
 
 package org.scilla.util;
 
-import java.util.Iterator;
-import java.util.Properties;
+import java.util.*;
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
 
 import org.apache.commons.logging.Log;
@@ -33,67 +34,128 @@ import org.scilla.Config;
 
 /**
  * Class for mapping filenames to mime types and visa versa.
- * TODO ugly handling of <tt>param</tt> element..
- * @version $Revision: 1.8 $
+ * Configuration is read from a properties file.  Please note the
+ * order of the properties is important; from two types with the
+ * same extensions the first will be returned by
+ * <tt>getTypeFromFilename</tt>.
+ * @version $Revision: 1.9 $
  * @author R.W. van 't Veer
  */
 public class MimeType {
+    /** logger */
     private static final Log log = LogFactory.getLog(MimeType.class);
 
     /** name of property file to hold mime types */
     public static final String PROPERTY_FILE = "org/scilla/util/MimeType.properties";
-    /** prefix of mime type properties */
-    public static final String PROPERTY_PREFIX = "MimeTypeExt";
 
-    private static Properties param = null;
+    /** map mime-type specs to list file extension names (first is prefered) */
+    private Map typeToExt = new HashMap();
+    /** map file extension names to mime-type specs (first is prefered) */
+    private Map extToType = new HashMap();
 
-    private static void readProperties () {
-        param = new Properties();
-        MimeType f = new MimeType();
+    private MimeType () {
+	ClassLoader cl = getClass().getClassLoader();
+
+	// load properties
+	Properties p = new Properties();
+	{
+	    InputStream in = null;
+	    try {
+		in = cl.getResourceAsStream(PROPERTY_FILE);
+		p.load(in);
+	    } catch (Throwable ex) {
+		final String msg = "unable to load property file \""+PROPERTY_FILE+"\"";
+		log.fatal(msg, ex);
+		throw new RuntimeException(msg);
+	    } finally {
+		if (in != null) {
+		    try { in.close(); } catch (IOException ex) { /* ignore */ }
+		}
+	    }
+	}
+
+	// read the key order, HACK HACK HACK..
+	List keys = new ArrayList();
+	{
+	    BufferedReader br = null;
+	    try {
+		InputStream in = cl.getResourceAsStream(PROPERTY_FILE);
+		br = new BufferedReader(new InputStreamReader(in));
+		String l = null;
+		while ((l = br.readLine()) != null) {
+		    if (l.trim().startsWith("#") || l.trim().startsWith("!")) {
+			continue;
+		    }
+		    StringTokenizer st = new StringTokenizer(l, "=: \t\n");
+		    if (st.hasMoreTokens()) {
+			keys.add(st.nextToken());
+		    }
+		}
+	    } catch (Throwable ex) {
+		final String msg = "unable to read key order from \""+PROPERTY_FILE+"\"";
+		log.fatal(msg, ex);
+		throw new RuntimeException(msg);
+	    } finally {
+		if (br != null) {
+		    try { br.close(); } catch (IOException ex) { /* ignore */ }
+		}
+	    }
+	}
+
+	// populate maps
+	for (Iterator it = keys.iterator(); it.hasNext();) {
+	    String key = (String) it.next();
+	    String eval = p.getProperty(key);
+
+	    // property value to list
+	    List val = new ArrayList();
+	    for (StringTokenizer st = new StringTokenizer(eval); st.hasMoreTokens();) {
+		val.add(st.nextToken());
+	    }
+
+	    // add type to extensions mappings
+	    {
+		List l = (List) typeToExt.get(key);
+		if (l == null) {
+		    l = new ArrayList();
+		    typeToExt.put(key, l);
+		}
+		l.addAll(val);
+	    }
+
+	    // extensions to type mappings
+	    for (Iterator it1 = val.iterator(); it1.hasNext();) {
+		String ext = (String) it1.next();
+
+		List l = (List) extToType.get(ext);
+		if (l == null) {
+		    l = new ArrayList();
+		    extToType.put(ext, l);
+		}
+		l.add(key);
+	    }
+	}
+	if (log.isDebugEnabled()) {
+	    log.debug("extension to type mappings="+extToType);
+	    log.debug("type to extension mappings="+typeToExt);
+	}
     }
 
-    protected MimeType () {
-        InputStream in = null;
-        try {
-            in = this.getClass().getClassLoader().getResourceAsStream(PROPERTY_FILE);
-            if (in != null) {
-                param.load(in);
-                log.debug("properties loaded: " + PROPERTY_FILE);
-            } else {
-                log.fatal("properties not available: " + PROPERTY_FILE);
-            }
-        } catch (IOException ex) {
-            log.fatal("can't load properties: " + PROPERTY_FILE, ex);
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+    private static synchronized MimeType getInstance () {
+	if (_instance == null) {
+	    _instance = new MimeType();
+	}
+	return _instance;
     }
+    private static MimeType _instance = null;
 
     /**
      * @param ext filename extension
      * @return mime type
      */
-    public static String getTypeFromFileExtension(String ext) {
-	if (log.isDebugEnabled()) {
-	    log.debug("ext="+ext);
-	}
-
-        // public methods using param must make sure the propfile is loaded
-        if (param == null) {
-            readProperties();
-	}
-
-        String type = param.getProperty(PROPERTY_PREFIX+"."+ext);
-	if (log.isDebugEnabled()) {
-	    log.debug("type="+type);
-	}
-        return type;
+    public static String getTypeFromFileExtension (String ext) {
+	List l = (List) getInstance().extToType.get(ext);
+	return (String) (l != null && l.size() > 0 ? l.get(0) : null);
     }
 
     /**
@@ -101,7 +163,7 @@ public class MimeType {
      * @return mime type
      */
     public static String getTypeFromFilename (String fname) {
-        return getTypeFromFileExtension(getExtensionFromFilename(fname));
+	return getTypeFromFileExtension(getExtensionFromFilename(fname));
     }
 
     /**
@@ -109,29 +171,8 @@ public class MimeType {
      * @return filename extension
      */
     public static String getExtensionForType (String type) {
-	if (log.isDebugEnabled()) {
-	    log.debug("type="+type);
-	}
-
-        // public methods using param must make sure the propfile is loaded
-        if (param == null) {
-            readProperties();
-	}
-
-        // find first match
-	for (Iterator it = param.keySet().iterator(); it.hasNext();) {
-            String key = (String) it.next();
-            if (type.equals(param.getProperty(key))) {
-		String ext = getExtensionFromFilename(key);
-		if (log.isDebugEnabled()) {
-		    log.debug("ext="+ext);
-		}
-                return ext;
-            }
-        }
-
-	log.debug("no extension found");
-        return null;
+	List l = (List) getInstance().typeToExt.get(type);
+	return (String) (l != null && l.size() > 0 ? l.get(0) : null);
     }
 
     /**
@@ -140,10 +181,18 @@ public class MimeType {
      */
     public static String getExtensionFromFilename (String fname) {
         int i = fname.lastIndexOf('.');
-        if (i != -1) {
-            return fname.substring(i+1);
-        }
+        return i == -1 ? null : fname.substring(i + 1);
+    }
 
-        return null;
+    /**
+     * Debugging..
+     */
+    public static void main (String[] args) {
+	MimeType mt = new MimeType();
+	for (int i = 0; i < args.length; i++) {
+	    String t = args[i];
+	    System.out.println("e2t("+t+")="+mt.getTypeFromFileExtension(t));
+	    System.out.println("t2e("+t+")="+mt.getExtensionForType(t));
+	}
     }
 }
