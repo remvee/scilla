@@ -21,14 +21,12 @@
 
 package org.scilla.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.util.*;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.http.*;
 
 import org.scilla.*;
 import org.scilla.util.mp3.*;
@@ -36,17 +34,12 @@ import org.scilla.util.mp3.*;
 /**
  * This servlet handles media requests.
  *
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  * @author R.W. van 't Veer
  */
 public class Servlet extends HttpServlet
 {
     private static final Logger log = LoggerFactory.get(Servlet.class);
-
-    /** name of scilla media source directory servlet parameter */
-    public static final String SOURCE_PARAMETER = "scilla.source";
-    /** name of scilla media cache directory servlet parameter */
-    public static final String CACHE_PARAMETER = "scilla.cache";
 
     /**
      * Initialize scilla.
@@ -54,17 +47,14 @@ public class Servlet extends HttpServlet
     public void init (ServletConfig config)
     throws ServletException
     {
-	String source = config.getInitParameter(SOURCE_PARAMETER);
-	String cache = config.getInitParameter(CACHE_PARAMETER);
-
-	if (source == null)
-	    throw new ServletException(SOURCE_PARAMETER+" parameter is null");
-	if (cache == null)
-	    throw new ServletException(CACHE_PARAMETER+" parameter is null");
-
 	Config scillaConfig = ConfigProvider.get();
-	scillaConfig.setString(Config.SOURCE_DIR_KEY, source);
-	scillaConfig.setString(Config.CACHE_DIR_KEY, cache);
+	Enumeration en = config.getInitParameterNames();
+	while (en.hasMoreElements())
+	{
+	    String key = (String) en.nextElement();
+	    String val = config.getInitParameter(key);
+	    scillaConfig.setString(key, val);
+	}
     }
 
     /**
