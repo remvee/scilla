@@ -86,7 +86,7 @@
 	    String crop = java.net.URLEncoder.encode("6x6+0+"+y);
 	    String scale = java.net.URLEncoder.encode(s+"%x"+s+"%");
 	    String params = "outputtype=gif&crop="+crop+"&scale="+scale;
-%><IMG src="servlet/scilla/schrofer.xpm?<%=params%>" alt="<%=data[i]%>"><%
+%><IMG src="scilla/schrofer.xpm?<%=params%>" alt="<%=data[i]%>"><%
 	}
 	else
 	{

@@ -104,7 +104,7 @@
 
 		String filepath = path+"/"+fn;
 		String viewUrl = "imgview.jsp?f="+filepath;
-		String imgUrl = "servlet/scilla/"+filepath+"?outputtype=jpg&"+s;
+		String imgUrl = "scilla/"+filepath+"?outputtype=jpg&"+s;
 
 		if (negative) {
 %>

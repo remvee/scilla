@@ -17,7 +17,7 @@
 	String remote = request.getRemoteHost();
 	String encoding = (remote.equals("localhost") || remote.equals("127.0.0.1"))
 		? "" : "&outputtype=mp3&mode=j&resample=16&vbr=1&vbrquality=6&maxbitrate=56";
-	return "servlet/playlist.m3u?d="+URLEncoder.encode(path)+(recursive ? "&r=1" : "")+encoding;
+	return "playlist.m3u?d="+URLEncoder.encode(path)+(recursive ? "&r=1" : "")+encoding;
     }
 
     String toHTML (Object in)
@@ -198,7 +198,7 @@
 
     String path = "";
     if (request.getParameter("d") != null) path = request.getParameter("d");
-    String urlHead = "servlet/scilla/" + path.replace(' ', '+') + "/";
+    String urlHead = "scilla/" + path.replace(' ', '+') + "/";
 
     String background = null;
     Map tagMap = new HashMap();
@@ -302,7 +302,7 @@
 	// redirect to index page if only html files here
 	if (htmVec.size() > 0 && vec.size() == 0 && dirVec.size() == 0)
 	{
-	    String url = "servlet/scilla/"+path+"/";
+	    String url = "scilla/"+path+"/";
 	    Iterator it = indexHtmls.iterator();
 	    while (it.hasNext())
 	    {

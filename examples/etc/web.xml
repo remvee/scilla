@@ -16,7 +16,7 @@
     </servlet>
 
     <servlet>
-	<servlet-name>playlist.m3u</servlet-name>
+	<servlet-name>playlist</servlet-name>
 	<servlet-class>PlaylistServlet</servlet-class>
 	<load-on-startup>2</load-on-startup>
     </servlet>
@@ -26,6 +26,16 @@
 	<servlet-class>test.ImageServlet</servlet-class>
 	<load-on-startup>3</load-on-startup>
     </servlet>
+
+    <servlet-mapping>
+	<servlet-name>scilla</servlet-name>
+	<url-pattern>/scilla/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+	<servlet-name>playlist</servlet-name>
+	<url-pattern>/playlist.m3u</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
 	<servlet-name>image</servlet-name>

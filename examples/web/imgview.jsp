@@ -64,21 +64,21 @@
 		    <DIV align=center>
 			<CODE><%=file%></CODE>
 			<P>
-			    <IMG src="servlet/scilla/<%=file%>?outputtype=jpg&<%=imgScaleEncoded%><%=copyrightEncoded%>" border=1>
+			    <IMG src="scilla/<%=file%>?outputtype=jpg&<%=imgScaleEncoded%><%=copyrightEncoded%>" border=1>
 			<P>
-			<A href="servlet/scilla/<%=file%>?outputtype=jpg&scale=640x480<%=copyrightEncoded%>">640x480</A>
+			<A href="scilla/<%=file%>?outputtype=jpg&scale=640x480<%=copyrightEncoded%>">640x480</A>
 			|
-			<A href="servlet/scilla/<%=file%>?outputtype=jpg&scale=800x600<%=copyrightEncoded%>">800x600</A>
+			<A href="scilla/<%=file%>?outputtype=jpg&scale=800x600<%=copyrightEncoded%>">800x600</A>
 			|
-			<A href="servlet/scilla/<%=file%>?outputtype=jpg&scale=1024x768<%=copyrightEncoded%>">1024x768</A>
+			<A href="scilla/<%=file%>?outputtype=jpg&scale=1024x768<%=copyrightEncoded%>">1024x768</A>
 			|
-			<A href="servlet/scilla/<%=file%>?outputtype=jpg&scale=1280x1024<%=copyrightEncoded%>">1280x1024</A>
+			<A href="scilla/<%=file%>?outputtype=jpg&scale=1280x1024<%=copyrightEncoded%>">1280x1024</A>
 			|
-			<A href="servlet/scilla/<%=file%>?outputtype=jpg&scale=1600x1200<%=copyrightEncoded%>">1600x1200</A>
+			<A href="scilla/<%=file%>?outputtype=jpg&scale=1600x1200<%=copyrightEncoded%>">1600x1200</A>
 			|
-			<A href="servlet/scilla/<%=file%>?outputtype=jpg&scale=1800x1440<%=copyrightEncoded%>">1800x1440</A>
+			<A href="scilla/<%=file%>?outputtype=jpg&scale=1800x1440<%=copyrightEncoded%>">1800x1440</A>
 			|
-			<A href="servlet/scilla/<%=file%>">Original<SMALL><%=spec%></SMALL></A>
+			<A href="scilla/<%=file%>">Original<SMALL><%=spec%></SMALL></A>
 		    </DIV>
 		</TD>
 	    </TR>
