@@ -1,12 +1,4 @@
 For version 1.0:
-- bugs:
-    - nocache yields NullPointerException:
-	java.lang.NullPointerException
-		at java.io.File.(File.java:180)
-		at org.scilla.core.MediaStream.(MediaStream.java:57)
-		at org.scilla.core.RunnerObject.getStream(RunnerObject.java:162)
-		at org.scilla.Request.getStream(Request.java:101)
-		at org.scilla.util.Servlet.doGet(Servlet.java:86)
 - examples:
     - mp3.jsp
 	- stream mono originals as mono stream

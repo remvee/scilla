@@ -110,7 +110,7 @@ import org.scilla.util.*;
  * </DL>
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class ExternalConverter implements Converter
 {
@@ -135,7 +135,6 @@ public class ExternalConverter implements Converter
     static
     {
 	reservedParameters.add(Request.OUTPUT_TYPE_PARAMETER);
-	reservedParameters.add(Request.NO_CACHE_PARAMETER);
     }
     private static Hashtable inputTypeMap = new Hashtable();
     private static Hashtable outputTypeMap = new Hashtable();

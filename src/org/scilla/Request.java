@@ -33,7 +33,7 @@ import org.scilla.util.*;
  * The Request class holds a scilla media object request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class Request
 {
@@ -41,14 +41,11 @@ public class Request
     private final static Config config = ConfigProvider.get();
     private final static CacheManager cache = CacheManager.getInstance();
 
-    public final static String NO_CACHE_PARAMETER = "nocache";
     public final static String OUTPUT_TYPE_PARAMETER = "outputtype";
 
     private String source = null;
     private String type = null;
     private Vector param = null;
-
-    private boolean nocache = false;
 
     private MediaObject obj = null;
 
@@ -65,17 +62,6 @@ public class Request
         this.source = source;
         this.type = type;
         this.param = param;
-
-	// remove parameters not relavant to conversion
-	for (Iterator it = param.iterator(); it.hasNext(); )
-	{
-	    RequestParameter rp = (RequestParameter) it.next();
-	    if (NO_CACHE_PARAMETER.equals(rp.key))
-	    {
-		nocache = true;
-		it.remove();
-	    }
-	}
     }
 
     /**
@@ -194,15 +180,6 @@ public class Request
      * @return true if this request needs a converter
      */
     public boolean needConverter () { return ! param.isEmpty(); }
-
-    /**
-     * @return true if this request can be cached
-     * @see #NO_CACHE_PARAMETER
-     */
-    public boolean allowCaching ()
-    {
-	return ! nocache;
-    }
 
     /**
      * @return request description
