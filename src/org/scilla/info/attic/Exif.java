@@ -27,12 +27,11 @@ import java.util.*;
 /**
  * EXIF.
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @author R.W. van 't Veer
  */
 public class Exif extends HashMap {
     private boolean littleEndian;
-    private int pos;
     private byte[] data;
 
     private static final int EXIF_T_EXIFIFD = 0x8769;
@@ -220,13 +219,14 @@ public class Exif extends HashMap {
     }
 
     private void readIfds(byte[] data, int pos, List ifds, List exififds) {
-	while (pos != 0) {
-	    int num = read2ByteInt(data, pos);
-	    pos += 2;
+        int p = pos;
+	while (p != 0) {
+	    int num = read2ByteInt(data, p);
+	    p += 2;
 
 	    for (int i = 0; i < num; i++) {
-		IFD ifd = new IFD(data, pos);
-		pos += 12;
+		IFD ifd = new IFD(data, p);
+		p += 12;
 
 		ifds.add(ifd);
 
@@ -236,11 +236,12 @@ public class Exif extends HashMap {
 			case EXIF_T_GPSIFD:
 			case EXIF_T_INTEROP:
 			    exififds.add(ifd);
+                        default:
 		    }
 		}
 	    }
 
-	    pos = read4ByteInt(data, pos);
+	    p = read4ByteInt(data, p);
 	}
     }
 
@@ -332,7 +333,6 @@ public class Exif extends HashMap {
 			    demoninator = signedLong(demoninator);
 			}
 			val = new Double((double) numerator / (double) demoninator);
-		    } else {
 		    }
 		    break;
 		case 7: // UNDEF
@@ -354,8 +354,9 @@ public class Exif extends HashMap {
 	switch (type) {
 	    case 6: case 8: case 9: case 10:
 		return true;
+            default:
+                return false;
 	}
-	return false;
     }
 
     private static long signedLong (long v) {
