@@ -26,7 +26,7 @@ import java.util.*;
 /**
  * The scilla media info base class.
  *
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * @author R.W. van 't Veer
  */
 public class Info implements Map {
@@ -88,12 +88,14 @@ public class Info implements Map {
 // read methods
     /**
      * @return string info value or <tt>null</tt> when property not available
+     * @throws ClassCastException when property is not a string
      */
     public String getString (String key) {
 	return (String) infoMap.get(key);
     }
     /**
      * @return integer info value or <tt>-1</tt> when property not available
+     * @throws ClassCastException when property is not an integer
      */
     public int getInt (String key) {
 	Integer i = (Integer) infoMap.get(key);
@@ -101,10 +103,18 @@ public class Info implements Map {
     }
     /**
      * @return boolean info value or <tt>false</tt> when property not available
+     * @throws ClassCastException when property is not a boolean
      */
     public boolean getBoolean (String key) {
 	Boolean b = (Boolean) infoMap.get(key);
 	return b == null ? false : b.booleanValue();
+    }
+    /**
+     * @return date info value or <tt>null</tt> when property not available
+     * @throws ClassCastException when property is not a date
+     */
+    public Date getDate (String key) {
+	return (Date) infoMap.get(key);
     }
 
 // set methods for extending classes
