@@ -31,7 +31,7 @@ import org.scilla.util.mp3.id3v2.*;
  *
  * @see <a href="http://www.id3.org/id3v2.3.0.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ID3v2
 {
@@ -83,17 +83,10 @@ public class ID3v2
 	byte[] tagData = new byte[tagSize];
 	if (unsyncFlag)
 	{
-	    int last = 0;
-	    int i = 0;
-	    while (i < tagSize)
+	    for (int last = 0, i = 0, n = 0; n < tagSize; n++)
 	    {
 		int b = in.read();
-		if (b == -1)
-		{
-		    System.out.println("OEPS.. "+tagLength+", "+i);
-		    tagLength = i;
-		    break;
-		}
+		if (b == -1) throw new Exception("file truncated");
 
 		if (! (last == 0xff && b == 0)) tagData[i++] = (byte) b;
 		last = b;
