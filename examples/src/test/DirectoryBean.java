@@ -5,6 +5,7 @@ import java.util.*;
 
 import org.scilla.*;
 import org.scilla.util.*;
+import org.scilla.info.*;
 
 public class DirectoryBean {
 
@@ -14,6 +15,9 @@ public class DirectoryBean {
 
     public DirectoryBean (String path)
     throws Exception {
+	if (path == null || path.length() == 0) {
+	    path = AppConfig.getSourceDir();
+	}
 	this.path = path;
 
 	// basename
@@ -28,17 +32,11 @@ public class DirectoryBean {
     }
     private String name = null;
 
-    public DirectoryBean getParent ()
-    throws Exception {
-	int i = path.lastIndexOf(File.separator);
-	if (i == -1) {
-	    return null;
-	}
-	return new DirectoryBean(path.substring(0, i));
-    }
-
     public void setPath (String path)
     throws Exception {
+	if (path == null || path.length() == 0) {
+	    path = AppConfig.getSourceDir();
+	}
 	this.path = path;
 
 	scan(true);
@@ -48,105 +46,28 @@ public class DirectoryBean {
     }
     private String path = null;
 
-    public Set getArtists () {
-	return artists;
-    }
-    public int getNumOfArtists () {
-	return artists.size();
-    }
-    public String getArtist () {
-	return (String) artists.iterator().next();
-    }
-    private Set artists = new HashSet();
-
-    public Set getPerformers () {
-	return performers;
-    }
-    public String getPerformer () {
-	return (String) performers.iterator().next();
-    }
-    public int getNumOfPerformers () {
-	return performers.size();
-    }
-    private Set performers = new HashSet();
-
-    public Set getAlbums () {
-	return albums;
-    }
-    public String getAlbum () {
-	return (String) albums.iterator().next();
-    }
-    public int getNumOfAlbums () {
-	return albums.size();
-    }
-    private Set albums = new HashSet();
-
-    public int getTotalLength () {
-	return length;
-    }
-    public String getTotalTime () {
-	int hours = length / (60 * 60);
-	int minutes = (length / 60) % 60;
-	int seconds = length % 60;
-
-	StringBuffer out = new StringBuffer();
-	if (hours > 0) {
-	    out.append(hours + ":");
-	}
-	if (minutes > 0) {
-	    if (hours > 0 && minutes < 10) {
-		out.append('0');
+    public String getParentPath ()
+    throws Exception {
+	int i = path.lastIndexOf('/');
+	if (i != -1) {
+	    String parent = path.substring(0, i);
+	    if (parent.startsWith(AppConfig.getSourceDir())) {
+		return parent;
 	    }
-	    out.append(minutes + "");
 	}
-	out.append(":");
-	out.append(seconds < 10 ? "0" : "");
-	out.append(seconds + "");
-
-	return out.toString();
+	return null;
     }
-    private int length = 0;
-
-    public List getTracks () {
-	return tracks;
-    }
-    public int getNumOfTracks () {
-	return tracks.size();
-    }
-    private List tracks = new ArrayList();
-
-    public Set getRecordingDates () {
-	return dates;
-    }
-    public String getRecordingDate () {
-	return (String) dates.iterator().next();
-    }
-    public int getNumOfRecordingDates () {
-	return dates.size();
-    }
-    private Set dates = new HashSet();
-
-    public List getImages () {
-	return images;
-    }
-    public int getNumOfImages () {
-	return images.size();
-    }
-    private List images = new ArrayList();
-
-    public List getDirectories () {
-	return directories;
-    }
-    public int getNumOfDirectories () {
-	return directories.size();
-    }
-    private List directories = new ArrayList();
 
     private void scan (boolean includeDirectories)
     throws Exception {
-	String source = AppConfig.getSourceDir();
+	////////////////////////////////////
+	Map typemap = new HashMap();
+	///////////////////////////////////////
 
-	String[] files = (new File(source + File.separator + path)).list();
+	String source = AppConfig.getSourceDir();
+	String pathname = path;
+
+	String[] files = (new File(pathname)).list();
 	Arrays.sort(files);
 
 	for (int i = 0; i < files.length; i++) {
@@ -154,33 +75,133 @@ public class DirectoryBean {
 		continue;
 	    }
 
-	    String fname = path + File.separator + files[i];
-	    File f = new File(source + File.separator + fname);
+	    String fname = pathname + File.separator + files[i];
+	    File f = new File(fname);
 
+	    //////////////////////////////
+	    // build type-key maps and lists
 	    if (f.isDirectory() && includeDirectories) {
-		directories.add(new DirectoryBean(fname));
+		String type = "directory";
+
+		List list = (List) lists.get(type);
+		if (list == null) {
+		    list = new ArrayList();
+		    lists.put(type, list);
+		}
+		list.add(new DirectoryBean(fname));
 	    } else {
-		String type = MimeType.getTypeFromFilename(fname);
-		if (type != null && type.startsWith("audio/")) {
-		    TrackBean track = new TrackBean(fname);
-		    tracks.add(track);
+		Info info = InfoFactory.get(fname);
+		if (info != null) {
 
-		    artists.add(track.getArtist());
-		    performers.add(track.getPerformer());
-		    albums.add(track.getAlbum());
-		    dates.add(track.getRecordingDate());
-
-		    if (track.getLength() > 0) {
-			length += track.getLength();
+		    String type = null;
+		    if (info instanceof AudioInfo) {
+			type = "audio";
+		    } else if (info instanceof ImageInfo) {
+			type = "image";
 		    }
-		} else if (type != null && type.startsWith("image/")) {
-		    ImageBean image = new ImageBean(fname);
-		    images.add(image);
+
+		    List list = (List) lists.get(type);
+		    if (list == null) {
+			list = new ArrayList();
+			lists.put(type, list);
+		    }
+		    list.add(info);
+
+		    List all = (List) lists.get("all");
+		    if (all == null) {
+			all = new ArrayList();
+			lists.put("all", all);
+		    }
+		    all.add(info);
+
+		    Map keymap = (Map) typemap.get(type);
+		    if (keymap == null) {
+			keymap = new HashMap();
+			typemap.put(type, keymap);
+		    }
+
+		    for (Iterator it = info.entrySet().iterator(); it.hasNext();) {
+			Map.Entry me = (Map.Entry) it.next();
+			Object key = me.getKey();
+			Object val = me.getValue();
+
+			Set values = (Set) keymap.get(key);
+			if (values == null) {
+			    values = new HashSet();
+			    keymap.put(key, values);
+			}
+			values.add(val);
+		    }
 		}
 	    }
 	}
-	artists.remove(null);
-	performers.remove(null);
-	albums.remove(null);
+
+	//////////////////////////////////
+	// count maps for type-key pairs
+	for (Iterator it0 = typemap.entrySet().iterator(); it0.hasNext();) {
+	    Map.Entry me0 = (Map.Entry) it0.next();
+	    String type = (String) me0.getKey();
+	    Map keymap = (Map) me0.getValue();
+
+	    Map countmap = (Map) count.get(type);
+	    if (countmap == null) {
+		countmap = new HashMap();
+		count.put(type, countmap);
+	    }
+
+	    for (Iterator it1 = keymap.entrySet().iterator(); it1.hasNext();) {
+		Map.Entry me1 = (Map.Entry) it1.next();
+		String key = (String) me1.getKey();
+		Set set = (Set) me1.getValue();
+
+		countmap.put(key, new Integer(set.size()));
+	    }
+	}
+
+	//////////////////////////////////
+	// sum maps for type-key pairs of type integer
+	{
+	    // TODO find fast dynamic solution!
+	    int audioLenght = 0;
+	    List audioList = (List) lists.get("audio");
+	    if (audioList != null) {
+		for (Iterator it = audioList.iterator(); it.hasNext();) {
+		    AudioInfo info = (AudioInfo) it.next();
+		    audioLenght += info.getLength();
+		}
+	    }
+	    Map audioSums = new HashMap();
+	    audioSums.put("length", new Integer(audioLenght));
+	    sums.put("audio", audioSums);
+	}
+
+	//////////////////////////////////
+	// count maps for lists
+	{
+	    Map listCounts = new HashMap();
+	    for (Iterator it = lists.entrySet().iterator(); it.hasNext();) {
+		Map.Entry me = (Map.Entry) it.next();
+		String type = (String) me.getKey();
+
+		if (me.getValue() instanceof List) {
+		    List list = (List) me.getValue();
+		    listCounts.put(type, new Integer(list.size()));
+		}
+	    }
+	    lists.put("count", listCounts);
+	}
+    }
+
+    private Map count = new HashMap();
+    public Map getCount () {
+	return count;
+    }
+    private Map lists = new HashMap();
+    public Map getList () {
+	return lists;
+    }
+    private Map sums = new HashMap();
+    public Map getSum () {
+	return sums;
     }
 }

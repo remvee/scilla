@@ -10,12 +10,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.scilla.info.AudioInfo;
+
 /**
  * The playlist tag puts an url to a playlist servlet into an JSP
  * attributes.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class PlaylistTag extends TagSupport {
     /** logger */
@@ -36,61 +38,81 @@ public class PlaylistTag extends TagSupport {
     throws JspException {
 	StringBuffer out = new StringBuffer();
 
-	// select servlet
-	out.append(PLAYLIST_SERVLET_BASE);
-	out.append('.');
-	if (listtype != null) {
-	    out.append(listtype);
-	} else {
-	    String t = (String) pageContext.findAttribute(LIST_TYPE_ATTRIBUTE);
-	    if (t != null) {
-		out.append(t);
+	try {
+	    // select servlet
+	    out.append(PLAYLIST_SERVLET_BASE);
+	    out.append('.');
+	    if (listtype != null) {
+		out.append(listtype);
 	    } else {
-		out.append(LIST_TYPE_DEFAULT);
+		String t = (String) pageContext.findAttribute(LIST_TYPE_ATTRIBUTE);
+		if (t != null) {
+		    out.append(t);
+		} else {
+		    out.append(LIST_TYPE_DEFAULT);
+		}
 	    }
-	}
 
-	// handle location
-	out.append('?');
-	out.append(PlaylistServlet.PATH_PARAM);
-	out.append('=');
-	Object obj = pageContext.findAttribute(name);
-	if (obj instanceof DirectoryBean) {
-	    out.append(URLEncoder.encode(((DirectoryBean)obj).getPath()));
-	} else if (obj instanceof TrackBean) {
-	    out.append(URLEncoder.encode(((TrackBean)obj).getFilename()));
-	} else {
-	    throw new JspException("oeps, unknown stream");
-	}
-
-	// stream type
-	out.append('&');
-	out.append(PlaylistServlet.OUTPUT_TYPE_PARAM);
-	out.append('=');
-	if (streamtype != null) {
-	    out.append(streamtype);
-	} else {
-	    String t = (String) pageContext.findAttribute(STREAM_TYPE_ATTRIBUTE);
-	    if (t != null) {
-		out.append(t);
+	    // handle location
+	    out.append('?');
+	    out.append(PlaylistServlet.PATH_PARAM);
+	    out.append('=');
+	    Object obj = pageContext.findAttribute(name);
+	    if (obj instanceof DirectoryBean) {
+		String fname = ((DirectoryBean) obj).getPath();
+		String source = AppConfig.getSourceDir();
+		if (! fname.startsWith(source)) {
+		    log.error("! "+fname+".startsWith("+source+")");
+		    throw new Exception("data not found");
+		}
+		fname = fname.substring(source.length());
+		out.append(URLEncoder.encode(fname));
+	    } else if (obj instanceof AudioInfo) {
+		String fname = ((AudioInfo) obj).getPathName();
+		String source = AppConfig.getSourceDir();
+		if (! fname.startsWith(source)) {
+		    log.error("! "+fname+".startsWith("+source+")");
+		    throw new Exception("data not found");
+		}
+		fname = fname.substring(source.length());
+		out.append(URLEncoder.encode(fname));
 	    } else {
-		out.append(STREAM_TYPE_DEFAULT);
+		throw new Exception("oeps, unknown stream");
 	    }
-	}
 
-	// handle recursion
-	if (recursive) {
+	    // stream type
 	    out.append('&');
-	    out.append(PlaylistServlet.RECURS_PARAM);
-	    out.append("=1");
+	    out.append(PlaylistServlet.OUTPUT_TYPE_PARAM);
+	    out.append('=');
+	    if (streamtype != null) {
+		out.append(streamtype);
+	    } else {
+		String t = (String) pageContext.findAttribute(STREAM_TYPE_ATTRIBUTE);
+		if (t != null) {
+		    out.append(t);
+		} else {
+		    out.append(STREAM_TYPE_DEFAULT);
+		}
+	    }
+
+	    // handle recursion
+	    if (recursive) {
+		out.append('&');
+		out.append(PlaylistServlet.RECURS_PARAM);
+		out.append("=1");
+	    }
+
+	    // encode session
+	    String url = out.toString();
+	    url = ((HttpServletResponse)pageContext.getResponse()).encodeURL(url);
+
+	    // place var attribute in page context
+	    pageContext.setAttribute(var, url, getScopeInt());
+
+	} catch (Exception ex) {
+	    log.error("failed to create playlist url", ex);
+	    throw new JspException("failed to create playlist url", ex);
 	}
-
-	// encode session
-	String url = out.toString();
-	url = ((HttpServletResponse)pageContext.getResponse()).encodeURL(url);
-
-	// place var attribute in page context
-	pageContext.setAttribute(var, url, getScopeInt());
 
         return SKIP_BODY;
     }

@@ -21,7 +21,7 @@ import org.scilla.info.*;
  * This image tag creates an <tt>img</tt> HTML tag to an
  * optionally transformed image with the proper <tt>width</tt>
  * and <tt>height</tt> attributes set.
- * @version $Id: ImageTag.java,v 1.16 2003/03/21 16:09:47 remco Exp $
+ * @version $Id: ImageTag.java,v 1.17 2003/04/14 01:27:05 remco Exp $
  * @author R.W. van 't Veer
  */
 public class ImageTag extends BodyTagSupport {
@@ -73,59 +73,63 @@ public class ImageTag extends BodyTagSupport {
 	// only putting image url in var?
 	if (var != null) {
 	    // TODO scope??
-	    pageContext.setAttribute(var, getImageUrl());
+	    try {
+		pageContext.setAttribute(var, getImageUrl());
+	    } catch (Exception ex) {
+		throw new JspException("failed to determine image url", ex);
+	    }
 	    return EVAL_PAGE;
 	}
 
-	// start build img tag
-	StringBuffer out = new StringBuffer();
-	out.append("<img");
-
-	out.append(" src=\"");
-	out.append(HTMLUtil.escape(getImageUrl()));
-	out.append('"');
-
-	// try to get and pass height and width
 	try {
-	    ImageInfo outputInfo = (ImageInfo) InfoFactory.get(getRequest().getOutputFile());
-	    if (outputInfo != null) {
-		int width = outputInfo.getWidth();
-		int height = outputInfo.getHeight();
-		if (width != -1 && height != -1) {
-		    out.append(" width=\"");
-		    out.append(width+"");
-		    out.append("\" height=\"");
-		    out.append(height+"");
-		    out.append('"');
+	    // start build img tag
+	    StringBuffer out = new StringBuffer();
+	    out.append("<img");
+
+	    out.append(" src=\"");
+	    out.append(HTMLUtil.escape(getImageUrl()));
+	    out.append('"');
+
+	    // try to get and pass height and width
+	    try {
+		ImageInfo outputInfo = (ImageInfo) InfoFactory.get(getRequest().getOutputFile());
+		if (outputInfo != null) {
+		    int width = outputInfo.getWidth();
+		    int height = outputInfo.getHeight();
+		    if (width != -1 && height != -1) {
+			out.append(" width=\"");
+			out.append(width+"");
+			out.append("\" height=\"");
+			out.append(height+"");
+			out.append('"');
+		    }
 		}
+	    } catch (Exception ex) {
+		// ignore
 	    }
+
+	    // typical image properties
+	    if (getAlt() != null) {
+		out.append(" alt=\""+HTMLUtil.escape(getAlt())+"\"");
+	    }
+	    if (getBorder() != null) {
+		out.append(" border=\""+HTMLUtil.escape(getBorder())+"\"");
+	    }
+	    if (getStyle() != null) {
+		out.append(" style=\""+HTMLUtil.escape(getStyle())+"\"");
+	    }
+	    if (getStyleClass() != null) {
+		out.append(" class=\""+HTMLUtil.escape(getStyleClass())+"\"");
+	    }
+
+	    // close tag
+	    out.append(" />");
+
+	    // write it!
+	    pageContext.getOut().print(out.toString());
 	} catch (Exception ex) {
-	    // ignore
+	    throw new JspException("failed to build image tag", ex);
 	}
-
-	// typical image properties
-	if (getAlt() != null) {
-	    out.append(" alt=\""+HTMLUtil.escape(getAlt())+"\"");
-	}
-	if (getBorder() != null) {
-	    out.append(" border=\""+HTMLUtil.escape(getBorder())+"\"");
-	}
-	if (getStyle() != null) {
-	    out.append(" style=\""+HTMLUtil.escape(getStyle())+"\"");
-	}
-	if (getStyleClass() != null) {
-	    out.append(" class=\""+HTMLUtil.escape(getStyleClass())+"\"");
-	}
-
-	// close tag
-	out.append(" />");
-
-	// write it!
-	try {
-            pageContext.getOut().print(out.toString());
-        } catch (Exception ex) {
-            throw new JspException("IO problems");
-        }
 
 	return EVAL_PAGE;
     }
@@ -141,10 +145,15 @@ public class ImageTag extends BodyTagSupport {
 	absSrc = null;
     }
     public String getSrc ()
-    throws JspException {
+    throws Exception {
 	if (name != null) {
-	    ImageBean img = (ImageBean) pageContext.findAttribute(name);
-	    return img.getFileName();
+	    ImageInfo img = (ImageInfo) pageContext.findAttribute(name);
+	    absSrc = img.getPathName();
+	    String source = AppConfig.getSourceDir();
+	    if (! absSrc.startsWith(source)) {
+		throw new Exception("data not found");
+	    }
+	    absSrc = absSrc.substring(source.length());
 	}
 
 	if (absSrc != null) {
@@ -264,9 +273,10 @@ public class ImageTag extends BodyTagSupport {
     throws Exception {
         // source mime type
         String type = null;
+	ImageInfo img = null;
 	if (name != null) {
-	    ImageBean img = (ImageBean) pageContext.findAttribute(name);
-	    type = MimeType.getTypeFromFilename(img.getFileName());
+	    img = (ImageInfo) pageContext.findAttribute(name);
+	    type = MimeType.getTypeFromFilename(img.getPathName());
 	} else {
 	    type = MimeType.getTypeFromFilename(getSrc());
 	}
@@ -277,19 +287,9 @@ public class ImageTag extends BodyTagSupport {
 
 	// create request according to context
 	Request req = null;
-	if (name != null) {
-	    ImageBean img = (ImageBean) pageContext.findAttribute(name);
-
-	    String source = AppConfig.getSourceDir();
-	    String fname = img.getFileName();
-	    if (fname.startsWith(File.separator)) {
-		fname = fname.substring(1);
-	    } else if (source.endsWith(File.separator)) {
-		source = source.substring(0, source.length() - 1);
-	    }
-	    source += File.separator + fname;
-
-	    req = new Request(source, type, getRequestParameters());
+	if (img != null) {
+	    String fname = img.getPathName();
+	    req = new Request(fname, type, getRequestParameters());
 	} else {
 	    URL url = pageContext.getServletContext().getResource(getSrc());
 	    req = new Request(url, type, getRequestParameters());
@@ -303,7 +303,7 @@ public class ImageTag extends BodyTagSupport {
      * source and transformations properties.
      */
     private String getImageUrl ()
-    throws JspException {
+    throws Exception {
 	StringBuffer out = new StringBuffer();
 
 	HttpServletRequest pageRequest = (HttpServletRequest) pageContext.getRequest();
@@ -311,9 +311,10 @@ public class ImageTag extends BodyTagSupport {
 
 	out.append(pageRequest.getContextPath());
 	out.append(SERVLET_MAPPING);
+
 	out.append(name != null ? ImageServlet.SCILLA_SOURCE_CTX : ImageServlet.APPLICATION_CTX);
-	String fname = getSrc();
 	// strip leading slash, already in context spec
+	String fname = getSrc();
 	while (fname.startsWith("/")) {
 	    fname = fname.substring(1);
 	}
