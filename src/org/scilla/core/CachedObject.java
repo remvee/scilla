@@ -29,6 +29,13 @@ import java.io.IOException;
 
 import org.scilla.*;
 
+/**
+ * A cached object is a media object already existing in cache,
+ * finished or not.
+ *
+ * @author R.W. van 't Veer
+ * @version $Id: CachedObject.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ */
 public class CachedObject implements MediaObject
 {
     final static int BUFFER_SIZE = 4096;
@@ -38,11 +45,21 @@ public class CachedObject implements MediaObject
     String filename;
     CacheManager cache = CacheManager.getInstance();
 
+    /**
+     * Create media object.
+     * @param filename full name of result file
+     */
     public CachedObject (String filename)
     {
 	this.filename = filename;
     }
 
+    /**
+     * Write data to stream.  If a converter is still running this
+     * method will follow the file till the converter is finished.
+     * @param out stream to write to
+     * @throws ScillaException when a read or write problem occures
+     */
     public void write (OutputStream out)
     throws ScillaException
     {

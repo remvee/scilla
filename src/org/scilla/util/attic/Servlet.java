@@ -30,8 +30,19 @@ import javax.servlet.ServletException;
 
 import org.scilla.*;
 
+/**
+ * This servlet handles media requests.
+ *
+ * @version $Id: Servlet.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ * @author R.W. van 't Veer
+ */
 public class Servlet extends HttpServlet
 {
+    /**
+     * Handle media request via servlet interface.
+     * @param request HTTP request
+     * @param response HTTP responce
+     */
     public void doGet (HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException
     {
@@ -77,6 +88,11 @@ public class Servlet extends HttpServlet
 	}
     }
 
+    /**
+     * Lookup last modified time
+     * @param request HTTP request
+     * @return last modification time in millis
+     */
     public long getLastModified (HttpServletRequest request)
     {
 	Request req = null;

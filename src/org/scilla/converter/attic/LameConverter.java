@@ -110,17 +110,20 @@ import org.scilla.core.*;
  * <BR>MPEG2 samplerates(kHz): 16 22.05 24 
  * <BR>bitrates(kbs): 8 16 24 32 40 48 56 64 80 96 112 128 144 160 
  *
- * @version $Id: LameConverter.java,v 1.3 2001/09/21 10:13:08 remco Exp $
+ * @version $Id: LameConverter.java,v 1.4 2001/09/21 12:38:27 remco Exp $
  * @see <A href="http://www.sulaco.org/mp3/">The LAME Project</A>
  * @author R.W. van 't Veer
  */
 
 public class LameConverter extends Converter
 {
+    /** parameter name to force the use of this converter */
     public final static String THIS_CONVERTER_PARAMETER = "lame";
     public final static String LAME_EXEC_PROPERTY = "LameConverter.exec";
 
-    // provide inputTypeList, outputTypeList and parameterList
+    /**
+     * Create a Lame converter object.
+     */
     public LameConverter ()
     {
 	super();
@@ -139,6 +142,9 @@ public class LameConverter extends Converter
 	};
     }
 
+    /**
+     * Start conversion.
+     */
     public void convert ()
     {
 	// create command line
@@ -156,13 +162,22 @@ public class LameConverter extends Converter
 	}
     }
 
+    /**
+     * Determine if <CODE>lame</CODE> executable exists.
+     * @see #LAME_EXEC_PROPERTY
+     * @see org.scilla.Config
+     */
     public boolean isFunctional ()
     {
 	File f = new File(Config.getParameter(LAME_EXEC_PROPERTY));
 	return f.exists();
     }
 
-    public String[] createCmdLine ()
+    /**
+     * Construct command line from request parameters
+     * @return request parameters
+     */
+    String[] createCmdLine ()
     {
 	boolean original = false;
 

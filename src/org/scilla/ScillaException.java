@@ -21,10 +21,19 @@
 
 package org.scilla;
 
+/**
+ * Base exception for scilla.
+ *
+ * @author R.W. van 't Veer
+ * @version $Id: ScillaException.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ */
 public class ScillaException extends Exception
 {
     String msg;
     Exception cause;
 
+    /**
+     * @return reason for exception condition
+     */
     public String getMessage () { return msg; }
 }

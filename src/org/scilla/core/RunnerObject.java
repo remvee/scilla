@@ -30,6 +30,12 @@ import java.io.IOException;
 import org.scilla.*;
 import org.scilla.converter.*;
 
+/**
+ * A runner object is a media object currently being converted.
+ *
+ * @author R.W. van 't Veer
+ * @version $Id: RunnerObject.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ */
 public class RunnerObject implements MediaObject
 {
     final static int BUFFER_SIZE = 4096;
@@ -39,16 +45,29 @@ public class RunnerObject implements MediaObject
     Converter conv;
     boolean deleteOutput = true;
 
+    /**
+     * Create media object.
+     * @param conv ready to run coonverter
+     */
     public RunnerObject (Converter conv)
     {
         this.conv = conv;
     }
 
+    /**
+     * @return true if runner has finished
+     */
     public boolean hasFinished ()
     {
 	return conv.hasFinished();
     }
 
+    /**
+     * Write data to stream.  Start converter and follow its output
+     * file meanwhile writing it to stream.
+     * @param out stream to write to
+     * @throws ScillaException when a read or write problem occures
+     */
     public void write (OutputStream out)
     throws ScillaException
     {
@@ -123,7 +142,20 @@ public class RunnerObject implements MediaObject
 	}
     }
 
-    public boolean allowCaching () { return true;  /* if not live stream */ }
-    public void setOutputFile (String filename) { conv.setOutputFile(filename); }
+    /**
+     * Change result file location.
+     * Don't call this method after write().
+     * @param fname output filename
+     * @see #write(java.io.OutputStream)
+     */
+    public void setOutputFile (String fname) { conv.setOutputFile(fname); }
+
+    /**
+     * Don't call this method after write().
+     * @param flag true if output should be deleted when conversion is
+     * finished
+     */
     public void setDeleteOutput (boolean flag) { deleteOutput = flag; }
+
+    public boolean allowCaching () { return true;  /* if not live stream */ }
 }

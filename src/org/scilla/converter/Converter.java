@@ -28,12 +28,21 @@ import java.util.Vector;
 import org.scilla.*;
 import org.scilla.core.*;
 
+/**
+ * Base for converter classes.
+ *
+ * @author R.W. van 't Veer
+ * @version $Id: Converter.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ */
 public abstract class Converter extends Thread
 {
     static final String TEMP_PREFIX = "scilla";
 
+    /** list of allowed input types */
     public String[] inputTypeList = null;
+    /** list of possible output types */
     public String[] outputTypeList = null;
+    /** list of possible conversion parameters */
     public String[] parameterList = null;
 
     String outputFile;
@@ -48,6 +57,9 @@ public abstract class Converter extends Thread
 
     int state = CONFIGURED_STATE;
 
+    /**
+     * Create a converter.
+     */
     public Converter ()
     {
 	// generate "save" temp filename: tmpdir/scillaHASHCODE
@@ -61,6 +73,9 @@ public abstract class Converter extends Thread
 	outputFile = b.toString();
     }
 
+    /**
+     * Runner.
+     */
     public void run ()
     {
 	state = RUNNING_STATE;
@@ -74,17 +89,26 @@ public abstract class Converter extends Thread
      */
     public abstract void convert ();
 
-    /** Test if convert is functional.  This method tries to determine
+    /**
+     * Test if convert is functional.  This method tries to determine
      * if the converter is able to run by testing the existence of
      * classes or executables it relies on.
+     * @return true if converter is properly configurated
      */
     public abstract boolean isFunctional ();
 
+    /**
+     * @return true if converter has finished
+     */
     public boolean hasFinished ()
     {
 	return state == FINISHED_STATE;
     }
 
+    /**
+     * @param type mime type of input file
+     * @return true if converter can handle this input type
+     */
     public boolean isValidInputType (String type)
     {
 	for (int i = 0; i < inputTypeList.length; i++)
@@ -94,6 +118,10 @@ public abstract class Converter extends Thread
 	return false;
     }
 
+    /**
+     * @param type mime type of output file
+     * @return true if converter can handle this output type
+     */
     public boolean isValidOutputType (String type)
     {
 	for (int i = 0; i < outputTypeList.length; i++)
@@ -103,6 +131,10 @@ public abstract class Converter extends Thread
 	return false;
     }
 
+    /**
+     * @param name parameter name
+     * @return true if converter accepts this parameter
+     */
     public boolean hasParameter (String name)
     {
 	for (int i = 0; i < parameterList.length; i++)
@@ -112,14 +144,24 @@ public abstract class Converter extends Thread
 	return false;
     }
 
-    public void setParameters (Vector p) { pars = p; }
+    /** @param pars conversion parameters */
+    public void setParameters (Vector pars) { pars = pars; }
+    /** @return conversion parameters */
     public Vector getParameters () { return pars; }
-    public void setOutputFile (String f) { outputFile = f; }
+    /** @param fname output filename */
+    public void setOutputFile (String fname) { outputFile = fname; }
+    /** @return output filename */
     public String getOutputFile () { return outputFile; }
-    public void setInputFile (String f) { inputFile = f; }
+    /** @param fname input filename */
+    public void setInputFile (String fname) { inputFile = fname; }
+    /** @return input filename */
     public String getInputFile () { return inputFile; }
-    public void setOutputType (String f) { outputType = f; }
+    /** @param type output mime type */
+    public void setOutputType (String type) { outputType = type; }
+    /** @return output mime type */
     public String getOutputType () { return outputType; }
-    public void setInputType (String f) { inputType = f; }
+    /** @param type input mime type */
+    public void setInputType (String type) { inputType = type; }
+    /** @return input mime type */
     public String getInputType () { return inputType; }
 }

@@ -34,13 +34,21 @@ import org.scilla.core.*;
 import org.scilla.util.*;
 
 /**
- * The "Java Advanced Imaging" Converter.
+ * The <STRONG>incomplete</STRONG> "Java Advanced Imaging" Converter.
+ * Currently this converter only supports the <CODE>size</CODE>
+ * parameter.
+ *
+ * @author R.W. van 't Veer
+ * @version $Id: JAIConverter.java,v 1.2 2001/09/21 12:38:27 remco Exp $
  */
 public class JAIConverter extends Converter
 {
+    /** parameter name to force the use of this converter */
     public final static String THIS_CONVERTER_PARAMETER = "jai";
 
-    // provide inputTypeList, outputTypeList and propertyList
+    /**
+     * Create a JAI converter object.
+     */
     public JAIConverter ()
     {
 	super();
@@ -61,6 +69,9 @@ public class JAIConverter extends Converter
 	};
     }
 
+    /**
+     * Start conversion.
+     */
     public void convert ()
     {
 	try
@@ -98,6 +109,10 @@ public class JAIConverter extends Converter
 	}
     }
 
+    /**
+     * See if JAI class is available.
+     * @see javax.media.jai.JAI
+     */
     public boolean isFunctional ()
     {
 	boolean f = false;
@@ -114,6 +129,12 @@ public class JAIConverter extends Converter
 	return f;
     }
 
+    /**
+     * Handle step in conversion.
+     * @param img source image
+     * @param rp conversion parameter
+     * @return result image
+     */
     PlanarImage handleConversion (PlanarImage img, RequestParameter rp)
     {
 	if (rp.key.equals("scale"))
@@ -127,8 +148,11 @@ public class JAIConverter extends Converter
     }
 
     /**
-     * Scale image.
-     * Format: WxH[+-]X[+-]Y[%][!][&lt;&gt;]
+     * Scale image complying to ImageMagick geometry format.
+     * Format: <CODE>WxH[+-]X[+-]Y[%][!][&lt;&gt;]</CODE>
+     * @param img source image
+     * @param geom geometry conversion parameter
+     * @return result image
      */
     PlanarImage scale (PlanarImage img, GeometryParameter geom)
     {
@@ -168,6 +192,9 @@ public class JAIConverter extends Converter
     }
 }
 
+/**
+ * Class for mapping ImageMagick scale format.
+ */
 class GeometryParameter
 {
     int width;
@@ -176,6 +203,9 @@ class GeometryParameter
     int y;
     String options;
 
+    /**
+     * Parse ImageMagick like scale format.
+     */
     GeometryParameter (String in)
     {
 	int i;

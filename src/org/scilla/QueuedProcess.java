@@ -32,12 +32,12 @@ import java.util.StringTokenizer;
  *
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Id: QueuedProcess.java,v 1.1 2001/09/15 17:59:21 remco Exp $
+ * @version $Id: QueuedProcess.java,v 1.2 2001/09/21 12:38:27 remco Exp $
  */
 public class QueuedProcess
 {
-    static final String MAX_RUNNERS_PROPERTY = "QueuedProcess.maxRunners";
-    static final String WRAPPER_PROPERTY = "QueuedProcess.wrapper";
+    public static final String MAX_RUNNERS_PROPERTY = "QueuedProcess.maxRunners";
+    public static final String WRAPPER_PROPERTY = "QueuedProcess.wrapper";
 
     int exitValue = -1;
     Process proc;
@@ -83,6 +83,14 @@ public class QueuedProcess
 	}
     }
 
+    /**
+     * Create and executed a queued OS process.  The process is
+     * created when a semaphore is below the configured value.
+     * @param args command arguments
+     * @throws IOException when execution fails
+     * @see java.lang.Runtime#exec(String[])
+     * @see #MAX_RUNNERS_PROPERTY
+     */
     public QueuedProcess (String[] args)
     throws IOException
     {
@@ -120,6 +128,9 @@ public class QueuedProcess
 	}
     }
 
+    /**
+     * Wait for process to finish.
+     */
     public synchronized void waitFor ()
     {
 	if (proc != null)
@@ -133,6 +144,10 @@ public class QueuedProcess
 	}
     }
 
+    /**
+     * Wait for process to finished and return the exit value.
+     * @return exit value
+     */
     public synchronized int exitValue ()
     {
 	waitFor();

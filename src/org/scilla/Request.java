@@ -29,6 +29,12 @@ import java.io.File;
 import org.scilla.core.*;
 import org.scilla.util.*;
 
+/**
+ * The Request class holds a scilla media object request.
+ *
+ * @author R.W. van 't Veer
+ * @version $Id: Request.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ */
 public class Request
 {
     public final static String OUTPUT_TYPE_PROPERTY = "outputtype";
@@ -53,6 +59,11 @@ public class Request
         this.param = param;
     }
 
+    /**
+     * Write media object data to stream.
+     * @param out output stream
+     * @throws ScillaException when reading or writing fails
+     */
     public void write (OutputStream out)
     throws ScillaException
     {
@@ -60,15 +71,33 @@ public class Request
         obj.write(out);
     }
 
+    /**
+     * @return source file relative to source directory
+     */
     public String getSource ()
     {
 	return source;
     }
+
+    /**
+     * convenience method
+     * @return full path to source file
+     * @see Config#getSourceDir()
+     */
     public String getInputFile ()
     {
         return Config.getSourceDir() + File.separator + source;
     }
+
+    /**
+     * @return input mime type
+     */
     public String getInputType () { return type; }
+
+    /**
+     * @return output mime type
+     * @see #OUTPUT_TYPE_PROPERTY
+     */
     public String getOutputType ()
     {
 	String typePar = null;
@@ -87,14 +116,33 @@ public class Request
 		?  MimeTypeFactory.getTypeFromFileExtension(typePar)
 	    	: type;
     }
+
+    /**
+     * @return last modified time of input file in millis
+     */
     public long lastModified ()
     {
 	return (new File(getInputFile())).lastModified();
     }
+
+    /**
+     * @return request paramaters
+     */
     public Vector getParameters () { return param; }
+
+    /**
+     * @return true if this request needs a converter
+     */
     public boolean needConverter () { return ! param.isEmpty(); }
+
+    /**
+     * @return true if this request can be cached
+     */
     public boolean allowCaching () { return true; }
 
+    /**
+     * @return request description
+     */
     public String toString ()
     {
 	StringBuffer b = new StringBuffer();
@@ -107,6 +155,9 @@ public class Request
 	return b.toString();
     }
 
+    /**
+     * @return request description in HTML format
+     */
     public String toHTML ()
     {
 	StringBuffer b = new StringBuffer("<DL>");

@@ -25,12 +25,24 @@ import java.io.OutputStream;
 
 import org.scilla.*;
 
+/**
+ * A caching object is a media object currently being written to
+ * cache.
+ *
+ * @author R.W. van 't Veer
+ * @version $Id: CachingObject.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ */
 public class CachingObject implements MediaObject
 {
     String filename;
     RunnerObject obj;
     CacheManager cache = CacheManager.getInstance();
 
+    /**
+     * Create media object and register runner.
+     * @param obj running conversion
+     * @param filename full name of result file
+     */
     public CachingObject (RunnerObject obj, String filename)
     {
         this.obj = obj;

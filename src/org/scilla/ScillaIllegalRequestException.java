@@ -21,8 +21,12 @@
 
 package org.scilla;
 
-import java.io.IOException;
-
+/**
+ * Illegal request exception.
+ *
+ * @author R.W. van 't Veer
+ * @version $Id: ScillaIllegalRequestException.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ */
 public class ScillaIllegalRequestException extends ScillaException
 {
     public ScillaIllegalRequestException ()

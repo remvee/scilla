@@ -29,13 +29,19 @@ import java.io.IOException;
 
 import org.scilla.converter.*;
 
+/**
+ * The scilla configuration wrapper.
+ *
+ * @version $Id: Config.java,v 1.2 2001/09/21 12:38:26 remco Exp $
+ * @author R.W. van 't Veer
+ */
 public class Config
 {
     private static Config _instance = null;
-    static final String PROPERTY_FILE = "org/scilla/Config.properties";
-    static final String CACHE_DIR_PROPERTY = "Config.cacheDir";
-    static final String SOURCE_DIR_PROPERTY = "Config.sourceDir";
-    static final String CONVERTERS_PROPERTY = "Config.converters";
+    public static final String PROPERTY_FILE = "org/scilla/Config.properties";
+    public static final String CACHE_DIR_PROPERTY = "Config.cacheDir";
+    public static final String SOURCE_DIR_PROPERTY = "Config.sourceDir";
+    public static final String CONVERTERS_PROPERTY = "Config.converters";
 
     private Properties param = new Properties();
 
@@ -69,6 +75,9 @@ public class Config
 	}
     }
 
+    /**
+     * @return Config for this scilla instance
+     */
     public static synchronized Config getInstance ()
     {
         if (_instance == null) _instance = new Config();
@@ -76,23 +85,42 @@ public class Config
 
     }
 
+    /**
+     * @param key parameter name
+     * @return value of parameter
+     */
     public static String getParameter (String key)
     {
         String value = getInstance().param.getProperty(key);
         return value;
     }
 
+    /**
+     * convenience method
+     * @return cache directory location
+     * @see #CACHE_DIR_PROPERTY
+     */
     public static String getCacheDir ()
     {
 	return getParameter(CACHE_DIR_PROPERTY);
     }
 
+    /**
+     * convenience method
+     * @return source directory location
+     * @see #SOURCE_DIR_PROPERTY
+     */
     public static String getSourceDir ()
     {
 	return getParameter(SOURCE_DIR_PROPERTY);
     }
 
-    static Class[] converters = null;
+    private static Class[] converters = null;
+    /**
+     * convenience method
+     * @return array of converter classes
+     * @see #CONVERTERS_PROPERTY
+     */
     public static Class[] getConverters ()
     {
 	if (converters == null)

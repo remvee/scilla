@@ -25,8 +25,23 @@ import java.io.OutputStream;
 
 import org.scilla.*;
 
+/**
+ * Interface to a media object.
+ *
+ * @author R.W. van 't Veer
+ * @version $Id: MediaObject.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ */
 public interface MediaObject
 {
+    /**
+     * Write data to stream.
+     * @param out stream to write to
+     * @throws ScillaException when a read or write problem occures
+     */
     public void write (OutputStream out) throws ScillaException;
+
+    /**
+     * @return true if this object may be cached
+     */
     boolean allowCaching ();
 }

@@ -3,11 +3,11 @@ package org.scilla.util.mp3;
 import java.io.*;
 
 /**
- * Read-only access the Xing info tag in an Mp3 file.
+ * Read-only access the Xing info tag in an MP3 file.
  *
  * @author Remco van 't Veer <rwvtveer@xs4all.nl>
- * @version $Revision: 1.1 $
- * @see xmms-1.2.4/Input/mpg123/dxhead.c
+ * @version $Revision: 1.2 $
+ * @see <CODE>xmms-1.2.4/Input/mpg123/dxhead.c</CODE>
  */
 public class XingInfo extends FrameHeader
 {
@@ -41,7 +41,8 @@ public class XingInfo extends FrameHeader
    * Xing info tag from this first frame.
    *
    * @see #close()
-   * @exception when file not readable or tag not present
+   * @throws IOException when file not readable
+   * @throws MP3Exception when tag not present
    */
   public XingInfo (File f) throws IOException, Mp3Exception
   {
@@ -149,4 +150,4 @@ public class XingInfo extends FrameHeader
   }
 }
 
-/* end of $Id: XingInfo.java,v 1.1 2001/09/16 21:56:03 remco Exp $ */
+/* end of $Id: XingInfo.java,v 1.2 2001/09/21 12:38:27 remco Exp $ */

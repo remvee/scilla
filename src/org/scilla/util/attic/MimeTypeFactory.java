@@ -26,9 +26,15 @@ import java.util.Properties;
 import java.io.InputStream;
 import java.io.IOException;
 
+/**
+ * Class for mapping filenames to mime types and visa versa.
+ *
+ * @version $Id: MimeTypeFactory.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ * @author R.W. van 't Veer
+ */
 public class MimeTypeFactory
 {
-    static final String PROPERTY_FILE = "org/scilla/util/MimeTypeFactory.properties";
+    public static final String PROPERTY_FILE = "org/scilla/util/MimeTypeFactory.properties";
     static final String PROPERTY_PREFIX = "MimeTypeExt";
 
     static Properties param = null;
@@ -39,7 +45,7 @@ public class MimeTypeFactory
 	MimeTypeFactory f = new MimeTypeFactory();
     }
 
-    public MimeTypeFactory ()
+    protected MimeTypeFactory ()
     {
 	InputStream in = null;
 	try
@@ -69,6 +75,10 @@ public class MimeTypeFactory
 	}
     }
 
+    /**
+     * @param ext filename extension
+     * @return mime type
+     */
     public static String getTypeFromFileExtension(String ext)
     {
 	// public methods using param must make sure the propfile is loaded
@@ -78,11 +88,19 @@ public class MimeTypeFactory
 	return type;
     }
 
-    public static String getTypeFromFilename (String filename)
+    /**
+     * @param fname filename
+     * @return mime type
+     */
+    public static String getTypeFromFilename (String fname)
     {
-	return getTypeFromFileExtension(getExtensionFromFilename(filename));
+	return getTypeFromFileExtension(getExtensionFromFilename(fname));
     }
 
+    /**
+     * @param type mime type
+     * @return filename extension
+     */
     public static String getExtensionForType (String type)
     {
 	// public methods using param must make sure the propfile is loaded
@@ -102,12 +120,16 @@ public class MimeTypeFactory
 	return null;
     }
 
-    private static String getExtensionFromFilename (String filename)
+    /**
+     * @param fname filename
+     * @return filename extension
+     */
+    private static String getExtensionFromFilename (String fname)
     {
-	int i = filename.lastIndexOf('.');
+	int i = fname.lastIndexOf('.');
 	if (i != -1)
 	{
-	    return filename.substring(i+1);
+	    return fname.substring(i+1);
 	}
 
 	return null;

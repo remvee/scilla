@@ -28,8 +28,22 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.scilla.util.*;
 
+/**
+ * The request factory class creates a request object from a different
+ * kind of request.
+ *
+ * @author R.W. van 't Veer
+ * @version $Id: RequestFactory.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ */
 public class RequestFactory
 {
+    /**
+     * Interpret HTTP request to create a scilla request.
+     * @param req HTTP request
+     * @throws ScillaIllegalRequestException when request can not be
+     * created
+     * @return scilla request
+     */
     public static Request createFromHttpServletRequest (HttpServletRequest req)
     throws ScillaIllegalRequestException
     {
@@ -62,7 +76,16 @@ public class RequestFactory
         return new Request(source, type, pars);
     }
 
+    /**
+     * Interpret argv request to create scilla request.
+     * @param args argument list, first argument is the source object
+     * and the rest of the arguments consist of param=value pairs
+     * @throws ScillaIllegalRequestException when request can not be
+     * created
+     * @return scilla request
+     */
     public static Request createFromArgv (String[] args)
+    throws ScillaIllegalRequestException
     {
         // source file
         String source = args[0];

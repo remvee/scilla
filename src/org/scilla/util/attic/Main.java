@@ -23,8 +23,19 @@ package org.scilla.util;
 
 import org.scilla.*;
 
+/**
+ * Simple main class for debugging scilla.
+ *
+ * @version $Id: Main.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ * @author R.W. van 't Veer
+ */
 public class Main
 {
+    /**
+     * Writes requested data to standart output.
+     * @param args conversion parameters
+     * @see org.scilla.RequestFactory#createFromArgv(String[])
+     */
     public static void main (String[] args)
     throws Exception
     {

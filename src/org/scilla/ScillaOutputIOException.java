@@ -23,6 +23,12 @@ package org.scilla;
 
 import java.io.IOException;
 
+/**
+ * Output IO exception wrapper.
+ *
+ * @author R.W. van 't Veer
+ * @version $Id: ScillaOutputIOException.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ */
 public class ScillaOutputIOException extends ScillaException
 {
     public ScillaOutputIOException (IOException ex)

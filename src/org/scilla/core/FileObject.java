@@ -27,12 +27,22 @@ import java.io.IOException;
 
 import org.scilla.*;
 
+/**
+ * A file object is a media object somewhere on disk.
+ *
+ * @author R.W. van 't Veer
+ * @version $Id: FileObject.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ */
 public class FileObject implements MediaObject
 {
     static final int BUFFER_SIZE = 4096;
 
     String filename;
 
+    /**
+     * Create media object.
+     * @param filename full name of result file
+     */
     public FileObject (String filename)
     {
         this.filename = filename;

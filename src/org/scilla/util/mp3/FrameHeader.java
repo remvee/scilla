@@ -9,7 +9,7 @@ import java.io.EOFException;
  * Read only access to MP3 frame header information.
  * @see <a href="http://www.mp3-tech.org/programmer/frame_header.html">MP3'Tech - Frame header</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class FrameHeader
 {
@@ -111,7 +111,8 @@ public class FrameHeader
    * Read first frame header in file and derive MP3 properties from it.
    * @see #close()
    * @param f mp3 file
-   * @exception when file access fails
+   * @throws IOException when file not readable
+   * @throws MP3Exception when no frameheader found
    */
   public FrameHeader (File f)
     throws IOException, Mp3Exception
@@ -500,4 +501,4 @@ public class FrameHeader
 }
 
 
-/* end of $Id: FrameHeader.java,v 1.1 2001/09/16 21:56:03 remco Exp $ */
+/* end of $Id: FrameHeader.java,v 1.2 2001/09/21 12:38:27 remco Exp $ */

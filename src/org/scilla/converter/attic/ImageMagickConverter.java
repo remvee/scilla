@@ -38,91 +38,97 @@ import org.scilla.util.*;
  * <P>
  * Following are the supported options from the convert --help
  * message:
- * <PRE>
- * affine MATRIX       drawing transform matrix
- * antialias           remove pixel-aliasing
- * blur GEOMETRY       blur the image
- * border GEOMETRY     surround image with a border of color
- * bordercolor COLOR   border color
- * box COLOR           color for annotation bounding box
- * channel TYPE        Red, Green, Blue, Matte
- * charcoal RADIUS     simulate a charcoal drawing
- * colorize VALUE      colorize the image with the fill color
- * colors VALUE        preferred number of colors in the image
- * colorspace TYPE     alternate image colorspace
- * comment STRING      annotate image with comment
- * compress TYPE       type of image compression
- * contrast N          enhance or reduce the image contrast N times
- * crop GEOMETRY       preferred size and location of the cropped image
- * cycle AMOUNT        cycle the image colormap
- * density GEOMETRY    vertical and horizontal density of the image
- * depth VALUE         depth of the image
- * despeckle           reduce the speckles within an image
- * dispose METHOD      GIF disposal method
- * dither              apply Floyd/Steinberg error diffusion to image
- * draw STRING         annotate the image with a graphic primitive
- * edge RADIUS         apply a filter to detect edges in the image
- * emboss RADIUS       emboss an image
- * enhance             apply a digital filter to enhance a noisy image
- * equalize            perform histogram equalization to an image
- * fill COLOR          color to use when filling a graphic primitive
- * filter TYPE         use this filter when resizing an image
- * flip                flip image in the vertical direction
- * flop                flop image in the horizontal direction
- * font NAME           font for rendering text
- * frame GEOMETRY      surround image with an ornamental border
- * fuzz DISTANCE       colors within this distance are considered equal
- * gamma VALUE         level of gamma correction
- * geometry GEOMETRY   perferred size or location of the image
- * gaussian GEOMETRY   gaussian blur an image
- * gravity TYPE        vertical and horizontal text placement
- * implode AMOUNT      implode image pixels about the center
- * intent TYPE         Absolute, Perceptual, Relative, or Saturation
- * interlace TYPE      None, Line, Plane, or Partition
- * label NAME          assign a label to an image
- * matte               store matte channel if the image has one
- * median RADIUS       apply a median filter to the image
- * modulate VALUE      vary the brightness, saturation, and hue
- * monochrome          transform image to black and white
- * negate              replace every pixel with its complementary color 
- * noise               add or reduce noise in an image
- * normalize           transform image to span the full range of colors
- * opaque COLOR        change this color to the fill color
- * page GEOMETRY       size and location of an image canvas
- * paint RADIUS        simulate an oil painting
- * pointsize VALUE     pointsize of Postscript font
- * quality VALUE       JPEG/MIFF/PNG compression level
- * raise VALUE         lighten/darken image edges to create a 3-D effect
- * region GEOMETRY     apply options to a portion of the image
- * roll GEOMETRY       roll an image vertically or horizontally
- * rotate DEGREES      apply Paeth rotation to the image
- * sample GEOMETRY     scale image with pixel sampling
- * scale GEOMETRY      resize image
- * segment VALUES      segment an image
- * shade DEGREES       shade the image using a distant light source
- * sharpen GEOMETRY    sharpen the image
- * shear GEOMETRY      slide one edge of the image along the X or Y axis
- * size GEOMETRY       width and height of image
- * solarize THRESHOLD  negate all pixels above the threshold level
- * spread AMOUNT       displace image pixels by a random amount
- * stroke COLOR        color to use when stoking a graphic primitive
- * strokewidth VALUE   width of stroke
- * swirl DEGREES       swirl image pixels about the center
- * threshold VALUE     threshold the image
- * transparent COLOR   make this color transparent within the image
- * treedepth VALUE     depth of the color color tree
- * type TYPE           Bilevel, Gray, Palette, PaletteMatte, TrueColor, 
- *                     TrueColorMatte, or ColorSeparation
- * units TYPE          PixelsPerInch, PixelsPerCentimeter, or Undefined
- * wave GEOMETRY       alter an image along a sine wave
- * </PRE>
+ * <DL>
+ * <DT>affine MATRIX       <DD>drawing transform matrix
+ * <DT>antialias           <DD>remove pixel-aliasing
+ * <DT>blur GEOMETRY       <DD>blur the image
+ * <DT>border GEOMETRY     <DD>surround image with a border of color
+ * <DT>bordercolor COLOR   <DD>border color
+ * <DT>box COLOR           <DD>color for annotation bounding box
+ * <DT>channel TYPE        <DD>Red, Green, Blue, Matte
+ * <DT>charcoal RADIUS     <DD>simulate a charcoal drawing
+ * <DT>colorize VALUE      <DD>colorize the image with the fill color
+ * <DT>colors VALUE        <DD>preferred number of colors in the image
+ * <DT>colorspace TYPE     <DD>alternate image colorspace
+ * <DT>comment STRING      <DD>annotate image with comment
+ * <DT>compress TYPE       <DD>type of image compression
+ * <DT>contrast N          <DD>enhance or reduce the image contrast N times
+ * <DT>crop GEOMETRY       <DD>preferred size and location of the cropped image
+ * <DT>cycle AMOUNT        <DD>cycle the image colormap
+ * <DT>density GEOMETRY    <DD>vertical and horizontal density of the image
+ * <DT>depth VALUE         <DD>depth of the image
+ * <DT>despeckle           <DD>reduce the speckles within an image
+ * <DT>dispose METHOD      <DD>GIF disposal method
+ * <DT>dither              <DD>apply Floyd/Steinberg error diffusion to image
+ * <DT>draw STRING         <DD>annotate the image with a graphic primitive
+ * <DT>edge RADIUS         <DD>apply a filter to detect edges in the image
+ * <DT>emboss RADIUS       <DD>emboss an image
+ * <DT>enhance             <DD>apply a digital filter to enhance a noisy image
+ * <DT>equalize            <DD>perform histogram equalization to an image
+ * <DT>fill COLOR          <DD>color to use when filling a graphic primitive
+ * <DT>filter TYPE         <DD>use this filter when resizing an image
+ * <DT>flip                <DD>flip image in the vertical direction
+ * <DT>flop                <DD>flop image in the horizontal direction
+ * <DT>font NAME           <DD>font for rendering text
+ * <DT>frame GEOMETRY      <DD>surround image with an ornamental border
+ * <DT>fuzz DISTANCE       <DD>colors within this distance are considered equal
+ * <DT>gamma VALUE         <DD>level of gamma correction
+ * <DT>geometry GEOMETRY   <DD>perferred size or location of the image
+ * <DT>gaussian GEOMETRY   <DD>gaussian blur an image
+ * <DT>gravity TYPE        <DD>vertical and horizontal text placement
+ * <DT>implode AMOUNT      <DD>implode image pixels about the center
+ * <DT>intent TYPE         <DD>Absolute, Perceptual, Relative, or Saturation
+ * <DT>interlace TYPE      <DD>None, Line, Plane, or Partition
+ * <DT>label NAME          <DD>assign a label to an image
+ * <DT>matte               <DD>store matte channel if the image has one
+ * <DT>median RADIUS       <DD>apply a median filter to the image
+ * <DT>modulate VALUE      <DD>vary the brightness, saturation, and hue
+ * <DT>monochrome          <DD>transform image to black and white
+ * <DT>negate              <DD>replace every pixel with its complementary color 
+ * <DT>noise               <DD>add or reduce noise in an image
+ * <DT>normalize           <DD>transform image to span the full range of colors
+ * <DT>opaque COLOR        <DD>change this color to the fill color
+ * <DT>page GEOMETRY       <DD>size and location of an image canvas
+ * <DT>paint RADIUS        <DD>simulate an oil painting
+ * <DT>pointsize VALUE     <DD>pointsize of Postscript font
+ * <DT>quality VALUE       <DD>JPEG/MIFF/PNG compression level
+ * <DT>raise VALUE         <DD>lighten/darken image edges to create a 3-D effect
+ * <DT>region GEOMETRY     <DD>apply options to a portion of the image
+ * <DT>roll GEOMETRY       <DD>roll an image vertically or horizontally
+ * <DT>rotate DEGREES      <DD>apply Paeth rotation to the image
+ * <DT>sample GEOMETRY     <DD>scale image with pixel sampling
+ * <DT>scale GEOMETRY      <DD>resize image
+ * <DT>segment VALUES      <DD>segment an image
+ * <DT>shade DEGREES       <DD>shade the image using a distant light source
+ * <DT>sharpen GEOMETRY    <DD>sharpen the image
+ * <DT>shear GEOMETRY      <DD>slide one edge of the image along the X or Y axis
+ * <DT>size GEOMETRY       <DD>width and height of image
+ * <DT>solarize THRESHOLD  <DD>negate all pixels above the threshold level
+ * <DT>spread AMOUNT       <DD>displace image pixels by a random amount
+ * <DT>stroke COLOR        <DD>color to use when stoking a graphic primitive
+ * <DT>strokewidth VALUE   <DD>width of stroke
+ * <DT>swirl DEGREES       <DD>swirl image pixels about the center
+ * <DT>threshold VALUE     <DD>threshold the image
+ * <DT>transparent COLOR   <DD>make this color transparent within the image
+ * <DT>treedepth VALUE     <DD>depth of the color color tree
+ * <DT>type TYPE           <DD>Bilevel, Gray, Palette, PaletteMatte, TrueColor, 
+ *                         TrueColorMatte, or ColorSeparation
+ * <DT>units TYPE          <DD>PixelsPerInch, PixelsPerCentimeter, or Undefined
+ * <DT>wave GEOMETRY       <DD>alter an image along a sine wave
+ * </DL>
+ *
+ * @author R.W. van 't Veer
+ * @version $Id: ImageMagickConverter.java,v 1.2 2001/09/21 12:38:27 remco Exp $
  */
 public class ImageMagickConverter extends Converter
 {
+    /** parameter name to force the use of this converter */
     public final static String THIS_CONVERTER_PARAMETER = "imagick";
     public final static String CONVERT_EXEC_PROPERTY = "ImageMagickConverter.exec";
 
-    // provide inputTypeList, outputTypeList and propertyList
+    /**
+     * Create a ImageMagick converter object.
+     */
     public ImageMagickConverter ()
     {
 	super();
@@ -157,6 +163,9 @@ public class ImageMagickConverter extends Converter
 	};
     }
 
+    /**
+     * Start conversion.
+     */
     public void convert ()
     {
 	// create command line
@@ -174,6 +183,12 @@ public class ImageMagickConverter extends Converter
 	}
     }
 
+    /**
+     * Determine if ImageMagick <CODE>convert</CODE> executable
+     * exists.
+     * @see #CONVERT_EXEC_PROPERTY
+     * @see org.scilla.Config
+     */
     public boolean isFunctional ()
     {
 	File f = new File(Config.getParameter(CONVERT_EXEC_PROPERTY));
@@ -225,6 +240,10 @@ public class ImageMagickConverter extends Converter
 	oneArgList.add("wave");
     }
 
+    /**
+     * Construct command line from request parameters
+     * @return request parameters
+     */
     String[] createCmdLine ()
     {
 	// create command line

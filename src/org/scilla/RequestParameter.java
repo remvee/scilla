@@ -21,10 +21,20 @@
 
 package org.scilla;
 
+/**
+ * Request parameter holder.
+ *
+ * @author R.W. van 't Veer
+ * @version $Id: RequestParameter.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ */
 public class RequestParameter
 {
     public String key, val;
 
+    /**
+     * @param key key to value
+     * @param value value to key
+     */
     public RequestParameter (String key, String val)
     {
         this.key = key;
