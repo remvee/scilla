@@ -1,5 +1,9 @@
 For version 1.0:
 - examples: 
+    - audio.jsp
+        - use filter to dispatch requests and have nice urls
+        - make list and stream types configurable
+        - make seek work for itunes
     - get rid of usebean stuff in audio.jsp and imglist.jsp
     - put tld in META-INF
     - image and playlist; use info objects instead of beans
