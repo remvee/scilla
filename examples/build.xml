@@ -23,11 +23,11 @@
     <property name="cache.dir" value="/tmp"/>
 
 <!-- targets -->
-    <target name="deploy" depends="prepare,scilla,compile,apidoc,web.xml">
+    <target name="deploy" depends="prepare,scilla,compile,apidoc,webxml1,webxml2">
         <echo>FIN</echo>
     </target>
 
-    <target name="web.xml" depends="prepare" if="source.dir">
+    <target name="webxml1" depends="prepare" if="source.dir">
         <delete file="${webinf.dir}/web.xml"/>
         <copy file="etc/web.xml" tofile="${webinf.dir}/web.xml"/>
 	<replace file="${webinf.dir}/web.xml" summary="yes">
@@ -35,7 +35,10 @@
 	    <replacefilter token="@cache.dir@" value="${cache.dir}"/>
 	</replace>
     </target>
-    <target name="template.web.xml"/>
+    <target name="webxml2" depends="prepare" unless="source.dir">
+        <delete file="${webinf.dir}/web.xml"/>
+        <copy file="etc/web.xml" tofile="${webinf.dir}/web.xml"/>
+    </target>
 
 
     <target name="war" depends="deploy">
