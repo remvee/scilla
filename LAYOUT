@@ -1,18 +1,18 @@
 Request handling diagram
 ------------------------
-Config                                 Main  .  Servlet
-                                              \|/
-MimeTypeFactory                         RequestFactory
-                                               |
-                                            Request
-                                               |
-                                         CacheManager
-                                              /|
-                                  MediaFactory
-                                              \|
-                                          MediaObject
-                                              /|\
-                FileObject  .  RunnerObject  .  CachingObject  .  CachedObject
+			    Publish  .  Servlet
+				    \|/
+			      RequestFactory
+				     |
+				  Request
+				     |
+			       CacheManager
+				    /|
+			MediaFactory
+				    \|
+				MediaObject
+				    /|\
+                FileObject  .  RunnerObject  .  CachedObject
                                      |
                                  Converter
                                     /|\

@@ -1,6 +1,5 @@
-- gogo script emulating lame
 - test with orion
-- implement content-length
+- make synchronized part of CacheManager.get smaller
 - write INSTALL INSTALL.html (referenced by homepage)
 - JAIConverter
     - sync parameters with imagick so they will be interchangable.
