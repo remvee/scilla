@@ -33,7 +33,7 @@ import org.scilla.LoggerFactory;
 /**
  * Class for mapping filenames to mime types and visa versa.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @author R.W. van 't Veer
  */
 public class MimeType
@@ -60,16 +60,16 @@ public class MimeType
 	    if (in != null)
 	    {
 		param.load(in);
-		log.info("properties loaded");
+		log.debug("properties loaded: " + PROPERTY_FILE);
 	    }
 	    else
 	    {
-		log.warn("no properties loaded");
+		log.fatal("properties not available: " + PROPERTY_FILE);
 	    }
 	}
-	catch (Exception e)
+	catch (IOException ex)
 	{
-	    e.printStackTrace();
+	    log.fatal("can't load properties: " + PROPERTY_FILE, ex);
 	}
 	finally
 	{

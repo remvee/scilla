@@ -32,7 +32,7 @@ import java.io.IOException;
 /**
  * The scilla configuration implemation using property files.
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @author R.W. van 't Veer
  */
 public class ConfigPropertiesImpl implements Config
@@ -113,7 +113,8 @@ public class ConfigPropertiesImpl implements Config
 	    }
 	    catch (Throwable ex)
 	    {
-		log.warn("getClasses("+key+"): "+cn, ex);
+		log.warn("getClasses("+key+"): "+cn+": "+ex);
+		log.debug("", ex);
 	    }
 	}
 	Class[] val = (Class[]) v.toArray(new Class[0]);

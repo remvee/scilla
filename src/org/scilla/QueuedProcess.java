@@ -35,7 +35,7 @@ import java.util.StringTokenizer;
  * taken from the scilla configuration.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class QueuedProcess
 {
@@ -132,9 +132,9 @@ public class QueuedProcess
 		    sb.append(envp[i]);
 		    sb.append(' ');
 		}
-		log.info("env: "+sb);
+		log.debug("env: "+sb);
 	    }
-	    if (dir != null) log.info("dir: "+dir);
+	    if (dir != null) log.debug("dir: "+dir);
 	}
 
 	// execute process

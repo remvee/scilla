@@ -27,7 +27,7 @@ import java.io.IOException;
 /**
  * The scilla configuration factory.
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @author R.W. van 't Veer
  */
 public class ConfigFactory
@@ -72,18 +72,18 @@ public class ConfigFactory
 		if (in != null)
 		{
 		    config = new ConfigPropertiesImpl(in);
-		    log.info("properties loaded: "+PROPERTY_FILE);
+		    log.debug("properties loaded: "+PROPERTY_FILE);
 		    in.close();
 		}
 		else
 		{
-		    log.warn("no properties loaded: "+PROPERTY_FILE);
+		    log.fatal("properties not avialable: "+PROPERTY_FILE);
 		}
 
 	    }
-	    catch (IOException e)
+	    catch (IOException ex)
 	    {
-		log.warn(e);
+		log.fatal("can't load properties: " + PROPERTY_FILE, ex);
 	    }
 	    finally
 	    {
