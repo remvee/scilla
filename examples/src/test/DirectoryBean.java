@@ -105,6 +105,17 @@ public class DirectoryBean {
     }
     private List tracks = new ArrayList();
 
+    public Set getRecordingDates () {
+	return dates;
+    }
+    public String getRecordingDate () {
+	return (String) dates.iterator().next();
+    }
+    public int getNumOfRecordingDates () {
+	return dates.size();
+    }
+    private Set dates = new HashSet();
+
     public List getImages () {
 	return images;
     }
@@ -147,6 +158,7 @@ public class DirectoryBean {
 		    artists.add(track.getArtist());
 		    performers.add(track.getPerformer());
 		    albums.add(track.getAlbum());
+		    dates.add(track.getRecordingDate());
 
 		    if (track.getLength() > 0) {
 			length += track.getLength();

@@ -37,6 +37,9 @@ public class TrackBean {
     public int getLength () {
 	return info.getLength();
     }
+    public String getRecordingDate () {
+	return info.getString(AudioInfo.RECORDING_DATE);
+    }
     public String getTime () {
 	if (getLength() >= 0) {
 	    int hours = getLength() / (60 * 60);
