@@ -62,7 +62,6 @@ public class DirectoryBean {
 	///////////////////////////////////////
 
 	String pathname = AppConfig.getSourceDir() + File.separator + path;
-System.out.println("pathname="+pathname);
 
 	String[] files = (new File(pathname)).list();
 	Arrays.sort(files);
