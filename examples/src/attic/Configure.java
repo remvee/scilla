@@ -83,7 +83,7 @@ public class Configure
 	{
 	    System.out.println("Writing war-file.");
 
-	    String outfn = "scilla.war"
+	    String outfn = "scilla.war";
 	    System.out.println("  "+outfn);
 
 	    JarInputStream in = new JarInputStream(cl.getResourceAsStream("scilla.war"));
