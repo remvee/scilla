@@ -11,6 +11,8 @@ For version 1.0:
       Maybe we want to define parameter sets as kind of interface?
 - JMFConverter
     - implement it!
+- improve performance for singletons using "Double-Checked Locking"
+  <http://patterndigest.com/patterns/DoubleCheckedLocking.html>
 
 Future:
 - define uniq operations for all operations

@@ -12,7 +12,7 @@
   <property name="excludes.file" value="excludes.txt"/>
 
 <!-- for documentation building -->
-  <property name="apidoc.dir"        value="doc"/>
+  <property name="apidoc.dir"        value="doc/apidoc"/>
   <property name="doc.title"         value="scilla API documentation"/>
   <property name="doc.pkgnames"      value="org.scilla.*"/>
   <property name="doc.apidocurl.jdk" value="http://java.sun.com/products/jdk/1.3/docs/api/"/>
