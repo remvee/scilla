@@ -97,12 +97,12 @@ public class PlaylistServlet extends HttpServlet {
 	    while (it.hasNext()) {
 		String fn = (String) it.next();
 
-		File t = new File(source+File.separator+fn);
 		String url = isLocal
-		    ? (source + fn)
+		    ? (source + File.separator + fn)
 		    : (urlPrefix + pathInfoEncode(fn) + "." + outputType);
 
 		// track info
+		File t = new File(source + File.separator+fn);
 		out.println("#EXTINF:"+getTrackLength(t)+","+getTrackTitle(t));
 
 		// url
@@ -118,11 +118,11 @@ public class PlaylistServlet extends HttpServlet {
 	    for (int num = 1; it.hasNext(); num++) {
 		String fn = (String) it.next();
 
-		File t = new File(source+File.separator+fn);
 		String url = isLocal
-		    ? (source + fn)
+		    ? (source + File.separator + fn)
 		    : (urlPrefix + pathInfoEncode(fn) + "." + outputType);
 
+		File t = new File(source + File.separator + fn);
 		out.println("File" + num + "=" + url);
 		out.println("Title" + num + "=" + getTrackTitle(t));
 		out.println("Length" + num + "=" + getTrackLength(t));
