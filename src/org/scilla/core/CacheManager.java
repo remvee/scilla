@@ -33,20 +33,25 @@ import org.scilla.util.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  * @author R.W. van 't Veer
  */
 public class CacheManager implements RunnerChangeListener {
+    /** instance of logger */
     private static final Logger log = LoggerFactory.get(CacheManager.class);
+    /** instance of global configuration */
     private static final Config config = ConfigProvider.get();
 
+    /** singleton instance of this class */
     private static CacheManager _instance = null;
 
-    protected CacheManager () {
+    /** private constructor for this singleton */
+    private CacheManager () {
         // launch cleanup daemon
     }
 
     /**
+     * This is a singleton.
      * @return CacheManager for this scilla instance
      */
     public static synchronized CacheManager getInstance () {
@@ -108,7 +113,9 @@ public class CacheManager implements RunnerChangeListener {
 	    // add runner to list and start converter
 	    ro.start();
 
-	    log.debug("get: started runner");
+	    if (log.isDebugEnabled()) {
+		log.debug("get: started runner: "+ro);
+	    }
 	    return obj;
 	}
 
@@ -117,17 +124,29 @@ public class CacheManager implements RunnerChangeListener {
 	return obj;
     }
 
+    /**
+     * Eventhandler for runner change events.
+     * @param ro runner object where event came from
+     * @param code event code
+     * @see RunnerChangeListener#RUNNER_FINISHED
+     */
     public void runnerChange (RunnerObject ro, int code) {
-        if (log.isDebugEnabled()) {
-	    log.debug("runnerChange: "+ro+", "+code);
-	}
         if (code == RUNNER_FINISHED) {
+	    if (log.isDebugEnabled()) {
+		log.debug("runnerChange: runner finished: "+ro);
+	    }
+	    // remove runner for list
             runners.remove(ro.getOutputFile());
-        }
+        } else {
+	    log.warn("runnerChange: unhandled runner change: "+code+": "+ro);
+	}
     }
+    /** the runner list */
     private Map runners = new Hashtable();
 
+    /** property for configuring the maximum filename length when creating cache filenames */
     public final static String MAX_FN_LEN_KEY = "cache.filenamelen.max";
+    /** default maximum filename length */
     public static int maxFilenameLen = 32;
 
     // try to set max filename len from config
@@ -142,6 +161,11 @@ public class CacheManager implements RunnerChangeListener {
         }
     }
 
+    /**
+     * Create a uniq cache filename for given request.
+     * @param req request to make filename for
+     * @return absolute filename for object
+     */
     private String getCacheFilename (Request req) {
         StringBuffer result = new StringBuffer(req.getSource());
         result.append("?");
@@ -209,6 +233,10 @@ public class CacheManager implements RunnerChangeListener {
         return fn;
     }
 
+    /**
+     * Make sure given filename has directory to live in.
+     * @param fn name of file to make directory for
+     */
     private void ensureCacheDirectoryFor (String fn) {
         String path = fn.substring(0, fn.lastIndexOf(File.separator));
         (new File(path)).mkdirs();
