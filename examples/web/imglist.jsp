@@ -1,14 +1,15 @@
 <%@ page import="java.io.*" %>
 <%@ page import="java.net.*" %>
 <%@ page import="java.util.*" %>
+<%@ page import="org.scilla.*" %>
 <%@ page import="org.scilla.info.*" %>
+<%@ page import="org.scilla.util.*" %>
 <%@ taglib uri="/WEB-INF/scilla.tld" prefix="scilla" %>
 <%
     String path = "";
     if (request.getParameter("d") != null) {
 	path = request.getParameter("d");
     }
-    String pathEncoded = "d="+URLEncoder.encode(path);
 
     boolean negative = request.getParameter("n") != null;
 %>
@@ -20,101 +21,75 @@
     </head>
     <body bgcolor="white">
 <%
-    Vector vec = new Vector();
-    Vector dirVec = new Vector();
-    org.scilla.Config scillaConfig = org.scilla.ConfigProvider.get();
-    String sourceDir = scillaConfig.getString(org.scilla.Config.SOURCE_DIR_KEY);
-    File dir = new File(sourceDir+"/"+path);
-    if (dir.isDirectory()) {
-	String[] files = dir.list();
-	Arrays.sort(files);
-	for (int i = 0; i < files.length; i++) {
-	    String s = files[i];
-
-	    // hidden file?
-	    if (s.startsWith(".")) {
-		continue;
-	    }
-
-	    // directory?
-	    File f = new File(sourceDir+"/"+path+"/"+s);
-	    if (f.isDirectory()) {
-		dirVec.add(s);
-		continue;
-	    }
-
-	    // image?
-	    String type = org.scilla.util.MimeType.getTypeFromFilename(s);
-	    if (type != null && type.startsWith("image/")) {
-		vec.add(s);
-		continue;
-	    }
-	}
-	{
-	    String sEncoded = "d="+URLEncoder.encode(path)+(negative ? "" : "&n=1");
+    // positive/negative toggle
+    {
+	String url = topUrl(path, ! negative);
+	String label = "(" + (negative ? "P" : "N") + ")";
 %>
 	<div align="right">
 	    <small>
-		<a target="_top" href="img.jsp?<%=sEncoded%>">(<%= negative ? "P" : "N" %>)</a>
+		<a target="_top" href="<%= url %>"><%= label %></a>
 	    </small>
 	</div>
 <%
-	}
-	if (path.lastIndexOf('/') != -1)
-	{
-	    String s = path.substring(0, path.lastIndexOf('/'));
-	    String sEncoded = "d="+URLEncoder.encode(s)+(negative ? "&n=1" : "");
-%>
-	<br><a target="_top" href="img.jsp?<%=sEncoded%>">..</a>
-<%
-	}
-	Enumeration e = dirVec.elements();
-	while (e.hasMoreElements()) {
-	    String s = (String) e.nextElement();
-	    String sEncoded = "d="+URLEncoder.encode(path+"/"+s)+(negative ? "&n=1" : "");
-%>
-	<br><a target="_top" href="img.jsp?<%=sEncoded%>"><%=s%></a>
-<%
-	}
+    }
 
-	if (vec.size() > 0) {
+    // parent directory link
+    if (path.lastIndexOf('/') != -1) {
+	String parent = path.substring(0, path.lastIndexOf('/'));
+	String url = topUrl(parent, negative);
+%>
+	<br /><a target="_top" href="<%= url %>">..</a>
+<%
+    }
+
+    // sub directory links
+    for (Iterator it = getDirectoryNames(path).iterator(); it.hasNext();) {
+	String fname = (String) it.next();
+	String url = topUrl(path+"/"+fname, negative);
+%>
+	<br /><a target="_top" href="<%= url %>"><%= fname %></a>
+<%
+    }
+
+    // images
+    {
 %>
 	<hr>
 	<table cellspacing="0" cellpadding="0">
 <%
-	    // loop the image list
-	    e = vec.elements();
-	    while (e.hasMoreElements()) {
-		String fn = (String) e.nextElement();
+	for (Iterator it = getImageNames(path).iterator(); it.hasNext();) {
+	    String fname = (String) it.next();
 
-		Info info = InfoFactory.get(sourceDir+File.separator+path+File.separator+fn);
-
-		String s = null;
-		if (negative) {
-		    s = "scale=66x100!&negate=1";
-		    if (info != null && info.getInt(ImageInfo.WIDTH) > info.getInt(ImageInfo.HEIGHT)) {
-			s = "rotate=270&"+s;
-		    }
-		} else {
-		    s = "scale=83x54!";
-		    if (info != null && info.getInt(ImageInfo.WIDTH) < info.getInt(ImageInfo.HEIGHT)) {
-			s += "&rotate=270";
-		    }
+	    // portret or landscape
+	    Info info = InfoFactory.get(getFileName(path, fname));
+	    String trans = null;
+	    if (negative) {
+		trans = "scale=66x100!&negate=1";
+		if (info != null && info.getInt(ImageInfo.WIDTH) > info.getInt(ImageInfo.HEIGHT)) {
+		    trans = "rotate=270&" + trans;
 		}
+	    } else {
+		trans = "scale=83x54!";
+		if (info != null && info.getInt(ImageInfo.WIDTH) < info.getInt(ImageInfo.HEIGHT)) {
+		    trans = "rotate=270&" + trans;
+		}
+	    }
 
-		String filepath = path+"/"+fn;
-		String viewUrl = "imgview.jsp?f="+filepath;
-		String imgUrl = "scilla/"+filepath+"?outputtype=jpg&"+s;
+	    // view link
+	    String viewUrl = viewUrl(path, fname);
+	    String imgUrl = imgUrl(path, fname, trans);
 
-		if (negative) {
+	    // framed image
+	    if (negative) {
 %>
 	    <tr>
 		<td><scilla:img src="images/film-left.gif"/></td>
 		<td width="68" height="100" bgcolor="black" align="center" valign="center"><a target="viewer" href="<%= viewUrl %>"><img src="<%= imgUrl %>" border="0"></a></td>
 		<td><scilla:img src="images/film-right.gif"/></td>
-	    </TR -->
+	    </tr>
 <%
-		} else {
+	    } else {
 %>
 	    <tr>
 		<td colspan="3"><scilla:img src="images/diaframe-n.png" scale="50%"/></td>
@@ -131,18 +106,81 @@
 		<td colspan="3" height="3px"></td>
 	    </tr>
 <%
-		}
 	    }
+	}
 %>
 	</table>
-<%
-	}
-    }
-    else {
-%>
-	<br><big><strong>Oeps: not a directory: <%=path%></strong></big>
 <%
     }
 %>
     </body>
 </html>
+<%!
+    String topUrl (String path, boolean negative) {
+	return "img.jsp?d=" + URLEncoder.encode(path) + (negative ? "&n=1" : "");
+    }
+    String viewUrl (String path, String fname) {
+	return "imgview.jsp?f=" + URLEncoder.encode(path + "/" + fname);
+    }
+    String imgUrl (String path, String fname, String trans) {
+	return "scilla/" + path + "/" + fname + "?outputtype=jpg&" + trans;
+    }
+
+    List getDirectoryNames (String path) {
+	String src = ConfigProvider.get().getString(Config.SOURCE_DIR_KEY);
+	String pathdir = src+File.separator+path;
+	File dir = new File(pathdir);
+
+	List result = new ArrayList();
+	if (! dir.isDirectory()) {
+	    return result;
+	}
+
+	String[] files = dir.list();
+	Arrays.sort(files);
+	for (int i = 0; i < files.length; i++) {
+	    String fname = files[i];
+	    if (fname.startsWith(".")) {
+		continue;
+	    }
+	    if ((new File(pathdir+File.separator+fname)).isDirectory()) {
+		result.add(fname);
+	    }
+	}
+
+	return result;
+    }
+
+    List getImageNames (String path) {
+	String src = ConfigProvider.get().getString(Config.SOURCE_DIR_KEY);
+	String pathdir = src+File.separator+path;
+	File dir = new File(pathdir);
+
+	List result = new ArrayList();
+	if (! dir.isDirectory()) {
+	    return result;
+	}
+
+	String[] files = dir.list();
+	Arrays.sort(files);
+	for (int i = 0; i < files.length; i++) {
+	    String fname = files[i];
+	    if (fname.startsWith(".")) {
+		continue;
+	    }
+	    if (! (new File(pathdir+File.separator+fname)).isDirectory()) {
+		String type = MimeType.getTypeFromFilename(fname);
+		if (type != null && type.startsWith("image/")) {
+		    result.add(fname);
+		}
+	    }
+	}
+
+	return result;
+    }
+
+    String getFileName (String path, String fname) {
+	String src = ConfigProvider.get().getString(Config.SOURCE_DIR_KEY);
+	return src+File.separator+path+File.separator+fname;
+    }
+%>

@@ -1,102 +1,69 @@
-<%@ page import="java.io.*,java.net.*,org.scilla.*,org.scilla.info.*" %>
+<%@ page import="org.scilla.*,org.scilla.info.*" %>
 <%
     String file = "";
-    if (request.getParameter("f") != null) file = request.getParameter("f");
-
-    int scale = 600;
-    if (request.getParameter("s") != null)
-    {
-	String s = request.getParameter("s");
-	try { scale = Integer.parseInt(s); } catch (Exception e) { }
-    }
-    String scaleEncoded = "s="+scale;
-    String imgScaleEncoded = "scale=" + scale + "x" + scale;
-
-    String copyrightEncoded = "";
-    String copyrightFile =
-	    ConfigProvider.get().getString(Config.SOURCE_DIR_KEY)
-	    +'/'+file;
-    copyrightFile = copyrightFile.substring(0, copyrightFile.lastIndexOf('/'));
-    copyrightFile += "/copyright.txt";
-    File f = new File(copyrightFile);
-    if (f.isFile())
-    {
-	StringBuffer r = new StringBuffer();
-	FileInputStream in = new FileInputStream(f);
-	byte[] b = new byte[4096];
-	for (int n; (n = in.read(b)) > 0; )
-	{
-	    r.append(new String(b, 0, n));
-	}
-
-	if (r.length() > 0)
-	{
-	    String msg = r.toString().replace('"', '\'');
-
-	    String fontEncoded = "font="+java.net.URLEncoder.encode(
-		    "-*-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-*");
-	    String drawEncoded = "draw="+java.net.URLEncoder.encode(
-		    "text 0,15 \""+msg+"\"");
-	    copyrightEncoded += "&gravity=SouthEast&fill=white&box=black&"+fontEncoded+"&"+drawEncoded;
-	}
+    if (request.getParameter("f") != null) {
+	file = request.getParameter("f");
     }
 %>
-<HTML>
-    <HEAD>
-	<TITLE>
-	    img: <%=file%> (<%=scale%>)
-	</TITLE>
-    </HEAD>
-    <BODY bgcolor=white>
+<html>
+    <head>
+	<title>
+	    img: <%= file %>
+	</title>
+    </head>
+    <body bgcolor="white">
+	<table width="100%" height="100%">
+	    <tr>
+		<td align="center" valign="center">
 <%
     if (! file.equals(""))
     {
 	Info info = InfoFactory.get(ConfigProvider.get().getString(Config.SOURCE_DIR_KEY)+'/'+file);
 	String spec = "";
 	if (info != null) {
-	    spec = " ("+info.getInt(ImageInfo.WIDTH)+"x"+info.getInt(ImageInfo.HEIGHT)+" "+info.getString(ImageInfo.CODEC)+")";
+	    spec = " ("+info.getInt(ImageInfo.WIDTH)+"x"+info.getInt(ImageInfo.HEIGHT)
+		    +" "+info.getString(ImageInfo.CODEC)+")";
 	}
 
+	String imgUrl = "scilla/"+file+"?outputtype=jpg&scale=600x600";
+	String img640x480 = "scilla/"+file+"?outputtype=jpg&scale=640x480";
+	String img800x600 = "scilla/"+file+"?outputtype=jpg&scale=800x600";
+	String img1024x768 = "scilla/"+file+"?outputtype=jpg&scale=1024x768";
+	String img1280x1024 = "scilla/"+file+"?outputtype=jpg&scale=1280x1024";
+	String img1600x1200 = "scilla/"+file+"?outputtype=jpg&scale=1600x1200";
+	String img1800x1440 = "scilla/"+file+"?outputtype=jpg&scale=1800x1440";
+	String imgOrig = "scilla/"+file;
 %>
-	<TABLE width="100%" height="100%">
-	    <TR>
-		<TD align=center valign=center>
-		    <DIV align=center>
-			<CODE><%=file%></CODE>
-			<P>
-			    <IMG src="scilla/<%=file%>?outputtype=jpg&<%=imgScaleEncoded%><%=copyrightEncoded%>" border=1>
-			<P>
-			<A href="scilla/<%=file%>?outputtype=jpg&scale=640x480<%=copyrightEncoded%>">640x480</A>
+		    <div align="center">
+			<code><%=file%></code>
+			<p>
+			    <img src="<%= imgUrl %>" border="1" />
+			<p>
+			<a href="<%= img640x480 %>">640x480</a>
 			|
-			<A href="scilla/<%=file%>?outputtype=jpg&scale=800x600<%=copyrightEncoded%>">800x600</A>
+			<a href="<%= img800x600 %>">800x600</a>
 			|
-			<A href="scilla/<%=file%>?outputtype=jpg&scale=1024x768<%=copyrightEncoded%>">1024x768</A>
+			<a href="<%= img1024x768 %>">1024x768</a>
 			|
-			<A href="scilla/<%=file%>?outputtype=jpg&scale=1280x1024<%=copyrightEncoded%>">1280x1024</A>
+			<a href="<%= img1280x1024 %>">1280x1024</a>
 			|
-			<A href="scilla/<%=file%>?outputtype=jpg&scale=1600x1200<%=copyrightEncoded%>">1600x1200</A>
+			<a href="<%= img1600x1200 %>">1600x1200</a>
 			|
-			<A href="scilla/<%=file%>?outputtype=jpg&scale=1800x1440<%=copyrightEncoded%>">1800x1440</A>
+			<a href="<%= img1800x1440 %>">1800x1440</a>
 			|
-			<A href="scilla/<%=file%>">Original<SMALL><%=spec%></SMALL></A>
-		    </DIV>
-		</TD>
-	    </TR>
-	</TABLE>
+			<a href="<%= imgOrig %>">Original<small><%=spec%></small></a>
+		    </div>
 <%
     }
     else
     {
 %>
-	<TABLE width=100% height=100%>
-	    <TR>
-		<TD align=center valign=center>
-		    <STRONG>Image Browser</STRONG>
-		</TD>
-	    </TR>
-	</TABLE>
+		    <strong>Image Browser</strong>
 <%
     }
 %>
-    </BODY>
-</HTML>
+		</td>
+	    </tr>
+	</table>
+    </body>
+</html>

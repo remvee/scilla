@@ -16,6 +16,6 @@
 	<frame name="viewer" src="imgview.jsp"/>
     </frameset>
     <noframes>
-	Oeps, sorry..  some <a href="img.jsp">redirections</a>..
+	Oeps, sorry..  this demo depends on frames..
     </noframes>
 </html>
