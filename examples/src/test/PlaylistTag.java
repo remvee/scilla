@@ -17,7 +17,7 @@ import org.scilla.info.AudioInfo;
  * attributes.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class PlaylistTag extends TagSupport {
     /** logger */
@@ -125,7 +125,7 @@ public class PlaylistTag extends TagSupport {
      * @param v recursive option, set to <tt>true</tt> of recursion
      */
     public void setRecursive (String v) {
-	recursive = Boolean.valueOf(v);
+	recursive = Boolean.getBoolean(v);
     }
     private boolean recursive = false;
 

@@ -36,7 +36,7 @@ public class DirectoryBean {
 
     public void setPath (String path)
     throws Exception {
-        this.page = path == null ? "" : path;
+        this.path = path == null ? "" : path;
 	scan(true);
     }
     public String getPath () {
