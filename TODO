@@ -1,8 +1,6 @@
 For version 1.0:
-- no input yields null pointer exception in servlet
 - make work with orion
 - make synchronized part of CacheManager.get smaller
-- write INSTALL INSTALL.html (referenced by homepage)
 - JAIConverter
     - sync parameters with imagick so they will be interchangable.
       Maybe we want to define parameter sets as kind of interface?
@@ -10,8 +8,6 @@ For version 1.0:
     - implement it!
     - sync parameters with lame so they will be interchangable for mp3
       conversions.  Interface?
-- FFMPEGConverter
-    - implement it!
 - log4j
 - junit
 - Converter: handle command failure
@@ -19,6 +15,10 @@ For version 1.0:
     - if not successful set flag which can be tested in RunnerObject
 	when no file appears and converter nolonger alive.  Delete
 	result file if it exists.
+- examples:
+    - default to mp3 filename if no ID3v1 exists
+	- servlet icecast header
+	- jsp directory index
 
 Future:
 - database interface for source (blobs?)
