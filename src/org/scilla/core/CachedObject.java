@@ -34,7 +34,7 @@ import org.scilla.*;
  * finished or not.
  *
  * @author R.W. van 't Veer
- * @version $Id: CachedObject.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ * @version $Revision: 1.3 $
  */
 public class CachedObject implements MediaObject
 {

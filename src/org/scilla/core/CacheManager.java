@@ -31,7 +31,7 @@ import org.scilla.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Id: CacheManager.java,v 1.1 2001/09/21 10:13:35 remco Exp $
+ * @version $Revision: 1.2 $
  * @author R.W. van 't Veer
  */
 public class CacheManager

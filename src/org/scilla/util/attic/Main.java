@@ -26,7 +26,7 @@ import org.scilla.*;
 /**
  * Simple main class for debugging scilla.
  *
- * @version $Id: Main.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ * @version $Revision: 1.3 $
  * @author R.W. van 't Veer
  */
 public class Main

@@ -33,7 +33,7 @@ import org.scilla.util.*;
  * kind of request.
  *
  * @author R.W. van 't Veer
- * @version $Id: RequestFactory.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ * @version $Revision: 1.3 $
  */
 public class RequestFactory
 {

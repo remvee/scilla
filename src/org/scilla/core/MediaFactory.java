@@ -30,7 +30,7 @@ import org.scilla.converter.*;
 /**
  * The MediaFactory creates a runner or file object.
  *
- * @version $Id: MediaFactory.java,v 1.1 2001/09/21 10:31:45 remco Exp $
+ * @version $Revision: 1.2 $
  * @author R.W. van 't Veer
  */
 public class MediaFactory

@@ -29,7 +29,7 @@ import org.scilla.*;
  * Interface to a media object.
  *
  * @author R.W. van 't Veer
- * @version $Id: MediaObject.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ * @version $Revision: 1.3 $
  */
 public interface MediaObject
 {

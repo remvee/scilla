@@ -27,7 +27,7 @@ import java.io.IOException;
  * Input IO exception wrapper.
  *
  * @author R.W. van 't Veer
- * @version $Id: ScillaInputIOException.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ * @version $Revision: 1.3 $
  */
 public class ScillaInputIOException extends ScillaException
 {

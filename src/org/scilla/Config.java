@@ -32,7 +32,7 @@ import org.scilla.converter.*;
 /**
  * The scilla configuration wrapper.
  *
- * @version $Id: Config.java,v 1.2 2001/09/21 12:38:26 remco Exp $
+ * @version $Revision: 1.3 $
  * @author R.W. van 't Veer
  */
 public class Config

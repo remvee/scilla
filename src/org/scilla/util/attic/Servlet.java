@@ -33,7 +33,7 @@ import org.scilla.*;
 /**
  * This servlet handles media requests.
  *
- * @version $Id: Servlet.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ * @version $Revision: 1.3 $
  * @author R.W. van 't Veer
  */
 public class Servlet extends HttpServlet

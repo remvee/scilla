@@ -25,7 +25,7 @@ package org.scilla;
  * No converter for requested data exception.
  *
  * @author R.W. van 't Veer
- * @version $Id: ScillaNoConverterException.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ * @version $Revision: 1.3 $
  */
 public class ScillaNoConverterException extends ScillaException
 {

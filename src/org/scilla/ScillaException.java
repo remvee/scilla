@@ -25,7 +25,7 @@ package org.scilla;
  * Base exception for scilla.
  *
  * @author R.W. van 't Veer
- * @version $Id: ScillaException.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ * @version $Revision: 1.3 $
  */
 public class ScillaException extends Exception
 {

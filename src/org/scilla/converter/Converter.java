@@ -32,7 +32,7 @@ import org.scilla.core.*;
  * Base for converter classes.
  *
  * @author R.W. van 't Veer
- * @version $Id: Converter.java,v 1.2 2001/09/21 12:38:27 remco Exp $
+ * @version $Revision: 1.3 $
  */
 public abstract class Converter extends Thread
 {
