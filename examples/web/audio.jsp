@@ -14,6 +14,7 @@
 <html>
     <head>
 	<title>
+	    <c:out value="${dir.path}/"/>
 	    <c:if test="${dir.count.audio.artist == 1}">
 		<c:out value="${dir.list.audio[0].artist}"/>
 	    </c:if>
