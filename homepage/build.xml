@@ -5,6 +5,7 @@
   <property name="cvsroot"        value="/home/remco/cvsroot"/>
   <property name="cvsprefix"      value="projects"/>
   <property name="scilla.project" value="projects/scilla"/>
+  <property name="tar.file"       value="scilla-homepage.tar"/>
 
 
   <target name="prepare">
@@ -19,6 +20,7 @@
     <copy todir="${build.dir}" filtering="true">
       <fileset dir="web"/>
     </copy>
+    <tar tarfile="${tar.file}" basedir="${build.dir}" excludes="**/CVS"/>
   </target>
 
 
@@ -57,6 +59,7 @@
 
   <target name="clean">
     <delete dir="${build.dir}"/>
+    <delete file="${tar.file}"/>
   </target>
 
 
