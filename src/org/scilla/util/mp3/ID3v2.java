@@ -34,7 +34,7 @@ import org.scilla.util.mp3.id3v2.*;
  *
  * @see <a href="http://www.id3.org/id3v2.3.0.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class ID3v2
 {
@@ -154,7 +154,7 @@ public class ID3v2
     throws IOException, Exception
     {
 	// prepare tag properties
-	minor = 3; // TODO convert v2.2 tags to v2.3
+	minor = 3;
 	revis = 0;
 	unsyncFlag = false;
 	extFlag = false;
@@ -213,6 +213,39 @@ public class ID3v2
     public boolean hasExtended () { return extFlag; }
     public boolean isExperimental () { return expFlag; }
     public boolean hasFooter () { return extFlag; }
+
+    /*
+	TODO implement following frame(list) constraints:
+
+	simple uniq:
+	    UFID uniq
+	    T??? uniq (not TXXX)
+	    W??? uniq (not WXXX)
+
+	complex uniq:
+	    TXXX uniq per ident
+	    WXXX uniq per ident
+	    USLT uniq per lang/ident
+	    COMM uniq per lang/ident
+	    APIC uniq per ident and for type 1 and 2
+	    GEOB uniq per ident
+
+	lists:
+	    TCOM /-separated
+	    TCOM /-separated
+	    TOLY /-separated
+	    TOPE /-separated
+	    TPE1 /-separated
+	    TPE2 /-separated
+	    TPE4 /-separated
+	    TPOS /-separated-tuple
+	    TRCK /-separated-tuple
+
+	strict formats:
+	    TDAT DDMM-format
+	    TIME HHMM-format
+	    TKEY max3-char
+     */
 
     /** @return list of frames */
     public List getFrames () { return frames; }
