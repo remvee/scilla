@@ -1,3 +1,5 @@
+package test;
+
 import java.io.*;
 import java.util.*;
 import javax.servlet.http.HttpServlet;
@@ -13,14 +15,14 @@ import org.scilla.ConfigProvider;
 import org.scilla.info.*;
 
 public class PlaylistServlet extends HttpServlet {
-    final static Config scillaConfig = ConfigProvider.get();
-    final static Log log = LogFactory.getLog(PlaylistServlet.class);
+    private final static Config scillaConfig = ConfigProvider.get();
+    private final static Log log = LogFactory.getLog(PlaylistServlet.class);
 
-    final static String PATH_PARAM = "d";
-    final static String RECURS_PARAM = "r";
-    final static String OUTPUT_TYPE_PARAM = "t";
-    final static String DEFAULT_OUTPUT_TYPE = "ogg";
-    final static String SCILLA_SERVLET = "stream";
+    public final static String PATH_PARAM = "d";
+    public final static String RECURS_PARAM = "r";
+    public final static String OUTPUT_TYPE_PARAM = "t";
+    public final static String DEFAULT_OUTPUT_TYPE = "ogg";
+    public final static String STREAM_SERVLET = "stream";
 
     public void doGet (HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
@@ -53,13 +55,13 @@ public class PlaylistServlet extends HttpServlet {
 		|| request.getServerName().equals("localhost")) {
 	    isLocal = true;
 	} else {
-	    // determine scilla url
+	    // determine stream servlet url
 	    urlPrefix = "http://"
-		    +request.getServerName()+":"+request.getServerPort()
-		    +request.getContextPath()+request.getServletPath();
+		    + request.getServerName() + ":" + request.getServerPort()
+		    + request.getContextPath() + request.getServletPath();
 	    // strip this servlet name
 	    urlPrefix = urlPrefix.substring(0, urlPrefix.lastIndexOf('/'));
-	    urlPrefix += "/"+SCILLA_SERVLET+"/";
+	    urlPrefix += "/" + STREAM_SERVLET + "/";
 	}
 
 	// collect files to list

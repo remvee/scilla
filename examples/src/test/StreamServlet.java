@@ -19,6 +19,8 @@
  * MA 02111-1307, USA.
  */
 
+package test;
+
 import java.io.*;
 import java.util.*;
 
