@@ -1,5 +1,6 @@
 <%@ page import="java.io.*,java.net.*,java.util.*,javax.servlet.*" %>
-<%@ page import="org.scilla.*,org.scilla.util.*,org.scilla.util.mp3.*" %>
+<%@ page import="org.scilla.*,org.scilla.util.*" %>
+<%@ page import="org.scilla.util.mp3.*,org.scilla.util.mp3.id3v2.*" %>
 <%!
     private String formatTime (int length)
     {
@@ -35,6 +36,28 @@
 		"</A>");
     }
 
+    String toHTML (Object in)
+    {
+	if (in == null) return "";
+
+	StringBuffer out = new StringBuffer();
+	if (in instanceof List)
+	{
+	    Iterator it = ((List) in).iterator();
+	    while (it.hasNext())
+	    {
+		out.append(it.next()+"");
+		if (it.hasNext()) out.append("<BR>");
+	    }
+	}
+	else
+	{
+	    out.append(in);
+	}
+	// TODO XML escape!!
+	return out.toString();
+    }
+
     static List indexHtmls = new Vector();
     static
     {
@@ -44,6 +67,149 @@
 	indexHtmls.add("default.htm");
 	indexHtmls.add("main.html");
 	indexHtmls.add("main.htm");
+    }
+
+    class Mp3File
+    {
+	ID3v1 tag1;
+	ID3v2 tag2;
+	FrameHeader fh;
+	XingInfo xing;
+	Map props = new HashMap();
+	String name;
+
+	Mp3File (File f)
+	throws Exception
+	{
+	    name = f.getName();
+
+	    // get MP3 frameheader
+	    try { fh = new FrameHeader(f); }
+	    catch (Exception ex) { throw new Exception("NOT A MP3 FILE!"); }
+	    finally { if (fh != null) fh.close(); }
+
+	    // "XING" frameheader
+	    try { xing = new XingInfo(f); }
+	    catch (Exception ex) { /* ignore */ }
+	    finally { if (xing != null) xing.close(); }
+	    if (xing != null) fh = xing;
+
+	    // get ID3 tags
+	    tag1 = new ID3v1(f);
+	    tag2 = new ID3v2(f);
+
+	    // add length property
+	    props.put("playlength", new Integer(fh.getLength()));
+
+	    // get properties from ID3v1 tag
+	    props.put("TPE1", tag1.getArtist());
+	    props.put("TALB", tag1.getAlbum());
+	    props.put("XCOM", tag1.getComment());
+	    props.put("TIT2", tag1.getTitle());
+	    props.put("TYER", tag1.getYear());
+	    if (tag2.hasTag())
+	    {
+		// get properties from ID3v2 tag
+		Object o = null;
+		o = getTextFrame("TPE1"); if (o != null) props.put("TPE1", o);
+		o = getTextFrame("TPE2"); if (o != null) props.put("TPE2", o);
+		o = getTextFrame("TPE3"); if (o != null) props.put("TPE3", o);
+		o = getTextFrame("TALB"); if (o != null) props.put("TALB", o);
+		o = getTextFrame("TIT1"); if (o != null) props.put("TIT1", o);
+		o = getTextFrame("TIT2"); if (o != null) props.put("TIT2", o);
+		o = getTextFrame("TIT3"); if (o != null) props.put("TIT3", o);
+		o = getTextFrame("TYER"); if (o != null) props.put("TYER", o);
+	    }
+	}
+
+	String getName() { return name; }
+
+	Object getTextFrame (String id)
+	{
+	    TextFrame f = (TextFrame) tag2.getFrame(id);
+System.out.println("getTextFrame="+f);
+	    if (f == null) return null;
+
+	    String t = f.getText();
+	    if (t.indexOf('/') == -1) return t;
+
+	    List v = new Vector();
+	    StringTokenizer st = new StringTokenizer(t, "/");
+	    while (st.hasMoreTokens()) v.add(st.nextToken().trim());
+	    return v;
+	}
+
+	Object getProp (String key) { return props.get(key); }
+	Set getKeySet () { return props.keySet(); }
+    }
+
+    class Mp3List extends Vector
+    {
+	Mp3List () { super(); }
+
+	Set keySet = null;
+	Set getKeySet ()
+	{
+	    if (keySet == null)
+	    {
+		keySet = new HashSet();
+
+		Iterator it = iterator();
+		while (it.hasNext())
+		{
+		    Mp3File f = (Mp3File) it.next();
+		    keySet.addAll(f.getKeySet());
+		}
+System.out.println("keySet="+keySet);
+	    }
+	    return keySet;
+	}
+
+	Map countMap = new HashMap();
+	int count (String key)
+	{
+	    if (! getKeySet().contains(key)) return 0;
+
+	    Integer cached = (Integer) countMap.get(key);
+	    if (cached != null) return cached.intValue();
+
+	    Set set = new HashSet();
+	    Iterator it = iterator();
+	    while (it.hasNext())
+	    {
+		Mp3File f = (Mp3File) it.next();
+		set.add(f.getProp(key));
+	    }
+
+System.out.println("count("+key+")="+set.size());
+	    countMap.put(key, new Integer(set.size()));
+	    return set.size();
+	}
+
+	Map propMap = new HashMap();
+	Object getProp (String key)
+	{
+	    if (! getKeySet().contains(key)) return null;
+
+	    Object cached = (Object) propMap.get(key);
+	    if (cached != null) return cached;
+
+	    Object last = null;
+	    Set set = new HashSet();
+	    Iterator it = iterator();
+	    while (it.hasNext())
+	    {
+		Mp3File f = (Mp3File) it.next();
+		last = (Object) f.getProp(key);
+		set.add(last);
+	    }
+
+	    Object r = set.size() > 1 ? set : last;
+System.out.println("getProp("+key+"):"+set);
+System.out.println("getProp("+key+")="+r);
+	    propMap.put(key, r);
+	    return r;
+	}
     }
 %>
 <%
@@ -59,6 +225,7 @@
     Map fhMap = new HashMap();
     Map xingMap = new HashMap();
     List vec = new Vector();
+    Mp3List mp3List = new Mp3List();
     List imgVec = new Vector();
     List m3uVec = new Vector();
     List htmVec = new Vector();
@@ -84,6 +251,7 @@
 		XingInfo xing = null;
 		String n = source+"/"+path+"/"+fname;
 		File f = new File(n);
+		mp3List.add(new Mp3File(f));
 
 		try
 		{
@@ -95,7 +263,7 @@
 			xing = new XingInfo(f);
 			xing.close();
 		    }
-		    catch (Mp3Exception e1) { }
+		    catch (Mp3Exception it1) { }
 
 		    if (tag != null) tagMap.put(f, tag);
 		    if (fh != null) fhMap.put(f, fh);
@@ -167,85 +335,11 @@
 	    }
 	}
 
-	// determine table layout
-	// count artist, albums and comments
-	String artist = null, album = null, comment = null, year = null;
-	Set artistSet = new HashSet();
-	Set albumSet = new HashSet();
-	Set commentSet = new HashSet();
-	Set yearSet = new HashSet();
-	{
-	    Iterator it = vec.iterator();
-	    while (it.hasNext())
-	    {
-		File f = (File) it.next();
-		ID3v1 tag = (ID3v1) tagMap.get(f);
-
-		if (tag != null)
-		{
-		    artist = tag.getArtist();
-		    album = tag.getAlbum();
-		    comment = tag.getComment();
-		    year = tag.getYear();
-		    if (artist != null && artist.trim().length() != 0) artistSet.add(artist);
-		    if (album != null && album.trim().length() != 0) albumSet.add(album);
-		    if (comment != null && comment.trim().length() != 0) commentSet.add(comment);
-		    if (year != null && year.trim().length() != 0) yearSet.add(year);
-		}
-	    }
-	}
 %>
 <HTML>
     <HEAD>
 	<TITLE>
-	    mp3:
-<%
-	int artistCount = artistSet.size();
-	int albumCount = albumSet.size();
-	int commentCount = commentSet.size();
-	int yearCount = yearSet.size();
-
-	if (artistCount == 1 && albumCount == 1)
-	{
-	    if (artist.equals(album))
-	    {
-%>
-	    <%= artist %>
-<%
-	    }
-	    else
-	    {
-%>
-	    <%= artist %> - <%= album %>
-<%
-	    }
-	}
-	else if (artistCount > 1 && (albumCount > 1 || albumCount == 0)
-		|| artistCount == 0 && albumCount == 0)
-	{
-%>
-	    Miscellaneous
-<%
-	}
-	else if (artistCount == 1)
-	{
-%>
-	    <%= artist %>
-<%
-	}
-	else if (albumCount == 1)
-	{
-%>
-	    <%= album %>
-<%
-	}
-	else
-	{
-%>
-	    Huh?
-<%
-	}
-%>
+	    mp3: <%= toHTML(mp3List.getProp("TPE1")) %> - <%= toHTML(mp3List.getProp("TALB")) %>
 	</TITLE>
     </HEAD>
 <%
@@ -258,19 +352,19 @@
 	int colWidth = 0;
 
 	// subdirectories, htmls, playlists in this directory
-	Iterator e1 = dirVec.iterator();
-	Iterator e2 = m3uVec.iterator();
-	Iterator e3 = htmVec.iterator();
-	if (e1.hasNext() || e2.hasNext() || e3.hasNext())
+	Iterator it1 = dirVec.iterator();
+	Iterator it2 = m3uVec.iterator();
+	Iterator it3 = htmVec.iterator();
+	if (it1.hasNext() || it2.hasNext() || it3.hasNext())
 	{
 %>
 		<TD align="left" valign="top">
 		    <TABLE>
 <%
 	    // subdirectories in this directory
-	    while (e1.hasNext())
+	    while (it1.hasNext())
 	    {
-		String s = (String) e1.next();
+		String s = (String) it1.next();
 		String sEncoded = (path + "/" + s).replace(' ', '+');
 %>
 			<TR>
@@ -287,9 +381,9 @@
 	    }
 
 	    // playlists in this directory
-	    while (e2.hasNext())
+	    while (it2.hasNext())
 	    {
-		String s = (String) e2.next();
+		String s = (String) it2.next();
 %>
 			<TR>
 			    <TD>
@@ -305,9 +399,9 @@
 	    }
 
 	    // htmls in this directory
-	    while (e3.hasNext())
+	    while (it3.hasNext())
 	    {
-		String s = (String) e3.next();
+		String s = (String) it3.next();
 		String url = "servlet/scilla/"+path+"/"+s;
 %>
 			<TR>
@@ -331,6 +425,15 @@
 		<TD align="left" valign="top">
 		    <TABLE>
 <%
+	    Object artist = mp3List.getProp("TPE1");
+	    Object album = mp3List.getProp("TALB");
+	    Object year = mp3List.getProp("TYER");
+	    Object comment = mp3List.getProp("XCOM");
+
+	    int artistCount = mp3List.count("TPE1");
+	    int albumCount = mp3List.count("TALB");
+	    int yearCount = mp3List.count("TYER");
+	    int commentCount = mp3List.count("XCOM");
 	    if (artistCount > 0 || albumCount == 1 || yearCount == 1 || commentCount == 1)
 	    {
 %>
@@ -338,27 +441,28 @@
 			    <TD>
 				<TABLE width="100%">
 				    <TR>
-					<TD align=left>
+					<TD valign=top align=left>
 					    <BIG><STRONG>
-						<%=(artistCount == 1 ?  artist : (artistCount != 0 ? "Various" : ""))%>
+						<%= (albumCount == 1 && ! album.equals(artist) ? toHTML(album) : "")%>
 					    </STRONG></BIG>
 					</TD>
-					<TD>&nbsp;</TD>
-					<TD align=right rowspan=2>
+					<TD valign=top align=right>
 					    <SMALL>
-						<%=(yearCount == 1 ? year : "")%>
-						<BR>
-						<%=(commentCount == 1 ? comment : "")%>
+						<%= (yearCount == 1 ? toHTML(year) : "") %>
 					    </SMALL>
 					</TD>
 				    </TR>
 				    <TR>
-					<TD align=left>
-					    <BIG><STRONG>
-						<%=(albumCount == 1 && ! album.equals(artist) ? album : "")%>
-					    </STRONG></BIG>
+					<TD valign=bottom align=left>
+					    <SMALL><STRONG>
+						<%= (artistCount == 1 ? toHTML(artist) : (artistCount != 0 ? "Various" : ""))%>
+					    </SMALL></BIG>
 					</TD>
-					<TD>&nbsp;</TD>
+					<TD valign=bottom align=right>
+					    <SMALL>
+						<%= (commentCount == 1 ?  toHTML(comment) : "") %>
+					    </SMALL>
+					</TD>
 				    </TR>
 				</TABLE>
 			    </TD>
@@ -373,98 +477,75 @@
 	    // loop through list
 	    {
 		int tlength = 0;
-		Iterator it = vec.iterator();
+		Iterator it = mp3List.iterator();
 		for (int num = 1; it.hasNext(); num++)
 		{
-		    File f = (File) it.next();
+		    Mp3File f = (Mp3File) it.next();
 		    String filepath = path+"/"+f.getName();
 
-		    ID3v1 tag = (ID3v1) tagMap.get(f);
-		    FrameHeader fh = (FrameHeader) fhMap.get(f);
-		    XingInfo xing = (XingInfo) xingMap.get(f);
-		    if (xing != null) fh = xing;
-		    int length = 0;
-		    if (fh != null)
-		    {
-			length = fh.getLength();
-			tlength += length;
-		    }
+		    int length = ((Integer)f.getProp("playlength")).intValue();
+		    tlength += length;
 
-		    String artistT = "";
-		    String albumT = "";
-		    String titleT = "";
-		    String commentT = "";
-		    String yearT = "";
-		    if (tag != null)
-		    {
-			artistT = tag.getArtist();
-			albumT = tag.getAlbum();
-			titleT = tag.getTitle();
-			commentT = tag.getComment();
-			yearT = tag.getYear();
-
-			if ((artistT+albumT+titleT).length() == 0)
-			{
-			    titleT = f.getName();
-			    titleT = titleT.substring(0, titleT.lastIndexOf('.'));
-			}
-		    }
-		    else
-		    {
-			titleT = f.getName();
-			titleT = titleT.substring(0, titleT.lastIndexOf('.'));
-		    }
-
+		    Object artistT = f.getProp("TPE1");
+		    Object albumT = f.getProp("TALB");
+		    Object partT = f.getProp("TIT1");
+		    Object titleT = f.getProp("TIT2");
+		    Object commentT = f.getProp("TIT3");
+		    Object yearT = f.getProp("TYER");
 %>
 				    <TR>
-					<TD align="right"><%=num%></TD>
+					<TD valign="top" align="right"><%=num%></TD>
 <%
-		    if (artistSet.size() > 1) out.write("<TD> "+artistT+"</TD>");
-		    if (albumSet.size() > 1) out.write("<TD> "+albumT+"</TD>");
+		    if (mp3List.count("TPE1") > 1)
+		    {
 %>
-					<TD>
+					<TD valign="top"><%= toHTML(artistT) %></TD>
+<%
+		    }
+		    if (mp3List.count("TALB") > 1)
+		    {
+%>
+					<TD valign="top"><%= toHTML(albumT) %></TD>
+<%
+		    }
+		    if (mp3List.count("TIT1") > 1)
+		    {
+%>
+					<TD valign="top"><%= toHTML(partT) %></TD>
+<%
+		    }
+%>
+					<TD valign="top">
 					    <STRONG>
-						<%=titleT%>
+						<%= toHTML(titleT) %>
 					    </STRONG>
 					</TD>
 <%
-		    if (commentSet.size() > 1) out.write("<TD>"+commentT+"</TD>");
-		    if (yearSet.size() > 1) out.write("<TD> "+yearT+"</TD>");
+		    if (mp3List.count("TIT3") > 1)
+		    {
 %>
-					<TD align=right>
+				    <TD valign="top"><%= toHTML(commentT) %></TD>
+<%
+		    }
+		    if (mp3List.count("TYER") > 1)
+		    {
+%>
+					<TD valign="top"><%= toHTML(yearT) %></TD>
+<%
+		    }
+%>
+					<TD valign="top" align=right>
 					    <TT>
 						<%= formatTime(length) %>
 					    </TT>
 					</TD>
-					<TD>
+					<TD valign="top">
 					    <FONT size=-2>
 <%
 		    streamLinks(request, out, filepath);
 %>
 					    </FONT>
 					</TD>
-<%
-		    if (fh != null)
-		    {
-%>
-<!--
-					<TD align=right>
-					    <FONT size=-5>
-						<%="MPEG"+fh.mpegVersionToString()%>
-						<%=fh.layerToInt()==1?"I":fh.layerToInt()==2?"II":"III"%>
-						<%=fh.getBitRate()%>Kbit/s
-						<%=fh.getSampleRate()/1000%>Khz
-						<%=fh.channelModeToString()%>
-						<BR>
-						<%=f.length()<1024?f.length():f.length()<1024*1024?f.length()/1024:f.length()/(1024*1024)%>
-						<%=f.length()<1024?"bytes":f.length()<1024*1024?"Kbytes":"Mbytes"%>
-						<A href="<%=urlHead+f.getName().replace(' ', '+')%>">Download</A>
-					    </FONT>
-					</TD>
--->
-<%
-		    }
-%>
 				    </TR>
 <%
 		}
@@ -473,11 +554,12 @@
 <%
 		// padding
 		out.write("<TD></TD>");
-		if (artistCount > 1) out.write("<TD></TD>");
-		if (albumCount > 1) out.write("<TD></TD>");
+		if (mp3List.count("TPE1") > 1) out.write("<TD></TD>");
+		if (mp3List.count("TALB") > 1) out.write("<TD></TD>");
+		if (mp3List.count("TIT1") > 1) out.write("<TD></TD>");
 		out.write("<TD></TD>");
-		if (commentCount > 1) out.write("<TD></TD>");
-		if (yearCount > 1) out.write("<TD></TD>");
+		if (mp3List.count("TIT3") > 1) out.write("<TD></TD>");
+		if (mp3List.count("TYER") > 1) out.write("<TD></TD>");
 %>
 					<TD align=right>
 					    <TT>
