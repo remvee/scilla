@@ -162,7 +162,7 @@
 		<div class="images">
 		    <c:forEach var="image" items="${dir.images}">
 			<scilla:img name="image" var="url" outputtype="jpeg">
-			    <scilla:par key="scale" value="1000x1000"/>
+			    <scilla:par key="scale" value="1024x768>"/>
 			</scilla:img>
 			<a href='<c:out value="${url}"/>'>
 			    <scilla:img name="image" border="2">
