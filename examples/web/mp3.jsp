@@ -35,6 +35,16 @@ throws IOException
 	    "</A>");
 }
 
+static List indexHtmls = new Vector();
+static
+{
+    indexHtmls.add("index.html");
+    indexHtmls.add("index.htm");
+    indexHtmls.add("default.html");
+    indexHtmls.add("default.htm");
+    indexHtmls.add("main.html");
+    indexHtmls.add("main.htm");
+}
 %>
 <%
     Config scillaConfig = ConfigProvider.get();
@@ -51,6 +61,7 @@ throws IOException
     Vector vec = new Vector();
     Vector imgVec = new Vector();
     Vector m3uVec = new Vector();
+    Vector htmVec = new Vector();
     Vector dirVec = new Vector();
     File dir = new File(source+"/"+path);
     if (dir.isDirectory())
@@ -117,6 +128,10 @@ throws IOException
 	    {
 		m3uVec.add(fname);
 	    }
+	    else if (fname.endsWith(".htm") || fname.endsWith(".html"))
+	    {
+		htmVec.add(fname);
+	    }
 	    else
 	    {
 		String n = source+"/"+path+"/"+fname;
@@ -129,7 +144,7 @@ throws IOException
 	}
 
 	// skip to dir if current only contains 1 dir
-	if (vec.size() + imgVec.size() + m3uVec.size() == 0
+	if (vec.size() + imgVec.size() + m3uVec.size() + htmVec.size() == 0
 		    && dirVec.size() == 1)
 	{
 	    String s = (path + "/" + dirVec.firstElement()).replace(' ', '+');
@@ -226,7 +241,8 @@ throws IOException
 
 	Enumeration e1 = dirVec.elements();
 	Enumeration e2 = m3uVec.elements();
-	if (e1.hasMoreElements() || e2.hasMoreElements())
+	Enumeration e3 = htmVec.elements();
+	if (e1.hasMoreElements() || e2.hasMoreElements() || e3.hasMoreElements())
 	{
 %>
 		<TD align="left" valign="top">
@@ -261,6 +277,33 @@ throws IOException
 <%
 		streamLinks(request, out, path+"/"+s);
 %>
+			    </TD>
+			</TR>
+<%
+	    }
+	    // redirect to index page if only html files here
+	    if (htmVec.size() > 0 && vec.size() == 0 && dirVec.size() == 0)
+	    {
+		String url = "servlet/scilla/"+path+"/";
+		Iterator it = indexHtmls.iterator();
+		while (it.hasNext())
+		{
+		    String s = (String) it.next();
+		    if (htmVec.contains(s))
+		    {
+			response.sendRedirect(url+s);
+			return;
+		    }
+		}
+	    }
+	    while (e3.hasMoreElements())
+	    {
+		String s = (String) e3.nextElement();
+		String url = "servlet/scilla/"+path+"/"+s;
+%>
+			<TR>
+			    <TD colspan="2">
+				<A href="<%= url %>"><%= s %></A>
 			    </TD>
 			</TR>
 <%
