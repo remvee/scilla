@@ -34,7 +34,7 @@ import org.scilla.util.vorbis.*;
 /**
  * Audio info.
  *
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  * @author R.W. van 't Veer
  */
 public class AudioInfo extends Info {
@@ -319,6 +319,8 @@ public class AudioInfo extends Info {
 		    { "date", RECORDING_DATE },
 		    { "location", RECORDING_LOCATION },
 		    { "title", TITLE },
+		    { "conductor", CONDUCTOR },
+		    { "band", BAND },
 	    };
 	    for (int i = 0; i < keys.length; i++) {
 		String comment = keys[i][0];
@@ -331,7 +333,7 @@ public class AudioInfo extends Info {
 	    }
 
 	    try {
-		setInt(TRKNUM, Integer.parseInt(info.getComment("TRACKNUMBER")));
+		setInt(TRKNUM, Integer.parseInt(info.getComment("tracknumber")));
 	    } catch (Throwable ex) {
 		// ignore
 	    }
