@@ -38,7 +38,7 @@ import org.scilla.util.Semaphore;
  * taken from the scilla configuration.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public class QueuedProcess {
     private static final Log log = LogFactory.getLog(QueuedProcess.class);
@@ -187,7 +187,7 @@ public class QueuedProcess {
 
     public String getErrorLog () {
         waitFor();
-        return stderr.toString();
+        return stderr != null ? stderr.toString() : null;
     }
 }
 
