@@ -34,7 +34,7 @@ import org.scilla.converter.*;
  * A runner object is a media object currently being converted.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class RunnerObject implements MediaObject
 {
@@ -195,6 +195,12 @@ public class RunnerObject implements MediaObject
 	}
 	finally
 	{
+	    if (in != null)
+	    {
+		try { in.close(); }
+		catch (IOException e) { }
+	    }
+
 	    // remove runner if we cached this
 	    cache.removeRunner(filename);
 
