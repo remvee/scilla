@@ -1,4 +1,5 @@
 For version 1.0:
+- include log4j jar 
 - make work with orion
 - make synchronized part of CacheManager.get smaller
 - review threading mess
@@ -12,7 +13,6 @@ For version 1.0:
 - LameConverter
     - workaround 300 byte max output filename length
     - enherit ID3v1 tag
-- log4j
 
 Future:
 - junit
