@@ -121,10 +121,10 @@ throws IOException
 		album = tag.getAlbum();
 		comment = tag.getComment();
 		year = tag.getYear();
-		if (artist != null) artistHash.put(artist, "X");
-		if (album != null) albumHash.put(album, "X");
-		if (comment != null) commentHash.put(comment, "X");
-		if (year != null) yearHash.put(year, "X");
+		if (artist != null && artist.trim().length() != 0) artistHash.put(artist, "X");
+		if (album != null && album.trim().length() != 0) albumHash.put(album, "X");
+		if (comment != null && comment.trim().length() != 0) commentHash.put(comment, "X");
+		if (year != null && year.trim().length() != 0) yearHash.put(year, "X");
 	    }
 	}
 
@@ -132,9 +132,54 @@ throws IOException
 	<HTML>
 	    <HEAD>
 		<TITLE>
-		    <%=(artistHash.size() == 1 ? artist : "Various")%>
-		    -
-		    <%=(albumHash.size() == 1 ? album : "Various")%>
+		    mp3:
+<%
+	int artistCount = artistHash.size();
+	int albumCount = albumHash.size();
+	int commentCount = commentHash.size();
+	int yearCount = yearHash.size();
+
+	if (artistCount == 1 && albumCount == 1)
+	{
+	    if (artist.equals(album))
+	    {
+%>
+		    <%= artist %>
+<%
+	    }
+	    else
+	    {
+%>
+		    <%= artist %> - <%= album %>
+<%
+	    }
+	}
+	else if (artistCount > 1 && (albumCount > 1 || albumCount == 0)
+		|| artistCount == 0 && albumCount == 0)
+	{
+%>
+		    Miscellaneous
+<%
+	}
+	else if (artistCount == 1)
+	{
+%>
+		    <%= artist %>
+<%
+	}
+	else if (albumCount == 1)
+	{
+%>
+		    <%= album %>
+<%
+	}
+	else
+	{
+%>
+		    Huh?
+<%
+	}
+%>
 		</TITLE>
 	    </HEAD>
 <%
@@ -180,35 +225,40 @@ throws IOException
 	if (vec.size() > 0)
 	{
 %>
+	<DIV align=left>
 	    <TABLE>
-	    <TR><TD> <TABLE WIDTH="100%">
 		<TR>
-		    <TD align=left>
-			<BIG><STRONG>
-			    <%=(artistHash.size() == 1 ? artist : "Various")%>
-			</STRONG></BIG>
-		    </TD>
-		    <TD>&nbsp;</TD>
-		    <TD align=right rowspan=2>
-			<SMALL>
-			    <%=(yearHash.size() == 1 ? year : "")%>
-			    <BR>
-			    <%=(commentHash.size() == 1 ? comment : "")%>
-			</SMALL>
+		    <TD>
+			<TABLE width="100%">
+			    <TR>
+				<TD align=left>
+				    <BIG><STRONG>
+					<%=(artistCount == 1 ? artist : "")%>
+				    </STRONG></BIG>
+				</TD>
+				<TD>&nbsp;</TD>
+				<TD align=right rowspan=2>
+				    <SMALL>
+					<%=(yearCount == 1 ? year : "")%>
+					<BR>
+					<%=(commentCount == 1 ? comment : "")%>
+				    </SMALL>
+				</TD>
+			    </TR>
+			    <TR>
+				<TD align=left>
+				    <BIG><STRONG>
+					<%=(albumCount == 1 ? album : "")%>
+				    </STRONG></BIG>
+				</TD>
+				<TD>&nbsp;</TD>
+			    </TR>
+			</TABLE>
 		    </TD>
 		</TR>
 		<TR>
-		    <TD align=left>
-			<BIG><STRONG>
-			    <%=(albumHash.size() == 1 ? album : "Various")%>
-			</STRONG></BIG>
-		    </TD>
-		    <TD>&nbsp;</TD>
-		</TR>
-	    </TABLE>
-	    </TD>
-
-	    <TR><TD> <TABLE WIDTH="100%" BGCOLOR="#EEEEEE" CELLSPACING=5 CELLPADDING=5>
+		    <TD>
+			<TABLE width="100%" bgcolor="#EEEEEE" cellspacing=5 cellpadding=5>
 <%
 	    // loop to list
 	    int tlength = 0;
@@ -255,78 +305,87 @@ throws IOException
 		}
 
 %>
-		<TR><TD><%=num%></TD>
+			    <TR>
+				<TD align="right"><%=num%></TD>
 <%
 		if (artistHash.size() > 1) out.write("<TD> "+artistT+"</TD>");
 		if (albumHash.size() > 1) out.write("<TD> "+albumT+"</TD>");
 %>
-		    <TD>
-			<STRONG>
-			    <%=titleT%>
-			</STRONG>
-		    </TD>
+				<TD>
+				    <STRONG>
+					<%=titleT%>
+				    </STRONG>
+				</TD>
 <%
 		if (commentHash.size() > 1) out.write("<TD>"+commentT+"</TD>");
 		if (yearHash.size() > 1) out.write("<TD> "+yearT+"</TD>");
 %>
-		    <TD align=right>
-			<TT>
-			    <%=length/60+":"+(length%60>9?"":"0")+length%60%>
-			</TT>
-		    </TD>
-		    <TD> <FONT size=-2>
+				<TD align=right>
+				    <TT>
+					<%=length/60+":"+(length%60>9?"":"0")+length%60%>
+				    </TT>
+				</TD>
+				<TD>
+				    <FONT size=-2>
 <%
 		streamLinks(request, out, filepath);
 %>
-		    </FONT>
-		    </TD>
+				    </FONT>
+				</TD>
 <%
 		if (fh != null)
 		{
 %>
 <!--
-		    <TD align=right> <FONT size=-5>
-			<%="MPEG"+fh.mpegVersionToString()%>
-			<%=fh.layerToInt()==1?"I":fh.layerToInt()==2?"II":"III"%>
-			<%=fh.getBitRate()%>Kbit/s
-			<%=fh.getSampleRate()/1000%>Khz
-			<%=fh.channelModeToString()%>
-			<BR>
-			<%=f.length()<1024?f.length():f.length()<1024*1024?f.length()/1024:f.length()/(1024*1024)%>
-			<%=f.length()<1024?"bytes":f.length()<1024*1024?"Kbytes":"Mbytes"%>
-			<A href="<%=urlHead+f.getName().replace(' ', '+')%>">Download</A>
-		    </FONT>
-		    </TD>
+				<TD align=right>
+				    <FONT size=-5>
+					<%="MPEG"+fh.mpegVersionToString()%>
+					<%=fh.layerToInt()==1?"I":fh.layerToInt()==2?"II":"III"%>
+					<%=fh.getBitRate()%>Kbit/s
+					<%=fh.getSampleRate()/1000%>Khz
+					<%=fh.channelModeToString()%>
+					<BR>
+					<%=f.length()<1024?f.length():f.length()<1024*1024?f.length()/1024:f.length()/(1024*1024)%>
+					<%=f.length()<1024?"bytes":f.length()<1024*1024?"Kbytes":"Mbytes"%>
+					<A href="<%=urlHead+f.getName().replace(' ', '+')%>">Download</A>
+				    </FONT>
+				</TD>
 -->
 <%
 		}
 %>
-		</TR>
+			    </TR>
 <%
 	    }
 %>
-	    <TR><TD></TD>
+			    <TR>
 <%
-	    if (artistHash.size() > 1) out.write("<TD></TD>");
-	    if (albumHash.size() > 1) out.write("<TD></TD>");
+	    // padding
 	    out.write("<TD></TD>");
-	    if (commentHash.size() > 1) out.write("<TD></TD>");
-	    if (yearHash.size() > 1) out.write("<TD></TD>");
-
+	    if (artistCount > 1) out.write("<TD></TD>");
+	    if (albumCount > 1) out.write("<TD></TD>");
+	    out.write("<TD></TD>");
+	    if (commentCount > 1) out.write("<TD></TD>");
+	    if (yearCount > 1) out.write("<TD></TD>");
 %>
-		    <TD align=right>
-			<TT>
-			    <%=tlength/60+":"+(tlength%60>9?"":"0")+tlength%60%>
-			</TT>
-		    </TD>
-		    <TD> <FONT size=-2>
+				<TD align=right>
+				    <TT>
+					<%=tlength/60+":"+(tlength%60>9?"":"0")+tlength%60%>
+				    </TT>
+				</TD>
+				<TD>
+				    <FONT size=-2>
 <%
 	    streamLinks(request, out, path);
 %>
-		    </FONT> </TD>
+				    </FONT>
+				</TD>
+			    </TR>
+			</TABLE>
+		    </TD>
 		</TR>
 	    </TABLE>
-	</TABLE>
+	</DIV>
 
 <%
 	}
