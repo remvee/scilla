@@ -34,7 +34,7 @@ import org.scilla.util.vorbis.*;
 /**
  * Audio info.
  *
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  * @author R.W. van 't Veer
  */
 public class AudioInfo extends Info {
@@ -43,7 +43,6 @@ public class AudioInfo extends Info {
     public final static String SAMPLERATE = "samplerate";
     public final static String CHANNELS = "channels";
     public final static String LENGTH = "length";
-    public final static String TIME = "time";
 
     public final static String ALBUM = "album";
     public final static String ARTIST = "artist";
@@ -89,31 +88,6 @@ public class AudioInfo extends Info {
     /** @return number of second this track takes or <tt>-1</tt> when unknown */
     public int getLength () {
 	return getInt(LENGTH);
-    }
-    /** @return time spec in format H:MM:SS, M:SS or :SS */
-    public String getTime () {
-	if (getLength() >= 0) {
-	    int hours = getLength() / (60 * 60);
-	    int minutes = (getLength() / 60) % 60;
-	    int seconds = getLength() % 60;
-
-	    StringBuffer out = new StringBuffer();
-	    if (hours > 0) {
-		out.append(hours + ":");
-	    }
-	    if (minutes > 0) {
-		if (hours > 0 && minutes < 10) {
-		    out.append('0');
-		}
-		out.append(minutes + "");
-	    }
-	    out.append(":");
-	    out.append(seconds < 10 ? "0" : "");
-	    out.append(seconds + "");
-
-	    return out.toString();
-	}
-	return "?:??";
     }
     /** @return artist name or <tt>null</tt> when unkwown */
     public String getArtist () {
