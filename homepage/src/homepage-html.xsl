@@ -18,8 +18,18 @@
 		    <xsl:value-of select="/homepage/description"/>
 		</P>
 
+		<!-- menu -->
+		<UL>
+		    <xsl:for-each select="/homepage/section">
+			<xsl:variable name="anchor"><xsl:number/></xsl:variable>
+			<LI><A name="_{$anchor}" href="#{$anchor}"><xsl:value-of select="title"/></A></LI>
+		    </xsl:for-each>
+		</UL>
+		<HR/>
+
 		<xsl:for-each select="/homepage/section">
-		    <H2><xsl:value-of select="title"/></H2>
+		    <xsl:variable name="anchor"><xsl:number/></xsl:variable>
+		    <H2><A name="{$anchor}" href="#_{$anchor}"><xsl:value-of select="title"/></A></H2>
 		    <xsl:for-each select="para">
 			<P>
 			    <xsl:value-of select="." disable-output-escaping="yes"/>
@@ -35,6 +45,13 @@
 			</xsl:for-each>
 		    </UL>
 		</xsl:for-each>
+		<HR/>
+
+		<DIV align="right">
+		    Problems with this site?
+		    Email <A href="mailto:{$email}?subject={$location}">me</A>!
+		    <BR/>$Date: 2002/02/23 15:13:34 $
+		</DIV>
 	    </BODY>
 	</HTML>
     </xsl:template>
