@@ -34,7 +34,7 @@ import org.scilla.util.mp3.id3v2.*;
  *
  * @see <a href="http://www.id3.org/id3v2.3.0.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class ID3v2
 {
@@ -154,7 +154,7 @@ public class ID3v2
     throws IOException, Exception
     {
 	// prepare tag properties
-	minor = 3;
+	minor = 3; // TODO convert v2.2 tags to v2.3
 	revis = 0;
 	unsyncFlag = false;
 	extFlag = false;
@@ -242,6 +242,8 @@ public class ID3v2
 
     public String toString ()
     {
+	if (! tagAvailable) return "no ID3v2 tag";
+
 	StringBuffer sb = new StringBuffer();
 	sb.append("v2."+minor+"."+revis);
     	if (unsyncFlag) sb.append(" unsync");
@@ -269,6 +271,12 @@ public class ID3v2
     {
 	return (((int) data[offset++]) << 21) +
 		(((int) data[offset++]) << 14) +
+		(((int) data[offset++]) << 7) +
+		((int) data[offset++]);
+    }
+    public final static int readUnsyncInt3 (byte[] data, int offset)
+    {
+	return (((int) data[offset++]) << 14) +
 		(((int) data[offset++]) << 7) +
 		((int) data[offset++]);
     }
@@ -320,12 +328,26 @@ public class ID3v2
     {
 	for (int i = 0; i < args.length; i++)
 	{
-	    //System.out.print(args[i]+": ");
+	    System.out.print(args[i]+": ");
 	    try
 	    {
 		ID3v2 tag = new ID3v2(new File(args[i]));
-		tag.frames.add(new LinkFrame("WXXX", "Unìcôde", "UTF-16", "http://blup.net"));
-		tag.writeTag(System.out);
+		System.out.println(""+tag);
+		if (tag.hasTag())
+		{
+		    String ifn = args[i];
+		    String ofn = i+".tag";
+
+		    MyInputStream myin = new MyInputStream(new FileInputStream(ifn));
+		    tag.readTag(myin); myin.close();
+		    OutputStream out = new FileOutputStream(ofn);
+		    byte[] b = new byte[myin.readCount];
+		    InputStream in = new FileInputStream(ifn);
+		    int n = in.read(b);
+		    out.write(b, 0, n);
+		    in.close();
+		    out.close();
+		}
 	    }
 	    catch (Throwable ex)
 	    {
@@ -334,4 +356,28 @@ public class ID3v2
 	}
     }
 
+}
+
+class MyInputStream extends InputStream
+{
+    public int readCount = 0;
+    public InputStream in;
+
+    public MyInputStream (InputStream in)
+    {
+	this.in = in;
+    }
+
+    public int read ()
+    throws IOException
+    {
+	readCount++;
+	return in.read();
+    }
+
+    public void close()
+    throws IOException
+    {
+	in.close();
+    }
 }

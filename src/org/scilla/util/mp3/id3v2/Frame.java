@@ -30,7 +30,7 @@ import org.scilla.util.mp3.ID3v2;
  * Basic representation of a frame.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class Frame
 {
@@ -76,28 +76,44 @@ public class Frame
 	sb.append((char)data[i++]);
 	sb.append((char)data[i++]);
 	sb.append((char)data[i++]);
-	sb.append((char)data[i++]);
+	if (minor > 2) sb.append((char)data[i++]);
 	frameId = sb.toString();
 
 	// read frame size
-	frameSize = minor >= 4
-		? ID3v2.readUnsyncInt(data, i)
-		: ID3v2.readPlainInt(data, i);
-	i += 4;
+	switch (minor)
+	{
+	    case 2:
+		frameSize = ID3v2.readUnsyncInt3(data, i);
+		i += 3;
+		break;
+	    case 3:
+		frameSize = ID3v2.readPlainInt(data, i);
+		i += 4;
+		break;
+	    case 4:
+		frameSize = ID3v2.readUnsyncInt(data, i);
+		i += 4;
+		break;
+	    default:
+		throw new RuntimeException("ID3v2."+minor+".X not supported");
+	}
 
 	// read frame flags
-	frameFlags = ((int) data[i++] << 8) + (int) data[i++];
-	tagAlterPreserv = (frameFlags & 0x4000) != 0;
-	fileAlterPreserv = (frameFlags & 0x2000) != 0;
-	readOnly = (frameFlags & 0x1000) != 0;
-	groupingIdentity = (frameFlags & 0x0040) != 0;
-	compression = (frameFlags & 0x0008) != 0;
-	encryption = (frameFlags & 0x0004) != 0;
-	unsynchronisation = (frameFlags & 0x0002) != 0;
-	dataLengthIndicator = (frameFlags & 0x0001) != 0;
+	if (minor != 2)
+	{
+	    frameFlags = ((int) data[i++] << 8) + (int) data[i++];
+	    tagAlterPreserv = (frameFlags & 0x4000) != 0;
+	    fileAlterPreserv = (frameFlags & 0x2000) != 0;
+	    readOnly = (frameFlags & 0x1000) != 0;
+	    groupingIdentity = (frameFlags & 0x0040) != 0;
+	    compression = (frameFlags & 0x0008) != 0;
+	    encryption = (frameFlags & 0x0004) != 0;
+	    unsynchronisation = (frameFlags & 0x0002) != 0;
+	    dataLengthIndicator = (frameFlags & 0x0001) != 0;
+	}
 
 	// calculate frame length
-	frameLength = frameSize + 4 + 4 + 2;
+	frameLength = frameSize + 4 + (minor == 2 ? 2 : 6);
 
 	// copy data
 	frameData = new byte[frameSize];
