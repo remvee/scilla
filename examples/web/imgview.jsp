@@ -1,4 +1,4 @@
-<%@ page import="java.io.*,java.net.*,org.scilla.*" %>
+<%@ page import="java.io.*,java.net.*,org.scilla.*,org.scilla.info.*" %>
 <%
     String file = "";
     if (request.getParameter("f") != null) file = request.getParameter("f");
@@ -51,6 +51,12 @@
 <%
     if (! file.equals(""))
     {
+	Info info = InfoFactory.get(ConfigProvider.get().getString(Config.SOURCE_DIR_KEY)+'/'+file);
+	String spec = "";
+	if (info != null) {
+	    spec = " ("+info.getInt(ImageInfo.WIDTH)+"x"+info.getInt(ImageInfo.HEIGHT)+" "+info.getString(ImageInfo.CODEC)+")";
+	}
+
 %>
 	<TABLE width="100%" height="100%">
 	    <TR>
@@ -60,8 +66,6 @@
 			<P>
 			    <IMG src="servlet/scilla/<%=file%>?outputtype=jpg&<%=imgScaleEncoded%><%=copyrightEncoded%>" border=1>
 			<P>
-			<A href="servlet/scilla/<%=file%>">Original</A>
-			|
 			<A href="servlet/scilla/<%=file%>?outputtype=jpg&scale=640x480<%=copyrightEncoded%>">640x480</A>
 			|
 			<A href="servlet/scilla/<%=file%>?outputtype=jpg&scale=800x600<%=copyrightEncoded%>">800x600</A>
@@ -73,6 +77,8 @@
 			<A href="servlet/scilla/<%=file%>?outputtype=jpg&scale=1600x1200<%=copyrightEncoded%>">1600x1200</A>
 			|
 			<A href="servlet/scilla/<%=file%>?outputtype=jpg&scale=1800x1440<%=copyrightEncoded%>">1800x1440</A>
+			|
+			<A href="servlet/scilla/<%=file%>">Original<SMALL><%=spec%></SMALL></A>
 		    </DIV>
 		</TD>
 	    </TR>
