@@ -13,7 +13,7 @@
   </target>
 
 
-  <target name="dist" depends="prepare,changelog,snapshot,doc">
+  <target name="dist" depends="prepare,changelog,snapshot,releases,doc">
     <filter token="today"        value="${TODAY}"/>
     <filter token="snapshot.zip" value="${snapshot.zip}"/>
     <filter token="snapshot.tgz" value="${snapshot.tgz}"/>
@@ -44,6 +44,27 @@
 	basedir="${build.dir}/${cvsprefix}" excludes="**/CVS"/>
     <gzip src="${build.dir}/${snapshot.tar}"
 	zipfile="${build.dir}/${snapshot.tgz}"/>
+    <delete file="${build.dir}/${snapshot.tar}"/>
+  </target>
+
+
+  <target name="releases">
+    <antcall target="build.release">
+      <param name="rel" value="0_9"/>
+    </antcall>
+  </target>
+
+  <target name="build.release">
+    <mkdir dir="${build.dir}/${rel}"/>
+    <cvs cvsRoot="${cvsroot}" dest="${build.dir}/${rel}" tag="RELEASE_${rel}" package="${scilla.project}"/>
+    <zip zipfile="${build.dir}/scilla-${rel}.zip"
+	basedir="${build.dir}/${rel}/${cvsprefix}" excludes="**/CVS"/>
+    <tar tarfile="${build.dir}/scilla-${rel}.tar"
+	basedir="${build.dir}/${rel}/${cvsprefix}" excludes="**/CVS"/>
+    <gzip src="${build.dir}/scilla-${rel}.tar"
+	zipfile="${build.dir}/scilla-${rel}.tgz"/>
+    <delete file="${build.dir}/scilla-${rel}.tar"/>
+    <delete dir="${build.dir}/${rel}"/>
   </target>
 
 
