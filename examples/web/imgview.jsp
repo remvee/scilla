@@ -1,9 +1,12 @@
 <%@ taglib uri="/WEB-INF/scilla.tld" prefix="scilla" %>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 
-<jsp:useBean id="image" scope="request" class="test.ImageBean"/>
+<%@ page import="org.scilla.info.*" %>
 <c:if test="${param.f != null}">
-    <jsp:setProperty name="image" property="fileName" value='<%= request.getParameter("f") %>'/>
+<%
+    ImageInfo ii = (ImageInfo) InfoFactory.get(request.getParameter("f"));
+    request.setAttribute("image", ii);
+%>
 </c:if>
 
 <html>
@@ -12,7 +15,7 @@
 	    <tr><td align="center" valign="center"><div align="center">
 		<c:choose>
 		    <c:when test="${param.f != null}">
-			<code><c:out value="${image.fileName}"/></code>
+			<code><c:out value="${image.pathName}"/></code>
 			<p>
 			    <scilla:img name="image" transform="scale(600x600)" border="1"/>
 			</p>

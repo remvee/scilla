@@ -20,6 +20,11 @@ public class DirectoryBean {
 	}
 	this.path = path;
 
+	// "security"
+	if (!path.startsWith(AppConfig.getSourceDir())) {
+	    throw new Exception("illegal access");
+	}
+
 	// basename
 	int i = path.lastIndexOf(File.separator);
 	name = i != -1 ? path.substring(i+1) : path;
@@ -38,6 +43,11 @@ public class DirectoryBean {
 	    path = AppConfig.getSourceDir();
 	}
 	this.path = path;
+
+	// "security"
+	if (!path.startsWith(AppConfig.getSourceDir())) {
+	    throw new Exception("illegal access");
+	}
 
 	scan(true);
     }

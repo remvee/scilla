@@ -14,24 +14,25 @@
 <html>
     <head>
 	<title>
-	    <c:if test="${dir.numOfArtists == 1}">
-		<c:out value="${dir.artist}"/>
+	    <c:if test="${dir.count.audio.artist == 1}">
+		<c:out value="${dir.list.audio[0].artist}"/>
 	    </c:if>
-	    <c:if test="${dir.numOfPerformers == 1}">
-		<c:out value="${dir.performer}"/>
+	    <c:if test="${dir.count.audio.performer == 1}">
+		<c:out value="${dir.list.audio[0].performer}"/>
 	    </c:if>
-	    <c:if test="${dir.numOfAlbums == 1}">
-		<c:out value="${dir.album}"/>
+	    <c:if test="${dir.count.audio.album == 1}">
+		<c:out value="${dir.list.audio[0].album}"/>
 	    </c:if>
 	</title>
 	<link rel="stylesheet" type="text/css" href="audio.css"/>
     </head>
     <body>
+
 	<div class="content">
-	    <c:if test="${dir.numOfDirectories > 0}">
+	    <c:if test="${dir.list.count.directory > 0}">
 		<div class="directories">
 		    <table>
-			<c:forEach var="d" items="${dir.directories}">
+			<c:forEach var="d" items="${dir.list.directory}">
 			    <scilla:playlist name="d" var="playlist" recursive="true"/>
 			    <c:url var="url" value="audio.jsp">
 				<c:param name="d" value="${d.path}"/>
@@ -53,7 +54,7 @@
 		</div>
 	    </c:if>
 
-	    <c:if test="${dir.numOfTracks > 0}">
+	    <c:if test="${dir.list.count.audio > 0}">
 		<div class="tracks">
 		    <table>
 			<tr>
@@ -61,16 +62,16 @@
 				<table width="100%" class="trackheader">
 				    <tr>
 					<td rowspan="2" align="left">
-					    <c:if test="${dir.numOfArtists == 1}">
-						<div class="artist"><c:out value="${dir.artist}"/></div>
+					    <c:if test="${dir.count.audio.artist == 1}">
+						<div class="artist"><c:out value="${dir.list.audio[0].artist}"/></div>
 					    </c:if>
-					    <c:if test="${dir.numOfPerformers == 1}">
-						<c:forTokens var="perf" items="${dir.performer}" delims="/">
+					    <c:if test="${dir.count.audio.performer == 1}">
+						<c:forTokens var="perf" items="${dir.list.audio[0].performer}" delims="/">
 						    <div class="performer"><c:out value="${perf}"/></div>
 						</c:forTokens>
 					    </c:if>
-					    <c:if test="${dir.numOfAlbums == 1}">
-						<div class="album"><c:out value="${dir.album}"/></div>
+					    <c:if test="${dir.count.audio.album == 1}">
+						<div class="album"><c:out value="${dir.list.audio[0].album}"/></div>
 					    </c:if>
 					</td>
 					<td align="right">
@@ -84,8 +85,8 @@
 				    </tr>
 				    <tr>
 					<td align="right">
-					    <c:if test="${dir.numOfRecordingDates == 1}">
-						<div class="year"><c:out value="${dir.recordingDate}"/></div>
+					    <c:if test="${dir.count.audio.recdate == 1}">
+						<div class="year"><c:out value="${dir.list.audio[0].recdate}"/></div>
 					    </c:if>
 					</td>
 				    </tr>
@@ -94,22 +95,22 @@
 			</tr>
 			<tr>
 			    <td>
-				<table width="100%" class="tracklist">
-				    <c:forEach var="track" items="${dir.tracks}" varStatus="stat">
+			    <table width="100%" class="tracklist">
+				    <c:forEach var="track" items="${dir.list.audio}" varStatus="stat">
 					<scilla:playlist name="track" var="playlist"/>
 					<tr>
 					    <td align="right"><c:out value="${stat.count}"/></td>
-					    <c:if test="${dir.numOfArtists > 1}">
+					    <c:if test="${dir.count.audio.artist > 1}">
 						<td>
 						    <div class="artist"><c:out value="${track.artist}"/></div>
 						</td>
 					    </c:if>
-					    <c:if test="${dir.numOfPerformers > 1}">
+					    <c:if test="${dir.count.audio.performer > 1}">
 						<td>
 						    <div class="performer"><c:out value="${track.performer}"/></div>
 						</td>
 					    </c:if>
-					    <c:if test="${dir.numOfAlbums > 1}">
+					    <c:if test="${dir.count.audio.album > 1}">
 						<td>
 						    <div class="album"><c:out value="${track.album}"/></div>
 						</td>
@@ -119,13 +120,13 @@
 						    <c:out value="${track.title}"/>
 						</a>
 					    </td>
-					    <c:if test="${dir.numOfRecordingDates > 1}">
+					    <c:if test="${dir.count.audio.recdate > 1}">
 						<td>
-						    <div class="year"><c:out value="${track.recordingDate}"/></div>
+						    <div class="year"><c:out value="${track.recdate}"/></div>
 						</td>
 					    </c:if>
 					    <td align="right">
-						<c:out value="${track.time}"/>
+						<c:out value="${track.length}"/>
 					    </td>
 					    <td>
 						<a href='<c:out value="${playlist}"/>'>
@@ -138,12 +139,12 @@
 				    </c:forEach>
 				    <tr>
 					<td></td>
-					<c:if test="${dir.numOfArtists > 1}"><td></td></c:if>
-					<c:if test="${dir.numOfPerformers > 1}"><td></td></c:if>
-					<c:if test="${dir.numOfAlbums > 1}"><td></td></c:if>
+					<c:if test="${dir.count.audio.artist > 1}"><td></td></c:if>
+					<c:if test="${dir.count.audio.performer > 1}"><td></td></c:if>
+					<c:if test="${dir.count.audio.album > 1}"><td></td></c:if>
 					<td></td>
-					<c:if test="${dir.numOfRecordingDates > 1}"><td></td></c:if>
-					<td align="right"><c:out value="${dir.totalTime}"/></td>
+					<c:if test="${dir.count.audio.recdate > 1}"><td></td></c:if>
+					<td align="right"><c:out value="${dir.sum.audio.length}"/></td>
 					<td>
 					    <scilla:playlist name="dir" var="playlist"/>
 					    <a href='<c:out value="${playlist}"/>'>
@@ -160,9 +161,9 @@
 		</div>
 	    </c:if>
 
-	    <c:if test="${dir.numOfImages > 0}">
+	    <c:if test="${dir.list.count.image > 0}">
 		<div class="images">
-		    <c:forEach var="image" items="${dir.images}">
+		    <c:forEach var="image" items="${dir.list.image}">
 			<scilla:img name="image" var="url" outputtype="jpeg">
 			    <scilla:par key="scale" value="1024x768>"/>
 			</scilla:img>

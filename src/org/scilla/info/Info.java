@@ -26,7 +26,7 @@ import java.util.*;
 /**
  * The scilla media info base class.
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @author R.W. van 't Veer
  */
 public class Info implements Map {
@@ -44,6 +44,7 @@ public class Info implements Map {
      */
     protected Info (String v) {
 	pathname = v;
+	infoMap.put("pathName", pathname);
     }
 
 // map methods

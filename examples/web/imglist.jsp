@@ -20,14 +20,14 @@
     <body bgcolor="white">
 
 	<div class="directories">
-	    <c:if test="${dir.parent.path != null}">
+	    <c:if test="${dir.parentPath != null}">
 		<c:url var="url" value="img.jsp">
-		    <c:param name="d" value="${dir.parent.path}"/>
+		    <c:param name="d" value="${dir.parentPath}"/>
 		</c:url>
 		<br />
 		<a target="_top" href='<c:out value="${url}"/>'>..</a>
 	    </c:if>
-	    <c:forEach var="d" items="${dir.directories}">
+	    <c:forEach var="d" items="${dir.list.directory}">
 		<c:url var="url" value="img.jsp">
 		    <c:param name="d" value="${d.path}"/>
 		</c:url>
@@ -37,9 +37,9 @@
 	</div>
 
 	<hr />
-	<c:if test="${dir.numOfImages > 0}">
+	<c:if test="${dir.list.count.image > 0}">
 	    <table class="images" cellspacing="0" cellpadding="0">
-		<c:forEach var="image" items="${dir.images}">
+		<c:forEach var="image" items="${dir.list.image}">
 		    <scilla:img name="image" var="imgurl" outputtype="jpeg">
 			<c:if test="${image.width > image.height}">
 			    <scilla:par key="rotate" value="270"/>
@@ -48,7 +48,7 @@
 			<scilla:par key="negate" value="1"/>
 		    </scilla:img>
 		    <c:url var="viewurl" value="imgview.jsp">
-			<c:param name="f" value="${image.fileName}"/>
+			<c:param name="f" value="${image.pathName}"/>
 		    </c:url>
 		    <tr>
 			<td><scilla:img src="images/film-left.gif"/></td>
