@@ -1,7 +1,7 @@
 <homepage>
     <title>Scilla - media server</title>
     <location>http://www.xs4all.nl/~rwvtveer/scilla</location>
-    <date>$Date: 2003/01/05 14:31:38 $</date>
+    <date>$Date: 2003/01/05 15:40:41 $</date>
     <description>
 	<html><![CDATA[
 	    <p>
@@ -37,11 +37,11 @@
 			<dd>
 			    Allows conversions between various video types. Including
 			    scaling of picture size, framerate, video/ audio bitrate
-			    etc.    Also the possiblity to create a MP3 audio stream.
+			    etc.  Also the possiblity to create a MP3 audio stream.
 			</dd>
 			<dt> <a href="http://java.sun.com/products/java-media/jai/">JAI</a> </dt>
 			<dd>
-			    Allows conversions between various images types.    Currently
+			    Allows conversions between various images types.  Currently
 			    only image scaling (with a ImageMagick like syntax) is
 			    supported.
 			</dd>
@@ -136,12 +136,12 @@
 	<html><![CDATA[
 	    <p>
 		Source snapshots (@today@) available for downloading:
-		<ul>
-		    <li>
-			<a href="@snapshot.zip@">@snapshot.zip@</a>
-		    </li>
-		</ul>
 	    </p>
+	    <ul>
+		<li>
+		    <a href="@snapshot.zip@">@snapshot.zip@</a>
+		</li>
+	    </ul>
 	]]></html>
     </section>
 
@@ -150,7 +150,7 @@
 	<html><![CDATA[
 	    <p>
 		An <a href="projects/scilla/INSTALL.html">installation guide</a>
-		is included.    The source code is documented using
+		is included.  The source code is documented using
 		<a href="projects/scilla/doc/apidoc/index.html">javadoc</a>..
 	    </p>
 	]]></html>

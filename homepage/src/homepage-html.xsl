@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-    <xsl:output method="xml" indent="yes"/>
+    <xsl:output method="xml" indent="yes" 
+	    doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
+	    doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" />
 
     <!-- discard title elements in sections -->
     <xsl:template match="title"/>
@@ -38,14 +40,14 @@
 		    Last <xsl:value-of select="@max"/> changelog messages.
 		</xsl:otherwise>
 	    </xsl:choose>
-	    <ul class="logitems">
-		<xsl:for-each select="document($file)/changelog/entry">
-		    <xsl:if test="position() &lt;= $max">
-			<xsl:apply-templates select="."/>
-		    </xsl:if>
-		</xsl:for-each>
-	    </ul>
 	</p>
+	<ul class="logitems">
+	    <xsl:for-each select="document($file)/changelog/entry">
+		<xsl:if test="position() &lt;= $max">
+		    <xsl:apply-templates select="."/>
+		</xsl:if>
+	    </xsl:for-each>
+	</ul>
     </xsl:template>
 
     <!-- changelog entries -->
