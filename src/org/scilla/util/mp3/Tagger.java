@@ -30,7 +30,7 @@ import org.scilla.util.mp3.id3v2.*;
  * MP3 tag commandline utillity.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class Tagger {
     static Map commandMap = new HashMap();
@@ -48,7 +48,6 @@ public class Tagger {
     static Map optionMap = new HashMap();
     static
     {
-        optionMap.put("-verbose", "Give verbose messages.");
         optionMap.put("-quiet", "Give no informative messages or warnings.");
         optionMap = Collections.unmodifiableMap(optionMap);
     }
@@ -126,46 +125,43 @@ public class Tagger {
 
         // write tags if modified
         if (v1tagModified || v2tagModified) {
+            if (!hasOption("-quiet")) {
+                System.out.println("writing tags");
+            }
             String oldfilename = filename + ".old";
             File oldf = new File(oldfilename);
             File newf = new File(filename);
             if (!newf.renameTo(oldf)) {
-                throw new Exception("can't rename '" + filename + "' to '" + oldfilename);
+                throw new Exception("can't rename '" + filename + "' to '"
+                        + oldfilename);
             }
 
-            if (v2tagModified && v2tag.getFrames().size() > 0) {
-                InputStream in = new FileInputStream(oldf);
-                OutputStream out = new FileOutputStream(newf);
+            InputStream in = new FileInputStream(oldf);
+            OutputStream out = new FileOutputStream(newf);
 
-                ID3v2 dummy = new ID3v2(oldf);
-                dummy.readTag(in);
-                if (! dummy.hasTag()) {
-                    in = new FileInputStream(oldf);
-		}
-                System.out.println("writing v2 tag");
+            // skip old v2 tag if there is any
+            ID3v2 dummy = new ID3v2(oldf);
+            dummy.readTag(in);
+            if (!dummy.hasTag()) {
+                in = new FileInputStream(oldf);
+            }
+            
+            // write new v2 tag when there are frames
+            if (v2tag.getFrames().size() > 0) {
                 v2tag.writeTag(out);
-
-                byte[] b = new byte[4096];
-                int n;
-                while ((n = in.read(b, 0, b.length)) != -1) {
-                    out.write(b, 0, n);
-		}
-                out.close();
-                in.close();
-            } else {
-                InputStream in = new FileInputStream(oldf);
-                OutputStream out = new FileOutputStream(newf);
-                byte[] b = new byte[4096];
-                int n;
-                while ((n = in.read(b, 0, b.length)) != -1) {
-                    out.write(b, 0, n);
-		}
-                out.close();
-                in.close();
             }
 
-            if (v1tagModified) {
-                System.out.println("writing v1 tag");
+            // copy the file
+            byte[] b = new byte[4096];
+            int n;
+            while ((n = in.read(b, 0, b.length)) != -1) {
+                out.write(b, 0, n);
+            }
+            out.close();
+            in.close();
+
+            // determine if a v1 tag needs to be appended
+            if (v1tag.fileHasTag() || v1tagModified) {
                 RandomAccessFile f = new RandomAccessFile(newf, "rw");
                 try {
                     f.seek(v1tag.fileHasTag() ? f.length() - 128 : f.length());
