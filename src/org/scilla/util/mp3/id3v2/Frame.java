@@ -30,7 +30,7 @@ import org.scilla.util.mp3.ID3v2;
  * Basic representation of a frame.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class Frame
 {
@@ -129,6 +129,8 @@ public class Frame
 	byte[] length = new byte[4];
 	byte[] data = getBytes();
 	ID3v2.writeUnsyncInt(data.length, length, 0);
+	try { out.write(length); }
+	catch (IOException ex) { /* will never happen */ }
 
 	// flags
 	frameFlags = 0; // TODO TODO

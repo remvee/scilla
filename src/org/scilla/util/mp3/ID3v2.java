@@ -34,7 +34,7 @@ import org.scilla.util.mp3.id3v2.*;
  *
  * @see <a href="http://www.id3.org/id3v2.3.0.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class ID3v2
 {
@@ -148,6 +148,7 @@ public class ID3v2
 	tagAvailable = true;
     }
 
+    final static int padding = 1024;
     private void writeTag (OutputStream out)
     throws IOException, Exception
     {
@@ -184,7 +185,9 @@ public class ID3v2
 	    }
 	}
 	if (unsyncFlag) data = unsyncArray(data);
-	// TODO if (padding > 0) data = addPadding(data, padding);
+
+	// add padding
+	if (padding > 0) data = addPadding(data, padding);
 
 	// prepare bits for header
 	if (unsyncFlag) bits |= 0x80;
@@ -260,31 +263,6 @@ public class ID3v2
 	return sb.toString();
     }
 
-    /** debugging */
-    public static void main (String[] args)
-    throws Exception
-    {
-	for (int i = 0; i < args.length; i++)
-	{
-	    System.out.print(args[i]+": ");
-	    try
-	    {
-		ID3v2 tag = new ID3v2(new File(args[i]));
-		Frame f = new TextFrame("COMM", null, "eng", "gotya!", "bla die bla");
-		tag.getFrames().add(f);
-		System.out.println(""+tag);
-		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-		tag.writeTag(System.out);
-		System.out.println("");
-		System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-	    }
-	    catch (Throwable ex)
-	    {
-		ex.printStackTrace(System.out);
-	    }
-	}
-    }
-
     public final static int readUnsyncInt (byte[] data, int offset)
     {
 	return (((int) data[offset++]) << 21) +
@@ -322,4 +300,66 @@ public class ID3v2
 
 	return out.toByteArray();
     }
+    public final static byte[] addPadding (byte[] data, int n)
+    {
+	ByteArrayOutputStream out = new ByteArrayOutputStream();
+	try
+	{
+	    out.write(data);
+	    out.write(new byte[n]);
+	}
+	catch (IOException ex) { /* we never happen */ }
+	return out.toByteArray();
+    }
+
+    /** debugging */
+    public static void main (String[] args)
+    throws Exception
+    {
+	for (int i = 0; i < args.length; i++)
+	{
+	    System.out.print(args[i]+": ");
+	    try
+	    {
+		String origFn = args[i];
+		File origF = new File(origFn);
+		ID3v2 tag = new ID3v2(origF);
+		System.out.println(""+tag);
+		String bakFn = args[i]+".new";
+/*
+		{
+		    File f = new File(bakFn);
+		    while (f.exists())
+		    {
+			bakFn += "~";
+			f = new File(bakFn);
+		    }
+		}
+		File bakF = new File(bakFn);
+		origF.renameTo(bakF);
+*/
+		InputStream in = new FileInputStream(origFn); //bakF);
+		OutputStream out = new FileOutputStream(bakFn);
+
+System.err.println("reading tag");
+		tag.readTag(in);
+		Frame f = new TextFrame("COMM", null, "eng", "gotya!", "bla die bla");
+		tag.getFrames().add(f);
+
+System.err.println("writing tag");
+		tag.writeTag(out);
+		byte[] buf = new byte[4096];
+		int n;
+		while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
+
+		out.close();
+		in.close();
+	    }
+	    catch (Throwable ex)
+	    {
+		ex.printStackTrace(System.out);
+	    }
+	}
+    }
+
 }
