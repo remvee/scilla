@@ -373,7 +373,7 @@
 <%
 		// subdirectories
 		{
-		    int cols = 5;
+		    int cols = 4;
 		    int rows = (dirVec.size() + cols - 1) / cols;
 		    int len = dirVec.size();
 		    for (int y = 0; y < rows; y++)
@@ -388,13 +388,11 @@
 
 			    String s = (String) dirVec.get(i);
 			    String sEnc = (path + "/" + s).replace(' ', '+');
+			    if (s.length() > 15) s = s.substring(0, 15)+"..";
 %>
                            <TD>
-				<A href="mp3.jsp?d=<%= sEnc %>"><%= s %></A>/
-<%
-			    streamLinks(request, out, path+"/"+s, true);
-%>
-				&nbsp;&nbsp;&nbsp;
+				<A href="mp3.jsp?d=<%= sEnc %>"><%= s %></A>/&nbsp;<%
+			    streamLinks(request, out, path+"/"+s, true); %>&nbsp;&nbsp;&nbsp;
                            </TD>
 <%
 			}
@@ -405,7 +403,7 @@
 		}
 		// html files
 		{
-		    int cols = 5;
+		    int cols = 4;
 		    int rows = (htmVec.size() + cols - 1) / cols;
 		    int len = htmVec.size();
 		    for (int y = 0; y < rows; y++)
@@ -422,8 +420,7 @@
 			    String sEnc = s.replace(' ', '+');
 %>
                            <TD>
-				<A href="<%= urlHead+sEnc %>"><%= s %></A>
-				&nbsp;&nbsp;&nbsp;
+				<A href="<%= urlHead+sEnc %>"><%= s %></A>&nbsp;&nbsp;&nbsp;
                            </TD>
 <%
 			}
