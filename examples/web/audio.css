@@ -40,6 +40,12 @@ ul.directories {
     font-size: 150%;
 }
 
+.images {
+    background-color: #eeeeee;
+    font-weight: bold;
+    padding: 2%;
+}
+
 .artist {
     font-style: italic;
 }

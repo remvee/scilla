@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,7 +24,7 @@ public class PlaylistTag extends TagSupport {
 	String url = "playlist.m3u?d=";
 
 	// handle location
-	Object obj = pageContext.findAttribute(id);
+	Object obj = pageContext.findAttribute(name);
 	if (obj instanceof DirectoryBean) {
 	    url += URLEncoder.encode(((DirectoryBean)obj).getPath());
 	} else if (obj instanceof TrackBean) {
@@ -37,19 +38,22 @@ public class PlaylistTag extends TagSupport {
 	    url += "&r=1";
 	}
 
+	// encode session
+	url = ((HttpServletResponse)pageContext.getResponse()).encodeURL(url);
+
 	// place var attribute in page context
 	pageContext.setAttribute(var, url, getScopeInt());
 
         return SKIP_BODY;
     }
 
-    public void setId (String v) {
-	id = v;
+    public void setName (String v) {
+	name = v;
     }
-    public String getId () {
-	return id;
+    public String getName () {
+	return name;
     }
-    private String id;
+    private String name;
 
     public void setVar (String v) {
 	var = v;

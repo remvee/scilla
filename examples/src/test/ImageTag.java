@@ -1,5 +1,6 @@
 package test;
 
+import java.io.File;
 import java.util.*;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -20,7 +21,7 @@ import org.scilla.info.*;
  * This image tag creates an <tt>img</tt> HTML tag to an
  * optionally transformed image with the proper <tt>width</tt>
  * and <tt>height</tt> attributes set.
- * @version $Id: ImageTag.java,v 1.11 2003/03/09 12:15:45 remco Exp $
+ * @version $Id: ImageTag.java,v 1.12 2003/03/19 23:21:44 remco Exp $
  * @author R.W. van 't Veer
  */
 public class ImageTag extends BodyTagSupport {
@@ -44,8 +45,8 @@ public class ImageTag extends BodyTagSupport {
 	HttpServletRequest pageRequest = (HttpServletRequest) pageContext.getRequest();
 
 	// content negotiation..  sort of.. TODO
-	preferredOutputType = null;
-	if (getOutputType() == null) {
+	preferredOutputtype = null;
+	if (getOutputtype() == null) {
 	    try {
 		ImageInfo inputInfo = (ImageInfo) InfoFactory.get(getRequest().getOutputFile());
 
@@ -57,14 +58,21 @@ public class ImageTag extends BodyTagSupport {
 		    boolean acceptPNG = acceptHeader != null && acceptHeader.indexOf("image/png") != -1;
 		    if (! acceptPNG && inputInfo.isPNG()) {
 			// indexed or transparent images become gifs others jpegs
-			preferredOutputType =
+			preferredOutputtype =
 				inputInfo.isIndexed() || inputInfo.hasAlphaChannel()
 				? "gif" : "jpg";
 		    }
 		}
 	    } catch (Exception ex) {
+		log.warn("failed to identify input", ex);
 		throw new JspException("failed to identify input", ex);
 	    }
+	}
+
+	// only putting image url in var?
+	if (var != null) {
+	    pageContext.setAttribute(var, getImageUrl());
+	    return EVAL_PAGE;
 	}
 
 	// start build img tag
@@ -132,6 +140,11 @@ public class ImageTag extends BodyTagSupport {
     }
     public String getSrc ()
     throws JspException {
+	if (name != null) {
+	    ImageBean img = (ImageBean) pageContext.findAttribute(name);
+	    return img.getFileName();
+	}
+
 	if (absSrc != null) {
 	    return absSrc;
 	}
@@ -146,7 +159,7 @@ public class ImageTag extends BodyTagSupport {
 	pageLocation = pageLocation.substring(0, i);
 
 	// run through parent directories
-	String t = src;
+	String t = src.toString();
 	while (t.startsWith("../")) {
 	    t = t.substring(3);
 	    int j = pageLocation.lastIndexOf('/');
@@ -163,17 +176,17 @@ public class ImageTag extends BodyTagSupport {
 
 	return absSrc = pageLocation + "/" + t;
     }
-    private String src = null;
+    private Object src = null;
     private String absSrc = null;
 
-    public void setOutputType (String v) {
-	outputType = v;
+    public void setOutputtype (String v) {
+	outputtype = v;
     }
-    public String getOutputType () {
-	return outputType;
+    public String getOutputtype () {
+	return outputtype;
     }
-    private String outputType = null;
-    private String preferredOutputType = null;
+    private String outputtype = null;
+    private String preferredOutputtype = null;
 
     public void setTransform (String v) {
        transform = v;
@@ -187,6 +200,22 @@ public class ImageTag extends BodyTagSupport {
 	requestParameters.add(rp);
     }
     private List requestParameters = new ArrayList();
+
+    public void setName (String v) {
+	name = v;
+    }
+    public String getName () {
+	return name;
+    }
+    private String name = null;
+
+    public void setVar (String v) {
+	var = v;
+    }
+    public String getVar () {
+	return var;
+    }
+    private String var;
 
 // image attributes
     public void setAlt (String v) {
@@ -229,13 +258,32 @@ public class ImageTag extends BodyTagSupport {
     private Request getRequest ()
     throws Exception {
         // source mime type
-        String type = MimeType.getTypeFromFilename(getSrc());
+        String type = null;
+	if (name != null) {
+	    ImageBean img = (ImageBean) pageContext.findAttribute(name);
+	    type = MimeType.getTypeFromFilename(img.getFileName());
+	} else {
+	    type = MimeType.getTypeFromFilename(getSrc());
+	}
+
         if (type == null) {
             throw new ScillaException("unknow input type");
         }
 
-	URL url = pageContext.getServletContext().getResource(getSrc());
-        return new Request(url, type, getRequestParameters());
+	// create request according to context
+	Request req = null;
+	if (name != null) {
+	    ImageBean img = (ImageBean) pageContext.findAttribute(name);
+	    Config config = ConfigProvider.get();
+	    String source = config.getString(Config.SOURCE_DIR_KEY);
+	    source += File.separator + img.getFileName();
+	    req = new Request(source, type, getRequestParameters());
+	} else {
+	    URL url = pageContext.getServletContext().getResource(getSrc());
+	    req = new Request(url, type, getRequestParameters());
+	}
+
+	return req;
     }
 
     /**
@@ -247,8 +295,11 @@ public class ImageTag extends BodyTagSupport {
 	StringBuffer out = new StringBuffer();
 
 	HttpServletRequest pageRequest = (HttpServletRequest) pageContext.getRequest();
+	HttpServletResponse pageResponse = (HttpServletResponse) pageContext.getResponse();
+
 	out.append(pageRequest.getContextPath());
 	out.append(SERVLET_MAPPING);
+	out.append(name != null ? ImageServlet.SCILLA_SOURCE_CTX : ImageServlet.APPLICATION_CTX);
 	out.append(getSrc());
 
 	// translate property to query string
@@ -261,7 +312,7 @@ public class ImageTag extends BodyTagSupport {
 	    out.append(URLEncoder.encode(rp.val));
 	}
 
-	return out.toString();
+	return pageResponse.encodeURL(out.toString());
     }
 
     /**
@@ -270,10 +321,10 @@ public class ImageTag extends BodyTagSupport {
     private List getRequestParameters () {
 	List result = new ArrayList(requestParameters);
 
-	if (outputType != null) {
-	    result.add(new RequestParameter(Request.OUTPUT_TYPE_PARAMETER, outputType));
-	} else if (preferredOutputType != null) {
-	    result.add(new RequestParameter(Request.OUTPUT_TYPE_PARAMETER, preferredOutputType));
+	if (outputtype != null) {
+	    result.add(new RequestParameter(Request.OUTPUT_TYPE_PARAMETER, outputtype));
+	} else if (preferredOutputtype != null) {
+	    result.add(new RequestParameter(Request.OUTPUT_TYPE_PARAMETER, preferredOutputtype));
 	}
 
 	if (transform == null) {

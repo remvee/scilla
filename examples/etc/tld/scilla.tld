@@ -22,11 +22,32 @@
 
 	<attribute>
 	    <name>src</name>
-	    <required>true</required>
+	    <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
 	    <description>
 		Location of the image, relative to the current
-		location in the application.
+		location in the application.  This attribute is
+		required if the "name" attribute is not used.
+	    </description>
+	</attribute>
+	<attribute>
+	    <name>name</name>
+	    <required>false</required>
+	    <rtexprvalue>false</rtexprvalue>
+	    <description>
+		Attribute name of an image bean describing then
+		image to be displayed.  This attribute is
+		required if the "src" attribute is not used.
+	    </description>
+	</attribute>
+	<attribute>
+	    <name>var</name>
+	    <required>false</required>
+	    <rtexprvalue>false</rtexprvalue>
+	    <description>
+		Attribute name to write url to.  Using this
+		attribute causes this tag to not write an HTML
+		image tag.
 	    </description>
 	</attribute>
 	<attribute>
@@ -122,7 +143,7 @@
 	</description>
 
 	<attribute>
-	    <name>id</name>
+	    <name>name</name>
 	    <required>true</required>
 	    <rtexprvalue>false</rtexprvalue>
 	    <description>

@@ -32,7 +32,7 @@
 		<div class="directories">
 		    <table>
 			<c:forEach var="d" items="${dir.directories}">
-			    <scilla:playlist id="d" var="playlist" recursive="true"/>
+			    <scilla:playlist name="d" var="playlist" recursive="true"/>
 			    <c:url var="url" value="audio.jsp">
 				<c:param name="d" value="${d.path}"/>
 			    </c:url>
@@ -72,7 +72,7 @@
 					    </c:if>
 					</td>
 					<td align="right">
-					    <scilla:playlist id="dir" var="playlist"/>
+					    <scilla:playlist name="dir" var="playlist"/>
 					    <a href='<c:out value="${playlist}"/>'>
 						<scilla:img src="images/speaker.png" border="0" alt="Play">
 						    <scilla:par key="scale" value="14x14"/>
@@ -94,7 +94,7 @@
 			    <td>
 				<table width="100%" class="tracklist">
 				    <c:forEach var="track" items="${dir.tracks}" varStatus="stat">
-					<scilla:playlist id="track" var="playlist"/>
+					<scilla:playlist name="track" var="playlist"/>
 					<tr>
 					    <td align="right"><c:out value="${stat.count}"/></td>
 					    <c:if test="${dir.numOfArtists > 1}">
@@ -143,7 +143,7 @@
 					<c:if test="${dir.numOfRecordingDates > 1}"><td></td></c:if>
 					<td align="right"><c:out value="${dir.totalTime}"/></td>
 					<td>
-					    <scilla:playlist id="dir" var="playlist"/>
+					    <scilla:playlist name="dir" var="playlist"/>
 					    <a href='<c:out value="${playlist}"/>'>
 						<scilla:img src="images/speaker.png" border="0" alt="Play">
 						    <scilla:par key="scale" value="14x14"/>
@@ -158,17 +158,20 @@
 		</div>
 	    </c:if>
 
-	    <%-- c:if test="${dir.numOfImages > 0}">
+	    <c:if test="${dir.numOfImages > 0}">
 		<div class="images">
 		    <c:forEach var="image" items="${dir.images}">
-			<a href='<c:out value="${playlist}"/>'>
-			    <scilla:img id="image" alt='<c:out value="${image.title}"'>
-				<scilla:par key="scale" value="50x50"/>
+			<scilla:img name="image" var="url" outputtype="jpeg">
+			    <scilla:par key="scale" value="1000x1000"/>
+			</scilla:img>
+			<a href='<c:out value="${url}"/>'>
+			    <scilla:img name="image" border="2">
+				<scilla:par key="scale" value="75x75"/>
 			    </scilla:img>
 			</a>
 		    </c:forEach>
 		</div>
-	    </c:if --%>
+	    </c:if>
 	</div>
     </body>
 </html>

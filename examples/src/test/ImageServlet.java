@@ -19,6 +19,9 @@ public class ImageServlet extends HttpServlet {
     private static final Log log = LogFactory.getLog(ImageServlet.class);
     private static final int BUFFER_SIZE = 4096;
 
+    public static final String APPLICATION_CTX = "/r/";
+    public static final String SCILLA_SOURCE_CTX = "/s/";
+
     public void doGet (HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         Request req = null;
@@ -72,10 +75,10 @@ public class ImageServlet extends HttpServlet {
         return 0L;
     }
 
-    private Request createFromHttpServletRequest (HttpServletRequest req)
+    private Request createFromHttpServletRequest (HttpServletRequest request)
     throws Exception {
-        // source file
-        String source = req.getPathInfo();
+	// does pathinfo contain a valid source
+        String source = request.getPathInfo();
 	log.debug("source="+source);
         if (source == null || !source.startsWith("/") || ("/"+source).indexOf("/../") != -1) {
             throw new ScillaIllegalRequestException();
@@ -88,8 +91,8 @@ public class ImageServlet extends HttpServlet {
         }
 
         // conversion parameters from QUERY_STRING
-        Vector pars = new Vector();
-        String qs = req.getQueryString();
+        List pars = new Vector();
+        String qs = request.getQueryString();
         if (qs != null) {
             StringTokenizer st = new StringTokenizer(qs, "&");
             while (st.hasMoreTokens()) {
@@ -101,9 +104,24 @@ public class ImageServlet extends HttpServlet {
             }
         }
 
-	URL url = getServletConfig().getServletContext().getResource(source);
-	log.debug("url="+url);
+	Request req = null;
+	if (source.startsWith(APPLICATION_CTX)) {
+	    String fname = source.substring(APPLICATION_CTX.length() - 1);
+	    URL url = getServletConfig().getServletContext().getResource(fname);
+	    log.debug("url="+url);
+	    req = new Request(url, type, pars);
+	} else if (source.startsWith(SCILLA_SOURCE_CTX)) {
+	    Config config = ConfigProvider.get();
+	    String fname = config.getString(Config.SOURCE_DIR_KEY);
+	    fname += source.substring(SCILLA_SOURCE_CTX.length() - 1);
+	    log.debug("fname="+fname);
+	    req = new Request(fname, type, pars);
+	} else {
+	    // no context no request..
+	    throw new ScillaIllegalRequestException();
+	}
 
-        return new Request(url, type, pars);
+	log.debug("request="+req);
+	return req;
     }
 }

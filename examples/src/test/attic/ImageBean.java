@@ -17,4 +17,8 @@ public class ImageBean {
 	String source = ConfigProvider.get().getString(Config.SOURCE_DIR_KEY);
 	info = (ImageInfo) InfoFactory.get(source + File.separator + fname);
     }
+
+    public String getFileName () {
+	return fname;
+    }
 }
