@@ -2,21 +2,22 @@
 - DOCUMENT DOCUMENT DOCUMENT!!
 - DOCUMENT DOCUMENT DOCUMENT!!
 
+- get rid of Mp3Exception
 - implement content-length
-- write INSTALL.txt
+- write INSTALL INSTALL.html (referenced by homepage)
 - JAIConverter
     - sync parameters with imagick so they will be interchangable.
       Maybe we want to define parameter sets as kind of interface?
 - JMFConverter
     - sync parameters with lame so they will be interchangable for mp3
       conversions.  Interface?
+- log4j
 - QueuedProcess
     - log stdout, stderr
 - Converter: handle command failure
     - let thread test for successful exit
     - if not successful set flag which can be tested in RunnerObject
 	when no file appears and converter nolonger alive
-- log4j
 - Publish class for generation of static websites, include main for
   scripting.
 
