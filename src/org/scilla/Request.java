@@ -23,7 +23,7 @@ package org.scilla;
 
 import java.util.Vector;
 import java.util.Iterator;
-import java.io.OutputStream;
+import java.io.InputStream;
 import java.io.File;
 
 import org.scilla.core.*;
@@ -33,7 +33,7 @@ import org.scilla.util.*;
  * The Request class holds a scilla media object request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class Request
 {
@@ -92,14 +92,13 @@ public class Request
     }
 
     /**
-     * Write media object data to stream.
-     * @param out output stream
-     * @throws ScillaException when reading or writing fails
+     * Get media input stream.
+     * @throws ScillaException accessing media fails
      */
-    public void write (OutputStream out)
+    public InputStream getStream ()
     throws ScillaException
     {
-        getObject().write(out);
+	return getObject().getStream();
     }
 
     /**

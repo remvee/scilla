@@ -21,12 +21,14 @@
 
 package org.scilla.util;
 
+import java.io.*;
+
 import org.scilla.*;
 
 /**
  * Simple main class for debugging scilla.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @author R.W. van 't Veer
  */
 public class Publish
@@ -41,6 +43,11 @@ public class Publish
     {
         Request req = RequestFactory.createFromArgv(args);
 	System.err.println("outputType='"+req.getOutputType()+"'");
-        req.write(System.out);
+
+	InputStream in = req.getStream();
+	OutputStream out = System.out;
+	int n; byte[] b = new byte[4096];
+	while ((n = in.read(b)) != -1) out.write(b, 0, n);
+	in.close(); out.close();
     }
 }

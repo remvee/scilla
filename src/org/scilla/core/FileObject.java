@@ -21,10 +21,7 @@
 
 package org.scilla.core;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.OutputStream;
-import java.io.IOException;
+import java.io.*;
 
 import org.scilla.*;
 
@@ -32,58 +29,37 @@ import org.scilla.*;
  * A file object is a media object somewhere on disk.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class FileObject implements MediaObject
 {
     static final int BUFFER_SIZE = 4096;
 
     String filename;
+    FileInputStream in;
 
     /**
      * Create media object.
      * @param filename full name of result file
      */
     public FileObject (String filename)
-    {
-        this.filename = filename;
-    }
-
-    public void write (OutputStream out)
     throws ScillaException
     {
-	FileInputStream in = null;
+        this.filename = filename;
 	try
 	{
 	    in = new FileInputStream(filename);
-
-	    // write in to out
-	    byte[] b = new byte[BUFFER_SIZE];
-	    int n;
-	    while ((n = in.read(b)) != -1)
-	    {
-		try
-		{
-		    out.write(b, 0, n);
-		}
-		catch (IOException ex)
-		{
-		    throw new ScillaOutputIOException(ex);
-		}
-	    }
 	}
 	catch (IOException ex)
 	{
 	    throw new ScillaInputIOException(ex);
 	}
-	finally
-	{
-	    if (in != null)
-	    {
-		try { in.close(); }
-		catch (IOException e) { }
-	    }
-	}
+    }
+
+    public InputStream getStream ()
+    throws ScillaException
+    {
+	return in;
     }
 
     /**

@@ -21,7 +21,7 @@
 
 package org.scilla.core;
 
-import java.io.OutputStream;
+import java.io.InputStream;
 
 import org.scilla.*;
 
@@ -29,16 +29,15 @@ import org.scilla.*;
  * Interface to a media object.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public interface MediaObject
 {
     /**
-     * Write data to stream.
-     * @param out stream to write to
-     * @throws ScillaException when a read or write problem occures
+     * Get media input stream.
+     * @throws ScillaException when a problem occures
      */
-    public void write (OutputStream out) throws ScillaException;
+    public InputStream getStream () throws ScillaException;
 
     /**
      * @return file size or -1 of unknown

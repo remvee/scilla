@@ -34,7 +34,7 @@ import org.scilla.*;
  * finished or not.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class CachedObject implements MediaObject
 {
@@ -44,15 +44,12 @@ public class CachedObject implements MediaObject
     /** buffer size */
     public static final int BUFFER_SIZE = 4096;
     /** milis to wait in wait for file loop */
-    public static final int WAIT_FOR_FILE_TIMEOUT = 100;
-    /** milis to wait for nieuw data in read loop */
-    public static final int WAIT_FOR_READ_TIMEOUT = 100;
 
     // output file name
     private String filename;
 
     /**
-     * Create media object.
+     * Construct media object for cached object.
      * @param filename full name of result file
      */
     public CachedObject (String filename)
@@ -60,103 +57,13 @@ public class CachedObject implements MediaObject
 	this.filename = filename;
     }
 
-    /**
-     * Write data to stream.  If a converter is still running this
-     * method will follow the file till the converter is finished.
-     * @param out stream to write to
-     * @throws ScillaException when a read or write problem occures
-     */
-    public void write (OutputStream out)
+    public InputStream getStream ()
     throws ScillaException
     {
 	RunnerObject runner = cache.getRunner(filename);
 	log.debug("write: runner="+runner);
 
-	File f = new File(filename);
-
-	// see if simular request is in running list
-	if (runner != null && ! runner.hasFinished())
-	{
-	    // wait for file to appear
-	    while (! f.exists() && ! runner.hasFinished())
-	    {
-		try
-		{
-		    Thread.currentThread().sleep(WAIT_FOR_FILE_TIMEOUT);
-		}
-		catch (InterruptedException ex) { }
-	    }
-	}
-	// did it leave any output?
-	if (! f.exists())
-	{
-	    String err = runner != null ? runner.getErrorMessage() : null;
-	    if (err != null)
-	    {
-		throw new ScillaConversionFailedException(err);
-	    }
-	    else
-	    {
-		throw new ScillaNoOutputException();
-	    }
-	}
-
-	// catch up with output file and write it to out
-	InputStream in = null;
-	try
-	{
-	    in = new FileInputStream(f);
-	    int n;
-	    byte[] b = new byte[BUFFER_SIZE];
-
-	    // read without going beyond EOF when k
-	    while (runner != null && ! runner.hasFinished())
-	    {
-		try
-		{
-		    Thread.currentThread().sleep(WAIT_FOR_READ_TIMEOUT);
-		}
-		catch (InterruptedException ex) { }
-
-		while (in.available() > 0 && ! runner.hasFinished())
-		{
-		    n = in.read(b);
-		    try
-		    {
-			out.write(b, 0, n);
-		    }
-		    catch (IOException ex)
-		    {
-			throw new ScillaOutputIOException(ex);
-		    }
-		}
-	    }
-
-	    // till EOF
-	    while ((n = in.read(b)) != -1)
-	    {
-		try
-		{
-		    out.write(b, 0, n);
-		}
-		catch (IOException ex)
-		{
-		    throw new ScillaOutputIOException(ex);
-		}
-	    }
-	}
-	catch (IOException ex)
-	{
-	    throw new ScillaInputIOException(ex);
-	}
-	finally
-	{
-	    if (in != null)
-	    {
-		try { in.close(); }
-		catch (IOException ex) { }
-	    }
-	}
+	return new MediaStream(filename, runner);
     }
 
     /**

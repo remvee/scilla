@@ -34,12 +34,13 @@ import org.scilla.util.mp3.*;
 /**
  * This servlet handles media requests.
  *
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  * @author R.W. van 't Veer
  */
 public class Servlet extends HttpServlet
 {
     private static final Logger log = LoggerFactory.get(Servlet.class);
+    private static final int BUFFER_SIZE = 4096;
 
     /**
      * Initialize scilla.
@@ -81,7 +82,17 @@ public class Servlet extends HttpServlet
 		addStreamHeaders(req, response);
 	    }
 
-	    req.write(response.getOutputStream());
+	    // write request result
+	    {
+		OutputStream out = response.getOutputStream();
+		InputStream in = req.getStream();
+		int n;
+		byte[] b = new byte[BUFFER_SIZE];
+		while ((n = in.read(b)) != -1)
+		{
+		    out.write(b, 0, n);
+		}
+	    }
 	}
 	catch (ScillaNoOutputException ex)
 	{

@@ -34,7 +34,7 @@ import org.scilla.converter.*;
  * A runner object is a media object currently being converted.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class RunnerObject implements MediaObject
 {
@@ -130,110 +130,8 @@ public class RunnerObject implements MediaObject
     }
 
     /**
-     * Write data to stream.  First wait for the file to appear then
-     * follow it till converter is finished.
-     * @param out stream to write to
-     * @throws ScillaException when a read or write problem occures
-     * @see #start()
-     */
-    public void write (OutputStream out)
-    throws ScillaException
-    {
-	String filename = conv.getOutputFile();
-
-	// wait for file to appear
-	File f = new File(filename);
-	while (! f.exists() && ! hasFinished())
-	{
-	    try
-	    {
-		Thread.currentThread().sleep(WAIT_FOR_FILE_TIMEOUT);
-	    }
-	    catch (InterruptedException ex) { }
-	}
-
-	// did converter fail?
-	if (hasFinished() && (! f.exists() || ! exitSuccess()))
-	{
-	    f.delete(); // removed output
-
-	    String err = getErrorMessage();
-	    if (err != null)
-	    {
-		throw new ScillaConversionFailedException(getErrorMessage());
-	    }
-	    else
-	    {
-		throw new ScillaNoOutputException();
-	    }
-	}
-
-	// catch up with output file and write it to out
-	InputStream in = null;
-	try
-	{
-	    in = new FileInputStream(f);
-	    int n;
-	    byte[] b = new byte[BUFFER_SIZE];
-	    do
-	    {
-		try
-		{
-		    Thread.currentThread().sleep(WAIT_FOR_READ_TIMEOUT);
-		}
-		catch (InterruptedException ex) { }
-
-		while (in.available() > 0 && ! hasFinished())
-		{
-		    n = in.read(b);
-		    try
-		    {
-			out.write(b, 0, n);
-		    }
-		    catch (IOException ex)
-		    {
-			throw new ScillaOutputIOException(ex);
-		    }
-		}
-	    }
-	    while (! hasFinished()); // until converter thread finished
-
-	    // till EOF
-	    while ((n = in.read(b)) != -1)
-	    {
-		try
-		{
-		    out.write(b, 0, n);
-		}
-		catch (IOException ex)
-		{
-		    throw new ScillaOutputIOException(ex);
-		}
-	    }
-	}
-	catch (IOException ex)
-	{
-	    throw new ScillaInputIOException(ex);
-	}
-	finally
-	{
-	    if (in != null)
-	    {
-		try { in.close(); }
-		catch (IOException e) { }
-	    }
-	}
-
-	// did converter fail?
-	if (! exitSuccess())
-	{
-	    throw new ScillaConversionFailedException(getErrorMessage());
-	}
-    }
-
-    /**
      * Change result file location.
-     * Don't call this method after write().
+     * Don't call this method after getStream().
      * TODO: illegalstate exception
      * @param fname output filename
      * @see #write(java.io.OutputStream)
@@ -256,4 +154,11 @@ public class RunnerObject implements MediaObject
      * @return always true
      */
     public boolean allowCaching () { return true; }
+
+    public InputStream getStream ()
+    throws ScillaException
+    {
+	String filename = conv.getOutputFile();
+	return new MediaStream(filename, this);
+    }
 }
