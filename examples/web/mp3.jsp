@@ -417,7 +417,7 @@
 	String encoding = "";
 	if (! (remote.equals("localhost") || remote.equals("127.0.0.1"))) {
 	    if ("ogg".equals(request.getParameter("t"))) {
-		encoding = "&t=ogg&bitrate=24&maxbitrate=56";
+		encoding = "&t=ogg&bitrate=50";
 	    } else {
 		encoding = "&t=mp3&resample=16&bitrate=24&maxbitrate=56";
 	    }
