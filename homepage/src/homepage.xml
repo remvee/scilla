@@ -1,7 +1,7 @@
 <homepage>
     <title>Scilla - media server</title>
     <location>http://www.xs4all.nl/~rwvtveer/scilla</location>
-    <date>$Date: 2002/11/22 17:24:39 $</date>
+    <date>$Date: 2002/11/22 17:27:16 $</date>
     <description>
 	Scilla answers media file requests and takes conversion
 	parameters for various media converters.  Manipulated media
@@ -138,7 +138,7 @@
 	<para><![CDATA[
             A <A href="projects/scilla/INSTALL.html">Installation guide</A>
             is included.    The source code is well documented using
-            <A href="projects/scilla/doc/index.html">javadoc</A>..
+            <A href="projects/scilla/doc/apidoc/index.html">javadoc</A>..
 	]]></para>
     </section>
 
