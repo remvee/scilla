@@ -1,32 +1,50 @@
 <!DOCTYPE taglib
-	PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN" 
-	"http://java.sun.com/j2ee/dtds/web-jsptaglib_1_1.dtd">
+	PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
+	"http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
 <taglib>
-    <tlibversion>1.0</tlibversion>
-    <jspversion>1.1</jspversion>
-    <shortname>scilla</shortname>
+    <tlib-version>1.0</tlib-version>
+    <jsp-version>1.2</jsp-version>
+    <short-name>scilla</short-name>
     <uri>/WEB-INF/scilla.tld</uri>
+    <display-name>Scilla</display-name>
+    <description>Scilla tag library</description>
 
     <tag>
 	<name>img</name>
 
-	<tagclass>test.ImageTag</tagclass>
-	<bodycontent>jsp</bodycontent>
+	<tag-class>test.ImageTag</tag-class>
+	<body-content>JSP</body-content>
+
+	<description>
+	    Render a HTML images for a given image with the given
+	    transformations.
+	</description>
 
 	<attribute>
 	    <name>src</name>
 	    <required>true</required>
 	    <rtexprvalue>true</rtexprvalue>
+	    <description>
+		Location of the image, relative to the current
+		location in the application.
+	    </description>
 	</attribute>
 	<attribute>
 	    <name>transform</name>
 	    <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
+	    <description>
+		Transformations, i.e. "scale(100x100);rotate(90)"
+	    </description>
 	</attribute>
 	<attribute>
 	    <name>outputtype</name>
 	    <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
+	    <description>
+		Output type, in the form of a file extension like
+		"jpg", to offer to browser.
+	    </description>
 	</attribute>
 
 	<!-- html img attributes -->
@@ -34,67 +52,109 @@
 	    <name>alt</name>
 	    <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
+	    <description>
+		Same as HTML attribute.
+	    </description>
 	</attribute>
 	<attribute>
 	    <name>border</name>
 	    <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
+	    <description>
+		Same as HTML attribute.
+	    </description>
 	</attribute>
 	<attribute>
 	    <name>style</name>
 	    <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
+	    <description>
+		Same as HTML attribute.
+	    </description>
 	</attribute>
 	<attribute>
 	    <name>styleclass</name>
 	    <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
+	    <description>
+		Same as HTML "class" attribute.
+	    </description>
 	</attribute>
     </tag>
 
     <tag>
 	<name>par</name>
 
-	<tagclass>test.ParameterTag</tagclass>
-	<bodycontent>empty</bodycontent>
+	<tag-class>test.ParameterTag</tag-class>
+	<body-content>empty</body-content>
+
+	<description>
+	    Transformation parameter.
+	</description>
 
 	<attribute>
 	    <name>key</name>
 	    <required>true</required>
 	    <rtexprvalue>true</rtexprvalue>
+	    <description>
+		I.e. "scale".
+	    </description>
 	</attribute>
 	<attribute>
 	    <name>value</name>
 	    <required>true</required>
 	    <rtexprvalue>true</rtexprvalue>
+	    <description>
+		I.e. "100x100".
+	    </description>
 	</attribute>
     </tag>
 
     <tag>
 	<name>playlist</name>
 
-	<tagclass>test.PlaylistTag</tagclass>
-	<bodycontent>empty</bodycontent>
+	<tag-class>test.PlaylistTag</tag-class>
+	<body-content>empty</body-content>
+
+	<description>
+	    Create an url to the playlist servlet given a
+	    directory or track bean.
+	</description>
 
 	<attribute>
 	    <name>id</name>
 	    <required>true</required>
 	    <rtexprvalue>false</rtexprvalue>
+	    <description>
+		Identifier of bean attribute.
+	    </description>
 	</attribute>
 	<attribute>
 	    <name>var</name>
 	    <required>true</required>
 	    <rtexprvalue>false</rtexprvalue>
+	    <description>
+		Attribute name to write url to.
+	    </description>
 	</attribute>
 	<attribute>
 	    <name>recursive</name>
 	    <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
+	    <description>
+		If "true", make an url to a playlist with all the
+		files in a directory and it's subdirectory (recursive).
+	    </description>
 	</attribute>
 	<attribute>
 	    <name>scope</name>
 	    <required>false</required>
 	    <rtexprvalue>false</rtexprvalue>
+	    <description>
+		JSP scope of the attribute to write; "page",
+		"request", "session" or "application".  Defaults
+		to "page".
+	    </description>
 	</attribute>
     </tag>
 </taglib>
