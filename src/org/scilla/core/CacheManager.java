@@ -19,14 +19,21 @@
  * MA 02111-1307, USA.
  */
 
-package org.scilla;
+package org.scilla.core;
 
 import java.io.File;
 import java.util.Iterator;
 import java.util.Hashtable;
 
-import org.scilla.core.*;
+import org.scilla.*;
 
+/**
+ * The CacheManager serves cached or fresh objects.  If the requested
+ * object is not available in cache, a new conversion will be started.
+ *
+ * @version $Id: CacheManager.java,v 1.1 2001/09/21 10:13:35 remco Exp $
+ * @author R.W. van 't Veer
+ */
 public class CacheManager
 {
     private static CacheManager _instance = null;
@@ -37,29 +44,58 @@ public class CacheManager
         // launch cleanup daemon
     }
 
+    /**
+     * @return CacheManager for this scilla instance
+     */
     public static synchronized CacheManager getInstance ()
     {
         if (_instance == null) _instance = new CacheManager();
         return _instance;
     }
 
-    public RunnerObject getRunner (String filename)
+    /**
+     * Query runner list.
+     * @param filename the name of the outputfile
+     * @return RunnerObject for this outputfile or null if no runner
+     * available.
+     * @see org.scilla.core.CachedObject
+     */
+    RunnerObject getRunner (String filename)
     {
 	return (RunnerObject) runners.get(filename);
     }
 
-    public void addRunner (String filename, RunnerObject obj)
+    /**
+     * Insert into runner list.
+     * @param filename the name of the outputfile
+     * @param obj the runner object
+     * @see org.scilla.core.CachingObject
+     */
+    void addRunner (String filename, RunnerObject obj)
     {
 	runners.put(filename, obj);
     }
 
-    public void removeRunner (String filename)
+    /**
+     * Delete from runner list.
+     * @param filename the name of the outputfile
+     * @see org.scilla.core.CachingObject
+     */
+    void removeRunner (String filename)
     {
 	runners.remove(filename);
     }
 
+    /**
+     * Get object from cache.  The CacheManager will lookup a
+     * equivalent object in cache.  When no cached object is available
+     * an new conversion will be started.
+     * @param req request info
+     * @return requested object
+     * @throws ScillaException when object creation failed
+     */
     public synchronized MediaObject get (Request req)
-    throws ScillaException
+    throws ScillaException 
     {
 	MediaObject obj;
 
