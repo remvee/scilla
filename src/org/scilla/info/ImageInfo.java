@@ -29,12 +29,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.scilla.info.exif.ExifReader;
 import org.scilla.util.MimeType;
 
 /**
  * Image info.
  *
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  * @author R.W. van 't Veer
  */
 public class ImageInfo extends Info {
@@ -427,7 +428,7 @@ public class ImageInfo extends Info {
 				byte[] e = new byte[d.length - 6];
 				System.arraycopy(d, 6, e, 0, e.length);
 				try {
-				    putAll(new Exif(e));
+				    ExifReader.readIntoMap(e, this);
 				} catch (TiffException ex) {
 				    // TODO log problem
 				}
