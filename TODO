@@ -5,10 +5,9 @@ For version 1.0:
       Maybe we want to define parameter sets as kind of interface?
 - JMFConverter
     - implement it!
-    - sync parameters with lame so they will be interchangable for mp3
-      conversions.  Interface?
 
 Future:
+- define uniq operations for all operations
 - pipes
 - netpbm converters (needs pipes)
 - sox converter (handy with lame and pipes)
