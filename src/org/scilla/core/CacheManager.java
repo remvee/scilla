@@ -33,7 +33,7 @@ import org.scilla.util.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  * @author R.W. van 't Veer
  */
 public class CacheManager implements RunnerChangeListener {
@@ -109,8 +109,8 @@ public class CacheManager implements RunnerChangeListener {
                 return obj;
             }
 
-            log.error("get: could get proper media object");
-            return null;
+	    // not a runner probably original
+            return obj;
         }
 
     public void runnerChange (RunnerObject ro, int code) {
