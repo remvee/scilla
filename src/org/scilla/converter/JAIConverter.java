@@ -41,7 +41,7 @@ import org.scilla.util.*;
  * parameter.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class JAIConverter implements Converter {
     static Log log = LogFactory.getLog(JAIConverter.class);
@@ -69,7 +69,7 @@ public class JAIConverter implements Converter {
     };
     static final String[] parameterList = new String[] {
 	THIS_CONVERTER_PARAMETER, Request.OUTPUT_TYPE_PARAMETER,
-	"scale", "crop"
+	"scale", "crop", "rotate"
     };
 
     public void convert () {
@@ -194,6 +194,8 @@ public class JAIConverter implements Converter {
             return scale(img, new GeometryParameter(rp.val));
         } else if (rp.key.equals("crop")) {
 	    return crop(img, new GeometryParameter(rp.val));
+        } else if (rp.key.equals("rotate")) {
+	    return rotate(img, rp.val);
 	}
 
         log.warn("handleConversion: param '"+rp.key+"' NOT YET IMPLEMENTED");
@@ -251,31 +253,66 @@ public class JAIConverter implements Converter {
     }
 
     /**
-     * Crop image complying.
+     * Crop image.
      * Format: <CODE>WxH[+-]X[+-]Y</CODE>
      * @param img source image
      * @param geom geometry conversion parameter
      * @return result image
      */
     PlanarImage crop (PlanarImage img, GeometryParameter geom) {
-        float x = geom.x;
-        float y = geom.y;
-        float w = geom.width;
-        float h = geom.height;
-
         ParameterBlock pars = new ParameterBlock();
         pars.addSource(img);
         pars.add((float)geom.x);
         pars.add((float)geom.y);
         pars.add((float)geom.width);
         pars.add((float)geom.height);
-
         return JAI.create("crop", pars);
+    }
+
+    /**
+     * Rotate image.
+     * @param img source image
+     * @param val rotation description; format: <tt>D+X+Y</tt>
+     * @return result image
+     */
+    PlanarImage rotate (PlanarImage img, String val) {
+	// determine degrees
+	double d = 0;
+	int p1 = val.indexOf('+');
+	if (p1 == -1) {
+	    d = Double.parseDouble(val);
+	} else {
+	    d = Double.parseDouble(val.substring(0, p1));
+	}
+	// determine rotation point
+	float x = 0;
+	float y = 0;
+	int p2 = val.indexOf('+', p1+1);
+	if (p1 == -1) {
+	    x = img.getWidth() / 2;
+	    y = img.getHeight() / 2;
+	} else if (p2 == -1) {
+	    x = Float.parseFloat(val.substring(p1+1));
+	    y = x;
+	} else {
+	    x = Float.parseFloat(val.substring(p1+1, p2));
+	    y = Float.parseFloat(val.substring(p2+1));
+	}
+	if (log.isDebugEnabled()) {
+	    log.debug("rotate "+d+"+"+x+"+"+y);
+	}
+
+        ParameterBlock pars = new ParameterBlock();
+        pars.addSource(img);
+        pars.add(x);
+        pars.add(y);
+        pars.add((float)Math.toRadians(d));
+        return JAI.create("rotate", pars);
     }
 }
 
 /**
- * Class for mapping ImageMagick scale format.
+ * Class for mapping ImageMagick geometry format.
  */
 class GeometryParameter {
     int width;
@@ -285,7 +322,7 @@ class GeometryParameter {
     String options;
 
     /**
-     * Parse ImageMagick like scale format.
+     * Parse ImageMagick like geometry format.
      */
     GeometryParameter (String in) {
         int i;
