@@ -37,7 +37,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * The scilla configuration implementation using property files.
  *
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  * @author R.W. van 't Veer
  */
 public class ConfigPropertiesImpl implements Config {
@@ -73,6 +73,9 @@ public class ConfigPropertiesImpl implements Config {
                 }
             }
         }
+
+	// some special defaults
+	setString(CACHE_DIR_KEY, System.getProperty("java.io.tmpdir"));
     }
 
     // cache for expensive operations

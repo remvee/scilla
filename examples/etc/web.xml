@@ -12,11 +12,6 @@
 	    <param-value>@source.dir@</param-value>
 	    <description>Location where media files reside</description>
 	</init-param>
-	<init-param>
-	    <param-name>cache.dir</param-name>
-	    <param-value>@cache.dir@</param-value>
-	    <description>Location where cache files reside</description>
-	</init-param>
 	<load-on-startup>1</load-on-startup>
     </servlet>
 

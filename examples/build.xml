@@ -17,7 +17,6 @@
     <!-- example compilation -->
     <property name="src.dir" value="src"/>
     <property name="lib.dir" value="lib"/>
-    <property name="cache.dir" value="/tmp"/>
 
     <!-- build class path -->
     <path id="build.classpath">
@@ -85,7 +84,6 @@
         <copy file="etc/web.xml" tofile="${webinf.dir}/web.xml"/>
 	<replace file="${webinf.dir}/web.xml" summary="yes">
 	    <replacefilter token="@source.dir@" value="${source.dir}"/>
-	    <replacefilter token="@cache.dir@" value="${cache.dir}"/>
 	</replace>
     </target>
 
