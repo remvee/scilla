@@ -1,5 +1,4 @@
 For version 1.0:
-- remove tomcat dependency, make work with orion
 - JAIConverter
     - sync parameters with imagick so they will be interchangable.
       Maybe we want to define parameter sets as kind of interface?
