@@ -32,7 +32,7 @@ import java.io.IOException;
 /**
  * The scilla configuration implementation using property files.
  *
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  * @author R.W. van 't Veer
  */
 public class ConfigPropertiesImpl implements Config
@@ -118,6 +118,8 @@ public class ConfigPropertiesImpl implements Config
 	}
 
 	String s = prop.getProperty(key);
+	if (s == null) return null;
+
 	StringTokenizer st = new StringTokenizer(s, delim);
 	Vector v = new Vector();
 	while (st.hasMoreTokens())
@@ -138,6 +140,8 @@ public class ConfigPropertiesImpl implements Config
 	}
 
 	String s = prop.getProperty(key);
+	if (s == null) return null;
+
 	StringTokenizer st = new StringTokenizer(s, ",:; \t\r\n");
 	Vector v = new Vector();
 	while (st.hasMoreTokens())
