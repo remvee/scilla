@@ -10,7 +10,35 @@ import org.scilla.util.mp3.ID3v1;
 
 public class M3UServlet extends HttpServlet
 {
-    Config scillaConfig = Config.getInstance();
+    final static Config scillaConfig = Config.getInstance();
+    final static String PROPERTY_FILE = "M3UServlet.properties";
+    static Properties config = null;
+
+    Properties getConfig ()
+    throws IOException
+    {
+	if (config == null)
+	{
+	    config = new Properties();
+	    InputStream in = null;
+	    try
+	    {
+		in = this.getClass().getClassLoader().getResourceAsStream(
+			PROPERTY_FILE);
+		if (in != null) config.load(in);
+	    }
+	    finally
+	    {
+		if (in != null)
+		{
+		    try { in.close(); }
+		    catch (IOException e) { e.printStackTrace(); }
+		}
+	    }
+	}
+
+	return config;
+    }
 
     public void doGet (HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException
@@ -18,7 +46,7 @@ public class M3UServlet extends HttpServlet
 	String path = "";
 	if (request.getParameter("d") != null) path = request.getParameter("d");
 
-	String preset = "isdn";
+	String preset = "stream";
 	if (request.getParameter("f") != null) preset = request.getParameter("f");
 
 	String urlPrefix = "";
@@ -72,11 +100,6 @@ public class M3UServlet extends HttpServlet
 	}
     }
 
-    final static String modemEncoding =
-	    "?outputtype=mp3&mode=m&resample=16&bitrate=24";
-    final static String isdnEncoding =
-	    "?outputtype=mp3&preset=voice";
-
     void println (PrintWriter out, String prefix, String path, String preset)
     throws IOException
     {
@@ -87,17 +110,8 @@ public class M3UServlet extends HttpServlet
 	else
 	{
 	    out.print(prefix + path.replace(' ', '+'));
-
-	    String encoding = "";
-	    if (preset.equals("modem"))
-	    {
-		encoding = modemEncoding;
-	    }
-	    else if (preset.equals("isdn"))
-	    {
-		encoding = isdnEncoding;
-	    }
-	    out.println(encoding);
+	    String encoding = getConfig().getProperty(preset+".encoding");
+	    if (encoding != null) out.println(encoding);
 	}
     }
 }

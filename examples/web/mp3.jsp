@@ -13,7 +13,7 @@ throws IOException
     }
     else
     {
-	out.println("<A href=\"servlet/playlist.m3u?f=modem&d="+pathEncoded+"\">Play</A>");
+	out.println("<A href=\"servlet/playlist.m3u?f=stream&d="+pathEncoded+"\">Play</A>");
     }
 }
 
