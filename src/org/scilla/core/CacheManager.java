@@ -33,7 +33,7 @@ import org.scilla.util.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  * @author R.W. van 't Veer
  */
 public class CacheManager implements RunnerChangeListener {
@@ -79,16 +79,13 @@ public class CacheManager implements RunnerChangeListener {
 	// conversion still running?
 	obj = (RunnerObject) runners.get(ofn);
 	if (obj != null) {
-	    log.debug("existing runner: "+obj);
-	    obj = new CachedObject(ofn, (RunnerObject) obj);
-	    log.debug("get="+obj);
-	    return obj;
+	    log.debug("get: catchup with runner");
+	    return new CachedObject(ofn, (RunnerObject) obj);
 	}
 	// output in cache and source not newer than cache
 	if (ofile.exists() && ifile.lastModified() < ofile.lastModified()) {
-	    obj = new CachedObject(ofn);
-	    log.debug("get="+obj);
-	    return obj;
+	    log.debug("get: cached data");
+	    return new CachedObject(ofn);
 	}
 	// create new MediaObject
 	obj = MediaFactory.createObject(req, ofn);
@@ -105,16 +102,19 @@ public class CacheManager implements RunnerChangeListener {
 	    // add runner to list and start converter
 	    ro.start();
 
-	    log.debug("get="+obj);
+	    log.debug("get: started runner");
 	    return obj;
 	}
 
 	// not a runner probably original
+	log.debug("get: passing object from media factory");
 	return obj;
     }
 
     public void runnerChange (RunnerObject ro, int code) {
-        log.debug("runnerChange: "+ro+", "+code);
+        if (log.isDebugEnabled()) {
+	    log.debug("runnerChange: "+ro+", "+code);
+	}
         if (code == RUNNER_FINISHED) {
             runners.remove(ro.getOutputFile());
         }

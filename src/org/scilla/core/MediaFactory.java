@@ -30,7 +30,7 @@ import org.scilla.converter.*;
 /**
  * The MediaFactory creates a runner or file object.
  *
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  * @author R.W. van 't Veer
  */
 public class MediaFactory {
@@ -56,6 +56,7 @@ public class MediaFactory {
 
         // its a conversionless hit
         if (! req.needConverter()) {
+	    log.debug("createObject: conversionless hit");
             return new FileObject(req.getInputFile());
         }
 
@@ -67,7 +68,7 @@ public class MediaFactory {
             try {
                 c = (Converter) convs[i].newInstance();
             } catch (Exception ex) {
-                log.warn("createObject: '"+convs[i]+"'", ex);
+                log.warn("createObject: unable to get instance for: "+convs[i], ex);
                 continue;
             }
 
@@ -86,7 +87,7 @@ public class MediaFactory {
 
         // log creation of converter
         if (log.isDebugEnabled()) {
-            log.debug("createObject: "+conv.getClass().getName());
+            log.debug("createObject: create runner with: "+conv.getClass().getName());
         }
 
         // create runner object
