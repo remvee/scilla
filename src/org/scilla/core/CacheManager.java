@@ -25,6 +25,8 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Hashtable;
 
+import org.apache.log4j.Category;
+
 import org.scilla.*;
 import org.scilla.util.*;
 
@@ -32,11 +34,13 @@ import org.scilla.util.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  * @author R.W. van 't Veer
  */
 public class CacheManager
 {
+    static Category log = Category.getInstance(CacheManager.class);
+
     private static CacheManager _instance = null;
     Hashtable runners = new Hashtable();
 
@@ -96,7 +100,7 @@ public class CacheManager
     public synchronized MediaObject get (Request req)
     throws ScillaException 
     {
-	MediaObject obj;
+	MediaObject obj = null;
 
 	String infilename = req.getInputFile();
 	String outfilename = getCacheFilename(req);
@@ -106,18 +110,24 @@ public class CacheManager
 	// don't cache this object
 	if (! req.allowCaching())
 	{
-	    return MediaFactory.createObject(req);
+	    obj = MediaFactory.createObject(req);
 	}
 	// already have runner
-	if (getRunner(outfilename) != null)
+	else if (getRunner(outfilename) != null)
 	{
-	    return new CachedObject(outfilename);
+	    obj = new CachedObject(outfilename);
 	}
 	// source exists, output in cache and source not newer than cache
-	if (infile.exists() && outfile.exists()
+	else if (infile.exists() && outfile.exists()
 		&& infile.lastModified() < outfile.lastModified())
 	{
-	    return new CachedObject(outfilename);
+	    obj = new CachedObject(outfilename);
+	}
+
+	if (obj != null)
+	{
+	    log.debug("get="+obj);
+	    return obj;
 	}
 
 	// create new MediaObject
@@ -135,6 +145,7 @@ public class CacheManager
 	    runner.start();
 	}
 
+	log.debug("get="+obj);
 	return obj;
     }
 

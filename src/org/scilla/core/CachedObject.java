@@ -27,6 +27,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 
+import org.apache.log4j.Category;
+
 import org.scilla.*;
 
 /**
@@ -34,10 +36,12 @@ import org.scilla.*;
  * finished or not.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class CachedObject implements MediaObject
 {
+    static Category log = Category.getInstance(CachedObject.class);
+
     final static int BUFFER_SIZE = 4096;
     final static int WAIT_FOR_FILE_TIMEOUT = 100;
     final static int WAIT_FOR_READ_TIMEOUT = 100;
@@ -64,6 +68,8 @@ public class CachedObject implements MediaObject
     throws ScillaException
     {
 	RunnerObject runner = cache.getRunner(filename);
+	log.debug("write: runner="+runner);
+
 	File f = new File(filename);
 
 	// see if simular request is in running list
@@ -159,6 +165,7 @@ public class CachedObject implements MediaObject
 	if (cache.getRunner(filename) != null) return -1;
 
 	File f = new File(filename);
+	if (log.isDebugEnabled()) log.debug("length="+f.length());
 	return f.length();
     }
 

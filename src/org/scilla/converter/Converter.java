@@ -25,6 +25,8 @@ import java.io.File;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import org.apache.log4j.Category;
+
 import org.scilla.*;
 import org.scilla.core.*;
 
@@ -32,10 +34,12 @@ import org.scilla.core.*;
  * Base for converter classes.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public abstract class Converter extends Thread
 {
+    static Category log = Category.getInstance(Converter.class);
+
     static final String TEMP_PREFIX = "scilla";
 
     /** list of allowed input types */
@@ -55,7 +59,7 @@ public abstract class Converter extends Thread
     static final int RUNNING_STATE = 1;
     static final int FINISHED_STATE = 2;
 
-    int state = CONFIGURED_STATE;
+    volatile int state = CONFIGURED_STATE;
 
     /**
      * Create a converter.

@@ -24,17 +24,21 @@ package org.scilla.core;
 import java.io.File;
 import java.util.Iterator;
 
+import org.apache.log4j.Category;
+
 import org.scilla.*;
 import org.scilla.converter.*;
 
 /**
  * The MediaFactory creates a runner or file object.
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @author R.W. van 't Veer
  */
 public class MediaFactory
 {
+    static Category log = Category.getInstance(MediaFactory.class);
+
     /**
      * Create a runner or file object for given request.
      * @param req media object request
@@ -51,7 +55,7 @@ public class MediaFactory
 	}
 
 	// its a conversionless hit 
-	if (file != null && ! req.needConverter())
+	if (! req.needConverter())
 	{
 	    return new FileObject(req.getInputFile());
 	}

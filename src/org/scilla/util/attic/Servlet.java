@@ -23,21 +23,34 @@ package org.scilla.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
+
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Category;
 
 import org.scilla.*;
 
 /**
  * This servlet handles media requests.
  *
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @author R.W. van 't Veer
  */
 public class Servlet extends HttpServlet
 {
+    static Category log = Category.getInstance(Servlet.class);
+
+    static { BasicConfigurator.configure(); }
+
+    public void addStreamHeaders (Request req, HttpServletResponse response)
+    {
+	/* dummy */
+    }
+
     /**
      * Handle media request via servlet interface.
      * @param request HTTP request
@@ -50,49 +63,64 @@ public class Servlet extends HttpServlet
 	try
 	{
 	    req = RequestFactory.createFromHttpServletRequest(request);
+	    log.info("doGet: request="+req);
 
 	    long len = req.getLength();
 	    if (len != -1) response.setContentLength((int) len);
 	    response.setContentType(req.getOutputType());
 
+	    if (req.getOutputType().equals("audio/mpeg")
+		    || req.getOutputType().equals("audio/mp3"))
+	    {
+		addStreamHeaders(req, response);
+	    }
+
 	    req.write(response.getOutputStream());
 	}
 	catch (ScillaNoOutputException ex)
 	{
+	    log.info("doGet! ", ex);
 	    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
 		    ex.getMessage());
 	}
 	catch (ScillaConversionFailedException ex)
 	{
+	    log.info("doGet! ", ex);
 	    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
 		    ex.getMessage());
 	}
 	catch (ScillaOutputIOException ex)
 	{
+	    log.debug("doGet! ", ex);
 	    /* probably and broken pipe */
 	}
 	catch (ScillaNoInputException ex)
 	{
+	    log.info("doGet! ", ex);
 	    response.sendError(HttpServletResponse.SC_NOT_FOUND,
 		    ex.getMessage());
 	}
 	catch (ScillaInputIOException ex)
 	{
+	    log.info("doGet! ", ex);
 	    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
 		    ex.getMessage());
 	}
 	catch (ScillaNoConverterException ex)
 	{
+	    log.info("doGet! ", ex);
 	    response.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED,
 		    ex.getMessage());
 	}
 	catch (ScillaIllegalRequestException ex)
 	{
+	    log.info("doGet! ", ex);
 	    response.sendError(HttpServletResponse.SC_FORBIDDEN,
 		    ex.getMessage());
 	}
 	catch (ScillaException ex)
 	{
+	    log.warn("doGet! ", ex);
 	    throw new ServletException("Scilla FAILED!", ex);
 	}
     }
@@ -108,6 +136,10 @@ public class Servlet extends HttpServlet
 	try
 	{
 	    req = RequestFactory.createFromHttpServletRequest(request);
+	    long t = req.lastModified();
+
+	    if (log.isDebugEnabled())
+		log.debug("getLastModified="+(new Date(t)));
 	    return req.lastModified();
 	}
 	catch (ScillaException ex)

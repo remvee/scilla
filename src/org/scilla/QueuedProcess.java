@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.util.Vector;
 import java.util.StringTokenizer;
 
+import org.apache.log4j.Category;
+
 /**
  * Execute a OS process.  A semaphore is used to allow only a defined
  * amount of processes to run concurrently.  This process maximum is
@@ -35,10 +37,12 @@ import java.util.StringTokenizer;
  *
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class QueuedProcess
 {
+    static Category log = Category.getInstance(QueuedProcess.class);
+
     public static final String MAX_RUNNERS_PROPERTY = "QueuedProcess.maxRunners";
     public static final String WRAPPER_PROPERTY = "QueuedProcess.wrapper";
 
@@ -99,7 +103,16 @@ public class QueuedProcess
     public QueuedProcess (String[] args)
     throws IOException
     {
-	String[] targs = args;
+	if (log.isInfoEnabled())
+	{
+	    StringBuffer sb = new StringBuffer();
+	    for (int i = 0; i < args.length; i++)
+	    {
+		sb.append(args[i]);
+		sb.append(' ');
+	    }
+	    log.info("process: "+sb);
+	}
 
 	// make sure a space exists
 	sem.decr();
@@ -108,7 +121,7 @@ public class QueuedProcess
 	if (wrapper != null)
 	{
 	    int i = 0;
-	    targs = new String[wrapper.size() + args.length];
+	    String[] targs = new String[wrapper.size() + args.length];
 
 	    for (int j = 0; j < wrapper.size(); j++, i++)
 	    {
@@ -119,12 +132,13 @@ public class QueuedProcess
 	    {
 		targs[i] = args[j];
 	    }
+	    args = targs;
 	}
 
 	// execute process
 	try
 	{
-	    proc = Runtime.getRuntime().exec(targs);
+	    proc = Runtime.getRuntime().exec(args);
 	}
 	catch (IOException e)
 	{

@@ -33,7 +33,7 @@ import org.scilla.util.*;
  * The Request class holds a scilla media object request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class Request
 {
@@ -192,13 +192,13 @@ public class Request
     public String toString ()
     {
 	StringBuffer b = new StringBuffer();
-	b.append("source=" + source + "\n");
+	b.append("source=" + source + ", ");
 	for (Iterator it = param.iterator(); it.hasNext(); )
 	{
 	    RequestParameter rp = (RequestParameter) it.next();
-	    b.append(rp.key + "=" + rp.val + "\n");
+	    b.append(rp.key + "=" + rp.val + ", ");
 	}
-	return b.toString();
+	return b.substring(0, b.length()-2);
     }
 
     /**

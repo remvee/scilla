@@ -27,6 +27,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 
+import org.apache.log4j.Category;
+
 import org.scilla.*;
 import org.scilla.converter.*;
 
@@ -34,10 +36,12 @@ import org.scilla.converter.*;
  * A runner object is a media object currently being converted.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class RunnerObject implements MediaObject
 {
+    static Category log = Category.getInstance(RunnerObject.class);
+
     final static int BUFFER_SIZE = 4096;
     final static int WAIT_FOR_FILE_TIMEOUT = 100;
     final static int WAIT_FOR_READ_TIMEOUT = 100;
