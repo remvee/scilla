@@ -27,7 +27,7 @@ import java.io.*;
  * Read-only access the Xing info tag in an MP3 file.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @see <CODE>xmms-1.2.4/Input/mpg123/dxhead.c</CODE>
  */
 public class XingInfo extends FrameHeader {
@@ -76,6 +76,7 @@ public class XingInfo extends FrameHeader {
         byte[] tag = new byte[4];
         mp3File.read(tag);
         if (! (new String(tag)).equals("Xing")) {
+	    super.close();
             throw new Mp3Exception("no tag present");
         }
 
@@ -179,4 +180,4 @@ public class XingInfo extends FrameHeader {
     }
 }
 
-/* end of $Id: XingInfo.java,v 1.5 2002/11/30 15:14:39 remco Exp $ */
+/* end of $Id: XingInfo.java,v 1.6 2003/04/14 07:18:53 remco Exp $ */

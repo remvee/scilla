@@ -30,7 +30,7 @@ import java.io.EOFException;
  * Read only access to MP3 frame header information.
  * @see <a href="http://www.mp3-tech.org/programmer/frame_header.html">MP3'Tech - Frame header</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class FrameHeader {
     public static final int MPEG_VERSION_2_5 = 0;
@@ -121,9 +121,17 @@ public class FrameHeader {
     public FrameHeader (File f)
     throws IOException, Mp3Exception {
         mp3File = new RandomAccessFile(f, "r");
-        fileLength = mp3File.length();
+	try {
+	    fileLength = mp3File.length();
 
-        next(false); // hit first frame
+	    next(false); // hit first frame
+	} catch (IOException ex) {
+	    close();
+	    throw ex;
+	} catch (Mp3Exception ex) {
+	    close();
+	    throw ex;
+	}
     }
 
     protected void finalize () throws Throwable {
@@ -573,4 +581,4 @@ public class FrameHeader {
 }
 
 
-/* end of $Id: FrameHeader.java,v 1.13 2003/03/19 16:50:13 remco Exp $ */
+/* end of $Id: FrameHeader.java,v 1.14 2003/04/14 07:18:53 remco Exp $ */
