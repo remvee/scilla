@@ -11,11 +11,7 @@
 	    by <xsl:value-of select="author"/>
 
 	    <P>
-		<EM>
-		    <xsl:for-each select="./msg">
-			<xsl:value-of select="."/>
-		    </xsl:for-each>
-		</EM>
+		<PRE><xsl:for-each select="./msg"><xsl:value-of select="."/></xsl:for-each></PRE>
 
 		<UL>
 		    <xsl:for-each select="./file/name">
