@@ -21,12 +21,13 @@
 
 package org.scilla.info;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
  * EXIF.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @author R.W. van 't Veer
  */
 public class Exif extends HashMap {
@@ -142,7 +143,8 @@ public class Exif extends HashMap {
 	labels.put(new Integer(0xffff), "EXIFUnknown");
     }
 
-    public Exif (byte[] in) {
+    public Exif (byte[] in)
+    throws IOException {
 	super();
 
 	int pos = 0;
@@ -159,13 +161,13 @@ public class Exif extends HashMap {
 	    } else if (c1 == 'M' && c2 == 'M') {
 		littleEndian = false;
 	    } else {
-		throw new RuntimeException("not a tiff; missing II or MM");
+		throw new IOException("not a tiff; missing II or MM");
 	    }
 	}
 
 	// verify endianess
 	if (read2ByteInt(data, pos) != 42) {
-	    throw new RuntimeException("not a tiff; byte order broken");
+	    throw new IOException("not a tiff; byte order broken");
 	}
 	pos += 2;
 
@@ -334,13 +336,13 @@ public class Exif extends HashMap {
 		    }
 		    break;
 		case 7: // UNDEF
-		    val = "UNDEF";
+		    val = null;
 		    break;
 		case 11: // FLOAT
-		    val = "FLOAT";
+		    val = "IMPLEMENT FLOAT!";
 		    break;
 		case 12: // DOUBLE
-		    val = "DOUBLE";
+		    val = "IMPLEMENT DOUBLE!";
 		    break;
 		default: // UNKNOWN
 		    val = "UNKNOWN";

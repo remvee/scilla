@@ -34,7 +34,7 @@ import org.scilla.util.MimeType;
 /**
  * Image info.
  *
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  * @author R.W. van 't Veer
  */
 public class ImageInfo extends Info {
@@ -428,7 +428,11 @@ public class ImageInfo extends Info {
 				    d[4] == 0 && d[5] == 0) {
 				byte[] e = new byte[d.length - 6];
 				System.arraycopy(d, 6, e, 0, e.length);
-				putAll(new Exif(e));
+				try {
+				    putAll(new Exif(e));
+				} catch (IOException ex) {
+				    // ignore
+				}
 			    }
 			}
 			break;
