@@ -50,6 +50,9 @@
 
   <target name="releases">
     <antcall target="build.release">
+      <param name="rel" value="0_9_1"/>
+    </antcall>
+    <antcall target="build.release">
       <param name="rel" value="0_9"/>
     </antcall>
   </target>
