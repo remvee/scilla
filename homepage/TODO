@@ -1,1 +1,6 @@
-- use Publish to generate a website
+- introduce html instead of para tags
+- in "Last 15 changelog messages" changelog show link to
+  changelog.html
+- stylesheets
+- XHTML-1.0
+- replace "$Date..$" by "generated at .."
