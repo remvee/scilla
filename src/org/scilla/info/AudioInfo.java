@@ -34,7 +34,7 @@ import org.scilla.util.vorbis.*;
 /**
  * Audio info.
  *
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  * @author R.W. van 't Veer
  */
 public class AudioInfo extends Info {
@@ -277,6 +277,24 @@ public class AudioInfo extends Info {
 	    }
 	} catch (Throwable ex) {
 	    // ignore
+	}
+
+	// fall back to track basename for title
+	if (getString(TITLE) == null) {
+	    int i;
+	    String title = fname;
+	    // strip directory name
+	    i = title.lastIndexOf('/');
+	    if (i != 0) {
+		title = title.substring(i+1);
+	    }
+	    // strip file extension
+	    i = title.lastIndexOf('.');
+	    if (i != 0) {
+		title = title.substring(0, i);
+	    }
+
+	    setString(TITLE, title);
 	}
     }
 
