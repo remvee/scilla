@@ -11,6 +11,7 @@ For version 1.0:
     - sync parameters with lame so they will be interchangable for mp3
       conversions.  Interface?
 - LameConverter
+    - ability to keep output when lame exit status != 0
     - enherit ID3v1 tag
 
 Future:
