@@ -9,7 +9,7 @@
 	<jsp:setProperty name="dir" property="path" value='<%= request.getParameter("d") %>'/>
     </c:when>
     <c:otherwise>
-	<jsp:setProperty name="dir" property="path" value="/media/audio"/>
+	<jsp:setProperty name="dir" property="path" value=""/>
     </c:otherwise>
 </c:choose>
 <html>
@@ -49,6 +49,12 @@
 		<c:if test="${dir.numOfAlbums == 1}">
 		    <div class="album"><c:out value="${dir.album}"/></div>
 		</c:if>
+		<scilla:playlist id="dir" var="playlist"/>
+		<a href='<c:out value="${playlist}"/>'>
+		    <scilla:img src="images/speaker.png" border="0" alt="Play">
+			<scilla:par key="scale" value="14x14"/>
+		    </scilla:img>
+		</a>
 		<table>
 		    <c:forEach var="track" items="${dir.tracks}" varStatus="stat">
 			<tr>
@@ -75,11 +81,12 @@
 				<c:out value="${track.time}"/>
 			    </td>
 			    <td>
-				<!-- scilla:playlist id="track" -->
+				<scilla:playlist id="track" var="playlist"/>
+				<a href='<c:out value="${playlist}"/>'>
 				    <scilla:img src="images/speaker.png" border="0" alt="Play">
 					<scilla:par key="scale" value="14x14"/>
 				    </scilla:img>
-				<!-- /scilla:playlist -->
+				</a>
 			    </td>
 			</tr>
 		    </c:forEach>
@@ -91,22 +98,28 @@
 			<td></td>
 			<td align="right"><c:out value="${dir.totalTime}"/></td>
 			<td>
-			    <!-- scilla:playlist id="dir" -->
+			    <scilla:playlist id="dir" var="playlist"/>
+			    <a href='<c:out value="${playlist}"/>'>
 				<scilla:img src="images/speaker.png" border="0" alt="Play">
 				    <scilla:par key="scale" value="14x14"/>
 				</scilla:img>
-			    <!-- /scilla:playlist -->
+			    </a>
 			</td>
 		    </tr>
 		</table>
 	    </div>
 	</c:if>
 
-	<c:if test="${dir.numOfImages > 0}">
+	<%-- c:if test="${dir.numOfImages > 0}">
 	    <div class="images">
 		<c:forEach var="image" items="${dir.images}">
+		    <a href='<c:out value="${playlist}"/>'>
+			<scilla:img id="image" alt='<c:out value="${image.title}"'>
+			    <scilla:par key="scale" value="50x50"/>
+			</scilla:img>
+		    </a>
 		</c:forEach>
 	    </div>
-	</c:if>
+	</c:if --%>
     </body>
 </html>

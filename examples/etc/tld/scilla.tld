@@ -13,7 +13,7 @@
 	<bodycontent>jsp</bodycontent>
 	<attribute>
 	    <name>src</name>
-	    <required>true</required>
+	    <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
@@ -63,6 +63,22 @@
 	    <name>value</name>
 	    <required>true</required>
 	    <rtexprvalue>true</rtexprvalue>
+	</attribute>
+    </tag>
+
+    <tag>
+	<name>playlist</name>
+	<tagclass>test.PlaylistTag</tagclass>
+	<bodycontent>empty</bodycontent>
+	<attribute>
+	    <name>id</name>
+	    <required>true</required>
+	    <rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+	    <name>var</name>
+	    <required>true</required>
+	    <rtexprvalue>false</rtexprvalue>
 	</attribute>
     </tag>
 </taglib>

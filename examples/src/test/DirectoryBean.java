@@ -2,7 +2,8 @@ package test;
 
 import java.io.*;
 import java.util.*;
-import org.scilla.info.*;
+
+import org.scilla.*;
 import org.scilla.util.*;
 
 public class DirectoryBean {
@@ -10,31 +11,33 @@ public class DirectoryBean {
     public void setPath (String path)
     throws Exception {
 	this.path = path;
+	String source = ConfigProvider.get().getString(Config.SOURCE_DIR_KEY);
 
-	String[] files = (new File(path)).list();
+	String[] files = (new File(source + File.separator + path)).list();
 	Arrays.sort(files);
 
 	for (int i = 0; i < files.length; i++) {
-	    String fn = path + File.separator + files[i];
+	    String fname = path + File.separator + files[i];
+	    File f = new File(source + File.separator + fname);
 
-	    if ((new File(fn)).isDirectory()) {
+	    if (f.isDirectory()) {
 		directories.add(files[i]);
 	    } else {
-		String type = MimeType.getTypeFromFilename(fn);
+		String type = MimeType.getTypeFromFilename(fname);
 		if (type != null && type.startsWith("audio/")) {
-		    AudioInfo info = (AudioInfo) InfoFactory.get(fn);
-		    tracks.add(info);
+		    TrackBean track = new TrackBean(fname);
+		    tracks.add(track);
 
-		    artists.add(info.getArtist());
-		    performers.add(info.getPerformer());
-		    albums.add(info.getAlbum());
+		    artists.add(track.getArtist());
+		    performers.add(track.getPerformer());
+		    albums.add(track.getAlbum());
 
-		    if (info.getLength() > 0) {
-			length += info.getLength();
+		    if (track.getLength() > 0) {
+			length += track.getLength();
 		    }
 		} else if (type != null && type.startsWith("image/")) {
-		    ImageInfo info = (ImageInfo) InfoFactory.get(fn);
-		    images.add(info);
+		    ImageBean image = new ImageBean(fname);
+		    images.add(image);
 		}
 	    }
 	}
