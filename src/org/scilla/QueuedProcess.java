@@ -38,7 +38,7 @@ import org.scilla.util.Semaphore;
  * taken from the scilla configuration.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 public class QueuedProcess {
     private static final Log log = LogFactory.getLog(QueuedProcess.class);
@@ -158,6 +158,7 @@ public class QueuedProcess {
 		}
 	    }
 	};
+	thrd.setDaemon(true);
 	thrd.start();
     }
 
@@ -198,6 +199,7 @@ class OutputLog extends Thread {
     String data;
 
     public OutputLog (InputStream in) {
+	super();
         this.in = in;
     }
 
