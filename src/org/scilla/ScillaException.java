@@ -25,12 +25,14 @@ package org.scilla;
  * Base exception for scilla.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ScillaException extends Exception
 {
     String msg;
     Throwable cause;
+
+    public ScillaException () { }
 
     public ScillaException (String msg)
     {
