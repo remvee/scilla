@@ -19,6 +19,7 @@ For version 1.0:
     - default to mp3 filename if no ID3v1 exists
 	- servlet icecast header
 	- jsp directory index
+    - error page
 
 Future:
 - database interface for source (blobs?)
