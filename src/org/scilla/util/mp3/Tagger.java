@@ -30,7 +30,7 @@ import org.scilla.util.mp3.id3v2.*;
  * MP3 tag commandline utillity.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class Tagger {
     static Map commandMap = new HashMap();
@@ -124,9 +124,13 @@ public class Tagger {
         }
 
         // write tags if modified
-        if (v1tagModified || v1tagModified) {
-            File oldf = new File(filename);
-            File newf = new File(filename+".new");
+        if (v1tagModified || v2tagModified) {
+            String oldfilename = filename + ".old";
+            File oldf = new File(oldfilename);
+            File newf = new File(filename);
+            if (!newf.renameTo(oldf)) {
+                throw new Exception("can't rename '" + filename + "' to '" + oldfilename);
+            }
 
             if (v2tagModified && v2tag.getFrames().size() > 0) {
                 InputStream in = new FileInputStream(oldf);
