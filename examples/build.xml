@@ -60,9 +60,6 @@
 
         <!-- create classes dir for helper classes -->
         <mkdir dir="${classes.dir}"/>
-
-        <!-- create installer build directory -->
-        <mkdir dir="${build.dir}"/>
     </target>
 
 
@@ -102,7 +99,6 @@
     <target name="clean"
 	    description="delete generated files">
         <delete dir="${deploy.dir}"/>
-        <delete dir="${build.dir}"/>
 	<delete file="${war.file}"/>
 	<delete file="${installer.jar}"/>
     </target>
