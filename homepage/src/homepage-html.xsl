@@ -27,7 +27,7 @@
 	    Last <xsl:value-of select="@max"/> changelog messages.
 	    <UL>
 		<xsl:for-each select="document($file)/changelog/entry">
-		    <xsl:if test="position() &lt;= $max">
+		    <xsl:if test="position() &lt; $max">
 			<xsl:apply-templates select="."/>
 		    </xsl:if>
 		</xsl:for-each>
@@ -91,7 +91,7 @@
 		<DIV align="right">
 		    Problems with this site?
 		    Email <A href="mailto:{$email}?subject={$location}">me</A>!
-		    <BR/>$Date: 2002/03/01 15:03:20 $
+		    <BR/>$Date: 2002/03/01 15:01:13 $
 		</DIV>
 	    </BODY>
 	</HTML>
