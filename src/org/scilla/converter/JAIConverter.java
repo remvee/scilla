@@ -41,7 +41,7 @@ import org.scilla.util.*;
  * parameter.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class JAIConverter implements Converter {
     static Log log = LogFactory.getLog(JAIConverter.class);
@@ -69,7 +69,7 @@ public class JAIConverter implements Converter {
     };
     static final String[] parameterList = new String[] {
 	THIS_CONVERTER_PARAMETER, Request.OUTPUT_TYPE_PARAMETER,
-	"scale"
+	"scale", "crop"
     };
 
     public void convert () {
@@ -82,22 +82,23 @@ public class JAIConverter implements Converter {
             for (Iterator it = request.getParameters().iterator(); it.hasNext(); ) {
                 RequestParameter rp = (RequestParameter) it.next();
 
-                if (rp.key.equals(Request.OUTPUT_TYPE_PARAMETER)) {
-                    // handled outside this loop
-                } else if (rp.key.equals(THIS_CONVERTER_PARAMETER)) {
-                    // force use of this converter; ignore
-                } else {
-                    img = handleConversion(img, rp);
+		// outputtype is handled outside this loop
+		// thisconverter is skipped
+                if (rp.key.equals(Request.OUTPUT_TYPE_PARAMETER)
+			|| rp.key.equals(THIS_CONVERTER_PARAMETER)) {
+                    continue;
                 }
+		img = handleConversion(img, rp);
             }
 
             // recode to output format
             String type = MimeType.getExtensionForType(request.getOutputType());
             FileOutputStream out = new FileOutputStream(outputFile);
             JAI.create("encode", img, out, type, null);
-        } catch (Exception e) {
+        } catch (Exception ex) {
+	    log.warn("JAI conversion failed", ex);
             exitValue = 1;
-            errorMessage = e.getMessage();
+            errorMessage = ex.getMessage();
         }
         finished = true;
     }
@@ -191,7 +192,9 @@ public class JAIConverter implements Converter {
     PlanarImage handleConversion (PlanarImage img, RequestParameter rp) {
         if (rp.key.equals("scale")) {
             return scale(img, new GeometryParameter(rp.val));
-        }
+        } else if (rp.key.equals("crop")) {
+	    return crop(img, new GeometryParameter(rp.val));
+	}
 
         log.warn("handleConversion: param '"+rp.key+"' NOT YET IMPLEMENTED");
         return null;
@@ -246,6 +249,29 @@ public class JAIConverter implements Converter {
 
         return JAI.create("scale", pars);
     }
+
+    /**
+     * Crop image complying.
+     * Format: <CODE>WxH[+-]X[+-]Y</CODE>
+     * @param img source image
+     * @param geom geometry conversion parameter
+     * @return result image
+     */
+    PlanarImage crop (PlanarImage img, GeometryParameter geom) {
+        float x = geom.x;
+        float y = geom.y;
+        float w = geom.width;
+        float h = geom.height;
+
+        ParameterBlock pars = new ParameterBlock();
+        pars.addSource(img);
+        pars.add((float)geom.x);
+        pars.add((float)geom.y);
+        pars.add((float)geom.width);
+        pars.add((float)geom.height);
+
+        return JAI.create("crop", pars);
+    }
 }
 
 /**
@@ -296,8 +322,11 @@ class GeometryParameter {
 	    }
             if (d[i] == '+' || d[i] == '-') {
                 b = new StringBuffer();
-                for (; i < d.length && Character.isDigit(d[i]); i++) {
-                    b.append(d[i]);
+		if (d[i] == '-') {
+		    b.append(d[i]);
+		}
+                for (i++; i < d.length && Character.isDigit(d[i]); i++) {
+		    b.append(d[i]);
                 }
                 if (b.length() > 0) {
                     x = Integer.parseInt(b.toString());
@@ -310,10 +339,13 @@ class GeometryParameter {
 	    }
             if (d[i] == '+' || d[i] == '-') {
                 b = new StringBuffer();
-                for (; i < d.length && Character.isDigit(d[i]); i++) {
+		if (d[i] == '-') {
+		    b.append(d[i]);
+		}
+                for (i++; i < d.length && Character.isDigit(d[i]); i++) {
                     b.append(d[i]);
                 }
-                x = Integer.parseInt(b.toString());
+                y = Integer.parseInt(b.toString());
             }
 
             // options
