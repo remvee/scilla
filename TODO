@@ -1,5 +1,4 @@
 For version 1.0:
-- include log4j jar 
 - make work with orion
 - review threading mess
 - JAIConverter
