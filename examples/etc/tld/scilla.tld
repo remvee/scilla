@@ -10,19 +10,19 @@
     <tag>
 	<name>img</name>
 	<tagclass>test.ImageTag</tagclass>
-	<bodycontent>empty</bodycontent>
+	<bodycontent>jsp</bodycontent>
 	<attribute>
 	    <name>src</name>
 	    <required>true</required>
 	    <rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
-	    <name>outputtype</name>
+	    <name>transform</name>
 	    <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
-	    <name>transform</name>
+	    <name>outputtype</name>
 	    <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
 	</attribute>
@@ -46,6 +46,22 @@
 	<attribute>
 	    <name>styleclass</name>
 	    <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>
+    </tag>
+
+    <tag>
+	<name>par</name>
+	<tagclass>test.ParameterTag</tagclass>
+	<bodycontent>empty</bodycontent>
+	<attribute>
+	    <name>key</name>
+	    <required>true</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+	    <name>value</name>
+	    <required>true</required>
 	    <rtexprvalue>true</rtexprvalue>
 	</attribute>
     </tag>

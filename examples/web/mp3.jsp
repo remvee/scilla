@@ -143,7 +143,7 @@
 				<A href="mp3.jsp?t=<%= enctype %>&p=<%= plstype %>&d=<%= sEnc %>"><%= s %></A>/&nbsp;
 			    </TD>
 			    <TD align="right">
-				<A href="<%= streamLink(request, path+"/"+p, true) %>"><scilla:img src="images/speaker.png" transform="scale(14x14)" border="0" alt="Play"/></A>
+				<A href="<%= streamLink(request, path+"/"+p, true) %>"><scilla:img src="images/speaker.png" border="0" alt="Play"><scilla:par key="scale" value="14x14"/></scilla:img></A>
 				&nbsp;&nbsp;&nbsp;
 			    </TD>
 <%
@@ -224,7 +224,7 @@
 		o = albumCount == 1 && ! album.equals(artist) ? album : "";
 %>
 					    <BIG><STRONG> <%= toHTML(o) %> </STRONG></BIG>
-					    <A href="<%= streamLink(request, path, false) %>"><scilla:img src="images/speaker.png" transform="scale(14x14)" border="0" alt="Play"/></A>
+					    <A href="<%= streamLink(request, path, false) %>"><scilla:img src="images/speaker.png" border="0" alt="Play"><scilla:par key="scale" value="14x14"/></scilla:img></A>
 					</TD>
 					<TD valign=top align=right>
 <%
@@ -311,7 +311,7 @@
 					</TD>
 					<TD valign="top">
 					    <FONT size=-2>
-					    <A href="<%= streamLink(request, filepath, false) %>"><scilla:img src="images/speaker.png" transform="scale(14x14)" border="0" alt="Play"/></A>
+					    <A href="<%= streamLink(request, filepath, false) %>"><scilla:img src="images/speaker.png" border="0" alt="Play"><scilla:par key="scale" value="14x14"/></scilla:img></A>
 					    </FONT>
 					</TD>
 				    </TR>
@@ -331,7 +331,7 @@
 					</TD>
 					<TD>
 					    <FONT size=-2>
-						<A href="<%= streamLink(request, path, false) %>"><scilla:img src="images/speaker.png" transform="scale(14x14)" border="0" alt="Play"/></A>
+						<A href="<%= streamLink(request, path, false) %>"><scilla:img src="images/speaker.png" border="0" alt="Play"><scilla:par key="scale" value="14x14"/></scilla:img></A>
 					    </FONT>
 					</TD>
 				    </TR>

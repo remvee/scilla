@@ -20,10 +20,10 @@ import org.scilla.info.*;
  * This image tag creates an <tt>img</tt> HTML tag to an
  * optionally transformed image with the proper <tt>width</tt>
  * and <tt>height</tt> attributes set.
- * @version $Id: ImageTag.java,v 1.10 2003/03/07 11:22:14 remco Exp $
+ * @version $Id: ImageTag.java,v 1.11 2003/03/09 12:15:45 remco Exp $
  * @author R.W. van 't Veer
  */
-public class ImageTag extends TagSupport {
+public class ImageTag extends BodyTagSupport {
     /** logger */
     private static final Log log = LogFactory.getLog(ImageTag.class);
 
@@ -35,6 +35,11 @@ public class ImageTag extends TagSupport {
     }
 
     public int doStartTag ()
+    throws JspException {
+	return EVAL_BODY_TAG;
+    }
+
+    public int doEndTag ()
     throws JspException {
 	HttpServletRequest pageRequest = (HttpServletRequest) pageContext.getRequest();
 
@@ -112,6 +117,12 @@ public class ImageTag extends TagSupport {
             throw new JspException("IO problems");
         }
 
+	return EVAL_PAGE;
+    }
+
+    public int doAfterBody ()
+    throws JspException {
+	bodyContent.clearBody();
         return SKIP_BODY;
     }
 
@@ -155,14 +166,6 @@ public class ImageTag extends TagSupport {
     private String src = null;
     private String absSrc = null;
 
-    public void setTransform (String v) {
-	transform = v;
-    }
-    public String getTransform () {
-	return transform;
-    }
-    private String transform = null;
-
     public void setOutputType (String v) {
 	outputType = v;
     }
@@ -171,6 +174,19 @@ public class ImageTag extends TagSupport {
     }
     private String outputType = null;
     private String preferredOutputType = null;
+
+    public void setTransform (String v) {
+       transform = v;
+    }
+    public String getTransform () {
+       return transform;
+    }
+    private String transform = null;
+
+    public void addParameter (RequestParameter rp) {
+	requestParameters.add(rp);
+    }
+    private List requestParameters = new ArrayList();
 
 // image attributes
     public void setAlt (String v) {
@@ -218,16 +234,8 @@ public class ImageTag extends TagSupport {
             throw new ScillaException("unknow input type");
         }
 
-        // conversion parameters from bean properties
-        List pars = new ArrayList();
-
-	if (transform != null) {
-	    // translate property to request parameters
-	    pars.addAll(getRequestParameters());
-	}
-
 	URL url = pageContext.getServletContext().getResource(getSrc());
-        return new Request(url, type, pars);
+        return new Request(url, type, getRequestParameters());
     }
 
     /**
@@ -242,17 +250,17 @@ public class ImageTag extends TagSupport {
 	out.append(pageRequest.getContextPath());
 	out.append(SERVLET_MAPPING);
 	out.append(getSrc());
-	if (transform != null) {
-	    // translate property to query string
-	    Iterator it = getRequestParameters().iterator();
-	    for (int i = 0; it.hasNext(); i++) {
-		RequestParameter rp = (RequestParameter) it.next();
-		out.append(i > 0 ? '&' : '?');
-		out.append(URLEncoder.encode(rp.key));
-		out.append('=');
-		out.append(URLEncoder.encode(rp.val));
-	    }
+
+	// translate property to query string
+	Iterator it = getRequestParameters().iterator();
+	for (int i = 0; it.hasNext(); i++) {
+	    RequestParameter rp = (RequestParameter) it.next();
+	    out.append(i > 0 ? '&' : '?');
+	    out.append(URLEncoder.encode(rp.key));
+	    out.append('=');
+	    out.append(URLEncoder.encode(rp.val));
 	}
+
 	return out.toString();
     }
 
@@ -260,7 +268,7 @@ public class ImageTag extends TagSupport {
      * Translate transform property to request parameters.
      */
     private List getRequestParameters () {
-	List result = new ArrayList();
+	List result = new ArrayList(requestParameters);
 
 	if (outputType != null) {
 	    result.add(new RequestParameter(Request.OUTPUT_TYPE_PARAMETER, outputType));
