@@ -112,7 +112,7 @@ import org.scilla.*;
  * </DL>
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class ExternalConverter implements Converter {
     private static final Log log = LogFactory.getLog(ExternalConverter.class);
@@ -468,7 +468,7 @@ public class ExternalConverter implements Converter {
      */
     private static boolean canExecute(String exec) {
         String osName = System.getProperty("os.name");
-        if (osName != null && osName.startsWith("Windows")) {
+        if (osName != null && !osName.startsWith("Windows")) {
             try {
                 // TODO this trick does not work on NT!
                 Runtime.getRuntime().exec(new String[] { exec}).waitFor();
