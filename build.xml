@@ -75,12 +75,12 @@
     </copy>
   </target>
 
-  <target name="compile.nojai" unless="jai.present">
-    <javac srcdir="${src.dir}" destdir="${build.dir}"
+  <target name="compile.nojai" unless="jai.available">
+    <javac verbose="true" srcdir="${src.dir}" destdir="${build.dir}"
 	classpathref="compile.classpath" excludes="**/JAI*"/>
   </target>
 
-  <target name="compile.all" if="jai.present">
+  <target name="compile.all" if="jai.available">
     <javac srcdir="${src.dir}" destdir="${build.dir}"
 	classpathref="compile.classpath"/>
   </target>

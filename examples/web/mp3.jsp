@@ -15,7 +15,7 @@ throws IOException
     String encoding = (request.getRemoteHost().equals("localhost")
 	    || request.getRemoteHost().equals("127.0.0.1"))
 	    ? "file" : "stream";
-    String imgSrc = "servlet/scilla/speaker.png?scale=14x14&outputtype=gif";
+    String imgSrc = "servlet/scilla/speaker.png?scale=14x14";
     out.println("<A href=\"servlet/playlist.m3u"+
 	    "?f="+encoding+
 	    "&d="+pathEncoded+
