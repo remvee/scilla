@@ -86,7 +86,6 @@
   <target name="clean">
     <delete quiet="true">
       <fileset dir="." includes="ChangeLog*"/>
-      <fileset dir="." includes="**/*.bak"/>
     </delete>
     <delete dir="${build.dir}"/>
     <delete dir="${apidoc.dir}"/>
