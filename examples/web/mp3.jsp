@@ -1,6 +1,15 @@
 <%@ page import="java.io.*,java.net.*,java.util.*,javax.servlet.*" %>
 <%@ page import="org.scilla.*,org.scilla.util.*,org.scilla.util.mp3.*" %>
 <%!
+private String formatTime (int length)
+{
+    int hours = length / 3600;
+    int minutes = (length / 60) % 60;
+    int seconds = length % 60;
+    return (hours > 0 ? hours + ":" : "")
+	    + (hours > 0 && minutes < 10 ? "0" : "") + minutes + ":"
+	    + (seconds > 9 ? "" : "0") + seconds;
+}
 
 void streamLinks (ServletRequest request, JspWriter out, String path)
 throws IOException
@@ -369,7 +378,7 @@ throws IOException
 %>
 					<TD align=right>
 					    <TT>
-						<%=length/60+":"+(length%60>9?"":"0")+length%60%>
+						<%= formatTime(length) %>
 					    </TT>
 					</TD>
 					<TD>
@@ -417,7 +426,7 @@ throws IOException
 %>
 					<TD align=right>
 					    <TT>
-						<%=tlength/60+":"+(tlength%60>9?"":"0")+tlength%60%>
+						<%= formatTime(tlength) %>
 					    </TT>
 					</TD>
 					<TD>
