@@ -34,7 +34,7 @@ import org.scilla.util.MimeType;
 /**
  * Image info.
  *
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  * @author R.W. van 't Veer
  */
 public class ImageInfo extends Info {
@@ -440,7 +440,8 @@ public class ImageInfo extends Info {
 		}
 	    }
 	} catch (Throwable ex) {
-	    // ignore
+	    // TODO: properly escalate problem
+            ex.printStackTrace();
 	} finally {
 	    if (in != null) {
 		try {
