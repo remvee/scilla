@@ -70,6 +70,7 @@ public class ImageTag extends TagSupport {
 
     public void setSrc (String src) {
 	this.src = src;
+	absSrc = null;
     }
     public String getSrc ()
     throws JspException {
