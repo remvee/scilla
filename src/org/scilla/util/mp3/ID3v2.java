@@ -34,7 +34,7 @@ import org.scilla.util.mp3.id3v2.*;
  *
  * @see <a href="http://www.id3.org/id3v2.3.0.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class ID3v2 {
     boolean tagAvailable = false;
@@ -59,8 +59,11 @@ public class ID3v2 {
     public ID3v2 (File f)
     throws Exception {
         InputStream in = new FileInputStream(f);
-        readTag(in);
-        in.close();
+	try {
+	    readTag(in);
+	} finally {
+	    in.close();
+	}
     }
 
     public void readTag (InputStream in)
