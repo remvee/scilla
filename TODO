@@ -10,9 +10,6 @@ For version 1.0:
 - examples:
     - mp3.jsp
 	- stream mono originals as mono stream
-- RequestFactory:
-    - command line
-    - xml for a ant task
 - JAIConverter
     - sync parameters with imagick so they will be interchangable.
       Maybe we want to define parameter sets as kind of interface?
@@ -39,6 +36,9 @@ Future:
 	<scilla:img src="spam.jpg" scale="100x100"/>
     yields:
 	<img src="servlet/img.jpg?1234567890" width="100" height="75" alt=""/>
+- RequestFactory:
+    - command line
+    - xml for a ant task
 - title streaming using icy-name and x-audiocast-name (need request
   info)
 - CacheManager
