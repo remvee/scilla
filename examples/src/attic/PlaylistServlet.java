@@ -46,13 +46,24 @@ public class PlaylistServlet extends HttpServlet
 	String type = request.getServletPath();
 	type = type.substring(type.lastIndexOf('.')+1);
 
-	// determine scilla url
-	String urlPrefix = "http://"
-		+request.getServerName()+":"+request.getServerPort()
-		+request.getContextPath()+request.getServletPath();
-	// strip this servlet name
-	urlPrefix = urlPrefix.substring(0, urlPrefix.lastIndexOf('/'));
-	urlPrefix += "/"+SCILLA_SERVLET+"/";
+	// request from localhost does need a stream or encoding
+	String urlPrefix = null;
+	if (request.getServerName().equals("127.0.0.1")
+		|| request.getServerName().equals("localhost"))
+	{
+	    urlPrefix = scillaConfig.getString(Config.SOURCE_DIR_KEY);
+	    encoding = "";
+	}
+	else
+	{
+	    // determine scilla url
+	    urlPrefix = "http://"
+		    +request.getServerName()+":"+request.getServerPort()
+		    +request.getContextPath()+request.getServletPath();
+	    // strip this servlet name
+	    urlPrefix = urlPrefix.substring(0, urlPrefix.lastIndexOf('/'));
+	    urlPrefix += "/"+SCILLA_SERVLET+"/";
+	}
 
 	// collect files to list
 	final String source = scillaConfig.getString(Config.SOURCE_DIR_KEY);
