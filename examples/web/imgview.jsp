@@ -1,3 +1,4 @@
+<%@ page import="java.io.File" %>
 <%@ page import="org.scilla.*,org.scilla.info.*" %>
 <%
     String file = "";
@@ -18,10 +19,11 @@
 <%
     if (! file.equals(""))
     {
-	Info info = InfoFactory.get(ConfigProvider.get().getString(Config.SOURCE_DIR_KEY)+'/'+file);
+	String fname = ConfigProvider.get().getString(Config.SOURCE_DIR_KEY)+File.separator+file;
+	ImageInfo info = (ImageInfo) InfoFactory.get(fname);
 	String spec = "";
 	if (info != null) {
-	    spec = " ("+info.getInt(ImageInfo.WIDTH)+"x"+info.getInt(ImageInfo.HEIGHT)
+	    spec = " ("+info.getWidth()+"x"+info.getHeight()
 		    +" "+info.getString(ImageInfo.CODEC)+")";
 	}
 

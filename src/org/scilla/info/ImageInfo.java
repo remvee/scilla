@@ -28,18 +28,32 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.scilla.util.MimeType;
 
 /**
  * Image info.
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @author R.W. van 't Veer
  */
 public class ImageInfo extends Info {
     public final static String WIDTH = "width";
     public final static String HEIGHT = "height";
+    public final static String CODEC_PNG = "PNG";
+    public final static String CODEC_GIF87A = "GIF version 87a";
+    public final static String CODEC_GIF89A = "GIF version 89a";
+    public final static String CODEC_BMP_OS2 = "BMP OS/2";
+    public final static String CODEC_BMP_WIN3x = "BMP Windows 3.x";
+    public final static String CODEC_JPEG = "JPEG";
+    public final static String COLORMODE = "colormode";
+    public final static String CM_GRAYSCALE = "cm_grayscale";
+    public final static String CM_RGB = "cm_rgb";
+    public final static String CM_INDEXED = "cm_indexed";
+    public final static String CM_UNKNOWN = "cm_unknown";
+    public final static String ALPHACHANNEL = "alphachannel";
+    public final static String BITS = "bits";
 
     public ImageInfo (String fname) {
 	String type = MimeType.getTypeFromFilename(fname);
@@ -53,6 +67,92 @@ public class ImageInfo extends Info {
 	} else {
 	    setupOther(fname);
 	}
+    }
+
+    /**
+     * @return <tt>true</tt> when image of Portable Network
+     * Graphics (PNG) format
+     */
+    public boolean isPNG () {
+	return CODEC_PNG.equals(getString(CODEC));
+    }
+
+    /**
+     * @return <tt>true</tt> when image of Graphics Interchange
+     * Format (GIF)
+     */
+    public boolean isGIF () {
+	return CODEC_GIF87A.equals(getString(CODEC))
+	    || CODEC_GIF89A.equals(getString(CODEC));
+    }
+
+    /**
+     * @return <tt>true</tt> when image of BMP format.
+     */
+    public boolean isBMP () {
+	return CODEC_BMP_OS2.equals(getString(CODEC))
+	    || CODEC_BMP_WIN3x.equals(getString(CODEC));
+    }
+
+    /**
+     * @return <tt>true</tt> when image of Joint Photographic
+     * Experts Group (JPEG) format.
+     */
+    public boolean isJPEG () {
+	return CODEC_JPEG.equals(getString(CODEC));
+    }
+
+    /**
+     * @return image width in pixels or <tt>-1</tt> when unknown
+     */
+    public int getWidth () {
+	return getInt(WIDTH);
+    }
+
+    /**
+     * @return image height pixels or <tt>-1</tt> when unknown
+     */
+    public int getHeight () {
+	return getInt(HEIGHT);
+    }
+
+    /**
+     * @return number of bits per pixel or <tt>-1</tt> when unknown
+     */
+    public int getBits () {
+	return getInt(BITS);
+    }
+
+    /**
+     * @return <tt>true</tt> when image has RGB color mode or
+     * <tt>false</tt> when other mode or mode unknown
+     */
+    public boolean isRGB () {
+	return CM_RGB.equals(getString(COLORMODE));
+    }
+
+    /**
+     * @return <tt>true</tt> when image has grayscale color mode or
+     * <tt>false</tt> when other mode or mode unknown
+     */
+    public boolean isGrayScale () {
+	return CM_GRAYSCALE.equals(getString(COLORMODE));
+    }
+
+    /**
+     * @return <tt>true</tt> when image has indexed color mode or
+     * <tt>false</tt> when other mode or mode unknown
+     */
+    public boolean isIndexed () {
+	return CM_INDEXED.equals(getString(COLORMODE));
+    }
+
+    /**
+     * @return <tt>true</tt> when image has alphachannel/
+     * transparency, <tt>false</tt> when no alpachannel or unknown
+     */
+    public boolean hasAlphaChannel () {
+	return getBoolean(ALPHACHANNEL);
     }
 
     /**
@@ -85,12 +185,13 @@ public class ImageInfo extends Info {
 	FileInputStream in = null;
 	try {
 	    in = new FileInputStream(fname);
-	    byte[] d = new byte[24];
-	    if (in.read(d) == 24
+	    byte[] d = new byte[28];
+	    if (in.read(d) == 28
 		    && d[0] == (byte) 0x89 && d[1] == (byte) 0x50
 		    && d[2] == (byte) 0x4e && d[3] == (byte) 0x47
 		    && d[4] == (byte) 0x0d && d[5] == (byte) 0x0a
 		    && d[6] == (byte) 0x1a && d[7] == (byte) 0x0a) {
+		setString(CODEC, CODEC_PNG);
 		setInt(WIDTH, ((d[16] & 0xff) << 24)
 			+ ((d[17] & 0xff) << 16)
 			+ ((d[18] & 0xff) << 8)
@@ -99,7 +200,31 @@ public class ImageInfo extends Info {
 			+ ((d[21] & 0xff) << 16)
 			+ ((d[22] & 0xff) << 8)
 			+ (d[23] & 0xff));
-		setString(CODEC, "PNG");  // TODO can do better!
+
+		// color mode
+		switch (d[25]) {
+		    case 0:
+			setString(COLORMODE, CM_GRAYSCALE);
+			break;
+		    case 2:
+			setString(COLORMODE, CM_RGB);
+			break;
+		    case 3:
+			setString(COLORMODE, CM_INDEXED);
+			break;
+		    case 4:
+			setString(COLORMODE, CM_GRAYSCALE);
+			setBoolean(ALPHACHANNEL, true);
+			break;
+		    case 6:
+			setString(COLORMODE, CM_RGB);
+			setBoolean(ALPHACHANNEL, true);
+			break;
+		    default:
+			setString(COLORMODE, CM_UNKNOWN);
+			break;
+		}
+		setInt(BITS, (d[24] & 0xff));
 	    } else {
 		setString(CODEC, "corrupted PNG file");
 	    }
@@ -148,7 +273,8 @@ public class ImageInfo extends Info {
 		    && d[5] == (byte) 'a') {
 		setInt(WIDTH, (d[6] & 0xff) + ((d[7] & 0xff) << 8));
 		setInt(HEIGHT, (d[8] & 0xff) + ((d[9] & 0xff) << 8));
-		setString(CODEC, "GIF version 8"+((char)d[4])+"a");
+		setString(CODEC, ((char)d[4]) == '7' ? CODEC_GIF87A : CODEC_GIF89A);
+		setString(COLORMODE, CM_INDEXED);
 	    } else {
 		setString(CODEC, "corrupted GIF file");
 	    }
@@ -190,12 +316,13 @@ public class ImageInfo extends Info {
 	FileInputStream in = null;
 	try {
 	    in = new FileInputStream(fname);
-	    byte[] d = new byte[28];
-	    if (in.read(d) == 28 && d[0] == (byte) 'B' && d[1] == (byte) 'M') {
+	    byte[] d = new byte[30];
+	    if (in.read(d) == 30 && d[0] == (byte) 'B' && d[1] == (byte) 'M') {
 		switch (d[14]) {
 		    case 12: case 64:
 			setInt(WIDTH, ((d[19] & 0xff) << 8) + (d[18] & 0xff));
 			setInt(HEIGHT, ((d[21] & 0xff) << 8) + (d[20] & 0xff));
+			setString(CODEC, CODEC_BMP_OS2);
 			break;
 		    case 40:
 			setInt(WIDTH, ((d[21] & 0xff) << 24)
@@ -206,6 +333,8 @@ public class ImageInfo extends Info {
 				+ ((d[24] & 0xff) << 16)
 				+ ((d[23] & 0xff) << 8)
 				+ (d[22] & 0xff));
+			setInt(BITS, ((d[29] & 0xff) << 8) + (d[28] & 0xff));
+			setString(CODEC, CODEC_BMP_WIN3x);
 			break;
 		    default:
 			setString(CODEC, "corrupted BMP file");
@@ -257,6 +386,11 @@ public class ImageInfo extends Info {
 
 	    setInt(WIDTH, img.getWidth(null));
 	    setInt(HEIGHT, img.getHeight(null));
+
+	    String type = MimeType.getTypeFromFilename(fname);
+	    if ("image/jpeg".equals(type)) {
+		setString(CODEC, CODEC_JPEG);
+	    }
 	} catch (Throwable ex) {
 	    // ignore
 	}

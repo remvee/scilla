@@ -62,16 +62,16 @@
 	    String fname = (String) it.next();
 
 	    // portret or landscape
-	    Info info = InfoFactory.get(getFileName(path, fname));
+	    ImageInfo info = (ImageInfo) InfoFactory.get(getFileName(path, fname));
 	    String trans = null;
 	    if (negative) {
 		trans = "scale=66x100!&negate=1";
-		if (info != null && info.getInt(ImageInfo.WIDTH) > info.getInt(ImageInfo.HEIGHT)) {
+		if (info != null && info.getWidth() > info.getHeight()) {
 		    trans = "rotate=270&" + trans;
 		}
 	    } else {
 		trans = "scale=83x54!";
-		if (info != null && info.getInt(ImageInfo.WIDTH) < info.getInt(ImageInfo.HEIGHT)) {
+		if (info != null && info.getWidth() < info.getHeight()) {
 		    trans = "rotate=270&" + trans;
 		}
 	    }

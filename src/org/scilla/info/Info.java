@@ -27,7 +27,7 @@ import java.util.HashMap;
 /**
  * The scilla media info base class.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @author R.W. van 't Veer
  */
 public class Info {
@@ -51,6 +51,13 @@ public class Info {
 	Integer i = (Integer) infoMap.get(key);
 	return i == null ? -1 : i.intValue();
     }
+    /**
+     * @return boolean info value or <tt>false</tt> when property not available
+     */
+    public boolean getBoolean (String key) {
+	Boolean b = (Boolean) infoMap.get(key);
+	return b == null ? false : b.booleanValue();
+    }
 
 // set methods for extending classes
     /**
@@ -68,6 +75,14 @@ public class Info {
      */
     protected void setInt (String key, int val) {
 	infoMap.put(key, new Integer(val));
+    }
+    /**
+     * Boolean setter method for extending classes.
+     * @param key property name
+     * @param val property value
+     */
+    protected void setBoolean (String key, boolean val) {
+	infoMap.put(key, new Boolean(val));
     }
 
 // other stuff

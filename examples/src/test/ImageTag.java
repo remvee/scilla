@@ -43,10 +43,10 @@ public class ImageTag extends TagSupport {
 
 	// try to get and pass height and width
 	try {
-	    Info info = InfoFactory.get(getRequest().getOutputFile());
+	    ImageInfo info = (ImageInfo) InfoFactory.get(getRequest().getOutputFile());
 	    if (info != null) {
-		int width = info.getInt(ImageInfo.WIDTH);
-		int height = info.getInt(ImageInfo.HEIGHT);
+		int width = info.getWidth();
+		int height = info.getHeight();
 		if (width != -1 && height != -1) {
 		    out.append(" width=\"");
 		    out.append(width+"");

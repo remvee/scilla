@@ -34,7 +34,7 @@ import org.scilla.util.MimeType;
 /**
  * The scilla media info factory.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @author R.W. van 't Veer
  */
 public class InfoFactory {
@@ -88,5 +88,14 @@ public class InfoFactory {
 	Info info = null;
 	/** file timestamp */
 	long timestamp = -1L;
+    }
+
+    /** debugging */
+    public static void main (String[] args)
+    throws Exception {
+	for (int i = 0; i < args.length; i++) {
+	    Info info = InfoFactory.get(args[i]);
+	    System.out.println(args[i]+": "+info);
+	}
     }
 }
