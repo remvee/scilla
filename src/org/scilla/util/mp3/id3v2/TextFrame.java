@@ -30,7 +30,7 @@ import java.util.*;
  * language and identifier like <TT>COMM</TT> and <TT>USLT</TT>.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class TextFrame extends Frame
 {
@@ -44,6 +44,8 @@ public class TextFrame extends Frame
     public final static int PLAIN = 0;
     /** type constant for <TT>COMM</TT> and others */
     public final static int LANGUAGE = 1;
+    /** type constant for <TT>TXXX</TT> and others */
+    public final static int TXXX = 2;
 
     /**
      * Constructor for reading a plain text frame.
@@ -72,11 +74,12 @@ public class TextFrame extends Frame
 
 	// determine encoding
 	int i = 0;
+	boolean isUnicode = false;
 	switch (frameData[i++])
 	{
 	    case 0: enc = "ISO-8859-1"; break;
 	    case 1:
-	    case 2: enc = "UTF-16"; break;
+	    case 2: enc = "UTF-16"; isUnicode = true; break;
 	    case 3: enc = "UTF-8"; break;
 	    default: throw new RuntimeException("text encoding not supported");
 	}
@@ -92,22 +95,37 @@ public class TextFrame extends Frame
 	    sb.append((char) frameData[i++]);
 	    lang = sb.toString();
 
-	    sb = new StringBuffer();
-	    while (frameData[i] != 0) sb.append((char) frameData[i++]);
-	    ident = sb.toString();
-
-	    // skip over zero
-	    i++;
+	    int j = nextStringTerminator(frameData, i, isUnicode);
+	    ident = new String(frameData, i, j - i, enc);
+	    i = j + (isUnicode ? 2 : 1);
+	}
+	else if (type == TXXX)
+	{
+	    int j = nextStringTerminator(frameData, i, isUnicode);
+	    ident = new String(frameData, i, j - i, enc);
+	    i = j + (isUnicode ? 2 : 1);
 	}
 
 	// get text value
-	ByteArrayOutputStream out = new ByteArrayOutputStream();
-	while (i < frameData.length && frameData[i] != 0) out.write(frameData[i++]);
-	text = out.toString(enc);
+	int j = nextStringTerminator(frameData, i, isUnicode);
+	text = new String(frameData, i, j - i, enc);
+    }
+
+    final static int nextStringTerminator(byte[] data, int i, boolean isUnicode)
+    {
+	int j = i;
+	for (; j < data.length; j++)
+	{
+	    if (data[j] != 0) continue;
+	    if (! isUnicode) break;
+	    if (j < data.length-1 && data[j+1] == 0) break;
+	}
+	if (j < data.length && isUnicode) j++;
+	return j;
     }
 
     /**
-     * Constructor for new a text frame.
+     * Constructor for new text frame.
      * @param id frame identifier
      * @param enc string encoding
      * @param text text for this frame
@@ -121,7 +139,23 @@ public class TextFrame extends Frame
     }
 
     /**
-     * Constructor for new a text frame.
+     * Constructor for new <TT>TXXX</TT> text frame.
+     * @param id typically set to <TT>TXXX</TT>
+     * @param enc string encoding
+     * @param ident text identifier
+     * @param text text for this frame
+     */
+    public TextFrame (String id, String enc, String ident, String text)
+    {
+	frameId = id;
+	type = TXXX;
+	this.ident = ident;
+	this.enc = enc != null ? enc : "ISO-8859-1";
+	this.text = text;
+    }
+
+    /**
+     * Constructor for new text frame.
      * @param id frame identifier
      * @param enc string encoding
      * @param lang language according to ISO-639-2
@@ -170,6 +204,15 @@ public class TextFrame extends Frame
 	    i += identData.length;
 	    result[i++] = 0;
 	}
+	else if (type == TXXX)
+	{
+	    byte[] identData = ident.getBytes();
+	    result = new byte[1+identData.length+1+textData.length];
+	    result[i++] = (byte) encId;
+	    System.arraycopy(identData, 0, result, i, identData.length);
+	    i += identData.length;
+	    result[i++] = 0;
+	}
 	else
 	{
 	    throw new RuntimeException("internal error: unknown type: "+type);
@@ -188,8 +231,12 @@ public class TextFrame extends Frame
 
     public String toString ()
     {
-	return type == LANGUAGE
-		?  super.toString() + ": \"" + ident + "\"("+ lang + ") \"" + text + "\""
-		: super.toString() + ": \"" + text + "\"";
+	switch (type)
+	{
+	    case PLAIN: return super.toString() + ":("+enc+") \"" + text + "\"";
+	    case LANGUAGE: return super.toString() + ":("+enc+") \"" + ident + "\"("+ lang + ") \"" + text + "\"";
+	    case TXXX: return  super.toString() + ":("+enc+") \"" + ident + "\" \"" + text + "\"";
+	}
+	return super.toString();
     }
 }

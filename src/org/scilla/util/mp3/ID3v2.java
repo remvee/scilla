@@ -34,7 +34,7 @@ import org.scilla.util.mp3.id3v2.*;
  *
  * @see <a href="http://www.id3.org/id3v2.3.0.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class ID3v2
 {
@@ -119,9 +119,10 @@ public class ID3v2
 
 	    // determine frame type
 	    Frame frame;
-	    if (! id.equals("TXXX") && id.startsWith("T"))
+	    if (id.startsWith("T"))
 	    {
-		frame = new TextFrame(tagData, bytesRead, minor);
+		int type = id.equals("TXXX") ? TextFrame.TXXX : TextFrame.PLAIN;
+		frame = new TextFrame(tagData, bytesRead, minor, type);
 	    }
 	    else if (id.equals("COMM") || id.equals("USLT"))
 	    {

@@ -28,7 +28,7 @@ import java.util.*;
  * Representation of picture frame (<TT>APIC</TT>).
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class PictureFrame extends Frame
 {
@@ -49,36 +49,31 @@ public class PictureFrame extends Frame
 	super(data, offset, minor);
 
 	// encoding for description
-	int i = 0;
+	int i = 0, j = 0;
 	ByteArrayOutputStream out;
-	String encoding;
+	String enc;
+	boolean isUnicode = false;
 	switch (frameData[i++])
 	{
-	    case 0: encoding = "ISO-8859-1"; break;
+	    case 0: enc = "ISO-8859-1"; break;
 	    case 1:
-	    case 2: encoding = "UTF-16"; break;
-	    case 3: encoding = "UTF-8"; break;
+	    case 2: enc = "UTF-16"; isUnicode = true; break;
+	    case 3: enc = "UTF-8"; break;
 	    default: throw new RuntimeException("text encoding not supported");
 	}
 
 	// get mime type
-	out = new ByteArrayOutputStream();
-	while (i < frameData.length && frameData[i] != 0) out.write(frameData[i++]);
-	mimeType = out.toString(encoding);
-
-	// skip over zero
-	i++;
+	j = TextFrame.nextStringTerminator(frameData, i, false);
+	mimeType = new String(frameData, i, j - i);
+	i = j + 1;
 
 	// picture type
 	picType = (int) frameData[i++] & 0xff;
 
 	// get description
-	out = new ByteArrayOutputStream();
-	while (i < frameData.length && frameData[i] != 0) out.write(frameData[i++]);
-	descr = out.toString(encoding);
-
-	// skip over zero
-	i++;
+	j = TextFrame.nextStringTerminator(frameData, i, isUnicode);
+	descr = new String(frameData, i, j - i, enc);
+	i = j + 1;
 
 	// copy picture data
 	int picSize = frameData.length - i;
