@@ -21,7 +21,7 @@ import org.scilla.info.*;
  * This image tag creates an <tt>img</tt> HTML tag to an
  * optionally transformed image with the proper <tt>width</tt>
  * and <tt>height</tt> attributes set.
- * @version $Id: ImageTag.java,v 1.17 2003/04/14 01:27:05 remco Exp $
+ * @version $Id: ImageTag.java,v 1.18 2003/04/21 12:47:08 remco Exp $
  * @author R.W. van 't Veer
  */
 public class ImageTag extends BodyTagSupport {
@@ -128,6 +128,7 @@ public class ImageTag extends BodyTagSupport {
 	    // write it!
 	    pageContext.getOut().print(out.toString());
 	} catch (Exception ex) {
+	    log.error("failed to build image tag", ex);
 	    throw new JspException("failed to build image tag", ex);
 	}
 
