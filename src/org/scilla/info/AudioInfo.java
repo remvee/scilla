@@ -34,7 +34,7 @@ import org.scilla.util.vorbis.*;
 /**
  * Audio info.
  *
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  * @author R.W. van 't Veer
  */
 public class AudioInfo extends Info {
@@ -67,6 +67,8 @@ public class AudioInfo extends Info {
     public final static String CODEC_WAV_UNKNOWN = "Wave Audio, Unknown";
 
     public AudioInfo (String fname) {
+	super(fname);
+
 	String type = MimeType.getTypeFromFilename(fname);
 	if (type.endsWith("/mpeg")) {
 	    setupMPEG(fname);

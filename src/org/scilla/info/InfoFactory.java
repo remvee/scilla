@@ -22,6 +22,7 @@
 package org.scilla.info;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,35 +35,42 @@ import org.scilla.util.MimeType;
 /**
  * The scilla media info factory.
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @author R.W. van 't Veer
  */
 public class InfoFactory {
     private final static Log log = LogFactory.getLog(InfoFactory.class);
 
-    public static Info get (String fname) {
-	CacheEntry ce = (CacheEntry) infoCache.get(fname);
-	long timestamp = (new File(fname)).lastModified();
+    public static Info get (String fname)
+    throws IOException {
+	File f = new File(fname);
+	String pname = f.getCanonicalPath();
+
+	CacheEntry ce = (CacheEntry) infoCache.get(pname);
+	long timestamp = f.lastModified();
 
 	// see if cache entry valid
 	if (ce != null && ce.timestamp == timestamp) {
 	    if (log.isDebugEnabled()) {
-		log.debug("pull info ("+ce.info+") from cache ("+ce+") for "+fname);
+		log.debug("pull info ("+ce.info+") from cache ("+ce+") for "+pname);
 	    }
 	    return ce.info;
 	}
 
 	// determine type of info
-	String type = MimeType.getTypeFromFilename(fname);
+	String type = MimeType.getTypeFromFilename(pname);
+	if (type == null) {
+	    return null;
+	}
 
 	// get info
 	Info info = null;
 	if (type.startsWith("audio/")) {
-	    info = new AudioInfo(fname);
+	    info = new AudioInfo(pname);
 	} else if (type.startsWith("image/")) {
-	    info = new ImageInfo(fname);
+	    info = new ImageInfo(pname);
 	} else if (type.startsWith("video/")) {
-	    // info = new VideoInfo(fname);
+	    // info = new VideoInfo(pname);
 	}
 
 	// cache it
@@ -70,10 +78,10 @@ public class InfoFactory {
 	    ce = new CacheEntry();
 	    ce.info = info;
 	    ce.timestamp = timestamp;
-	    infoCache.put(fname, ce);
+	    infoCache.put(pname, ce);
 
 	    if (log.isDebugEnabled()) {
-		log.debug("cached ("+ce+") info ("+info+") for "+fname);
+		log.debug("cached ("+ce+") info ("+info+") for "+pname);
 	    }
 	}
 

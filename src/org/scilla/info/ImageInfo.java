@@ -34,7 +34,7 @@ import org.scilla.util.MimeType;
 /**
  * Image info.
  *
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  * @author R.W. van 't Veer
  */
 public class ImageInfo extends Info {
@@ -57,6 +57,7 @@ public class ImageInfo extends Info {
     public final static String COMMENT = "comment";
 
     public ImageInfo (String fname) {
+	super(fname);
 	String type = MimeType.getTypeFromFilename(fname);
 
 	if (type.endsWith("/png")) {

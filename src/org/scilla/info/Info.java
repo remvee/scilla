@@ -21,21 +21,68 @@
 
 package org.scilla.info;
 
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * The scilla media info base class.
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @author R.W. van 't Veer
  */
-public class Info {
+public class Info implements Map {
     /** map to hold property values */
     private Map infoMap = new HashMap();
 
     /** general property to denote the media encoding specs */
     public final static String CODEC = "codec";
+
+    /** property containing canonical pathname of the source file */
+    protected String pathname = null;
+
+    /**
+     * @param v canonical pathname of the source file
+     */
+    protected Info (String v) {
+	pathname = v;
+    }
+
+// map methods
+    public void clear () {
+	throw new RuntimeException("not implemented");
+    }
+    public boolean containsKey (Object key) {
+	return infoMap.containsKey(key);
+    }
+    public boolean containsValue (Object value) {
+	return infoMap.containsValue(value);
+    }
+    public Set entrySet () {
+	return new HashSet(infoMap.entrySet());
+    }
+    public Object get (Object key) {
+	return infoMap.get(key);
+    }
+    public boolean isEmpty () {
+	return infoMap.isEmpty();
+    }
+    public Set keySet () {
+	return new HashSet(infoMap.keySet());
+    }
+    public Object put (Object key, Object val) {
+	throw new RuntimeException("not implemented");
+    }
+    public void putAll (Map t) {
+	throw new RuntimeException("not implemented");
+    }
+    public Object remove (Object key) {
+	throw new RuntimeException("not implemented");
+    }
+    public int size () {
+	return infoMap.size();
+    }
+    public Collection values () {
+	return new HashSet(infoMap.values());
+    }
 
 // read methods
     /**
@@ -86,6 +133,13 @@ public class Info {
     }
 
 // other stuff
+    /**
+     * @return canonical pathname of the source file
+     */
+    public String getPathName () {
+	return pathname;
+    }
+
     /**
      * Debugging..
      */
