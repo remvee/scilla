@@ -26,10 +26,14 @@ import java.io.IOException;
 import java.util.Properties;
 import java.lang.reflect.Method;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Document;
+
 /**
  * The scilla logger factory.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @author R.W. van 't Veer
  */
 public class LoggerFactory
@@ -40,6 +44,7 @@ public class LoggerFactory
     private static Method getInstanceMethod = null;
 
     public static final String LOG4J_PROPERTY_FILE = "org/scilla/log4j.properties";
+    public static final String LOG4J_XML_FILE      = "org/scilla/log4j.xml";
 
     /**
      * Need the classloader to pick up configuration files.
@@ -50,38 +55,72 @@ public class LoggerFactory
 	try
 	{
 	    loggerClass = this.getClass().forName("org.scilla.LoggerLog4jImpl");
-
-	    // configure log4j
 	    Logger virgin = (Logger) loggerClass.newInstance();
-	    InputStream in = null;
-	    try
+	    ClassLoader cl = this.getClass().getClassLoader();
+	    boolean configured = false;
+
+	    if (! configured) // configure log4j for xml file
 	    {
-		ClassLoader cl = this.getClass().getClassLoader();
-		in = cl.getResourceAsStream(LOG4J_PROPERTY_FILE);
-		if (in != null)
+		InputStream in = null;
+		try
 		{
-		    Properties prop = new Properties();
-		    prop.load(in);
-		    virgin.configure(prop);
+		    in = cl.getResourceAsStream(LOG4J_XML_FILE);
+		    if (in != null)
+		    {
+			DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			Document d = db.parse(in);
+			virgin.configure(d.getDocumentElement());
+			configured = true;
+		    }
 		}
-	    }
-	    catch (IOException e)
-	    {
-		e.printStackTrace();
-	    }
-	    finally
-	    {
-		if (in != null)
+		catch (Exception e)
 		{
-		    try { in.close(); }
-		    catch (IOException e) { e.printStackTrace(); }
+		    e.printStackTrace();
+		}
+		finally
+		{
+		    if (in != null)
+		    {
+			try { in.close(); }
+			catch (IOException e) { e.printStackTrace(); }
+		    }
 		}
 	    }
 
-	    // make logger president
-	    getInstanceMethod = loggerClass.getMethod("getInstance", new Class[] { Class.class });
+	    if (! configured) // configure log4j for properties file
+	    {
+		InputStream in = null;
+		try
+		{
+		    in = cl.getResourceAsStream(LOG4J_PROPERTY_FILE);
+		    if (in != null)
+		    {
+			Properties prop = new Properties();
+			prop.load(in);
+			virgin.configure(prop);
+			configured = true;
+		    }
+		}
+		catch (IOException e)
+		{
+		    e.printStackTrace();
+		}
+		finally
+		{
+		    if (in != null)
+		    {
+			try { in.close(); }
+			catch (IOException e) { e.printStackTrace(); }
+		    }
+		}
+	    }
+
+	    if (configured) // make logger president
+	    {
+		getInstanceMethod = loggerClass.getMethod("getInstance", new Class[] { Class.class });
+	    }
 	}
-	catch (Throwable t) { /* nop */ }
+	catch (Throwable t) { t.printStackTrace(); /* nop */ }
 
 	// fallback to simple logger
 	if (getInstanceMethod == null)

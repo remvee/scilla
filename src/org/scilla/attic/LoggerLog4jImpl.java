@@ -25,14 +25,17 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.w3c.dom.Element;
+
 import org.apache.log4j.Category;
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.xml.DOMConfigurator;
 
 /**
  * The scilla log4j logger implementation.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @author R.W. van 't Veer
  */
 public class LoggerLog4jImpl implements Logger
@@ -56,6 +59,10 @@ public class LoggerLog4jImpl implements Logger
 	if (obj instanceof Properties)
 	{
 	    PropertyConfigurator.configure((Properties) obj);
+	}
+	else if (obj instanceof Element)
+	{
+	    DOMConfigurator.configure((Element) obj);
 	}
 	else
 	{
