@@ -30,7 +30,7 @@ Future:
 	- has it's own jdbc-url to allow separate cache database
 	- use temp file before inserting in database to allow
 	  follow read
-    - cleanup deamon (requires cache to database)
+    - cleanup deamon (requires last access time record)
 	- max cache size, lowmark, himark
 	- per type configuration
 	- expire request parameter
