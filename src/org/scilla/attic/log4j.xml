@@ -4,11 +4,11 @@
        <priority value ="debug" />
        <appender-ref ref="STDOUT" />
     </root>
-    
+<!--
     <category name="org.scilla">
       <priority value="info" />
     </category>
-
+-->
     <appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
        <layout class="org.apache.log4j.PatternLayout">
 	 <param name="ConversionPattern" value="%d [%t] %p %c - %m%n"/>
