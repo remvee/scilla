@@ -38,9 +38,15 @@ encode_command () {
 	&& ENC_ARGS="$ENC_ARGS -a"
 	[ -n "$FREQ" ] \
 	&& ENC_ARGS="$ENC_ARGS --resample $FREQ"
+	[ -n "$ARTIST" ] \
+	&& ENC_ARGS="$ENC_ARGS --ta \"$ARTIST\""
+	[ -n "$ALBUM" ] \
+	&& ENC_ARGS="$ENC_ARGS --tl \"$ALBUM\""
+	[ -n "$TITLE" ] \
+	&& ENC_ARGS="$ENC_ARGS --tt \"$TITLE\""
 
 	echo lame $ENC_ARGS -S "$1" "$2" >&2
-	lame $ENC_ARGS -S "$1" "$2"
+	eval "lame $ENC_ARGS -S \"$1\" \"$2\""
     elif `echo "$2" | grep -q '.ogg$'`
     then
 	ENC_ARGS=""
@@ -67,14 +73,46 @@ encode_command () {
 	    esac
 	    ENC_ARGS="$ENC_ARGS --resample $FREQ"
 	fi
+	[ -n "$ARTIST" ] \
+	&& ENC_ARGS="$ENC_ARGS --artist \"$ARTIST\""
+	[ -n "$ALBUM" ] \
+	&& ENC_ARGS="$ENC_ARGS --album \"$ALBUM\""
+	[ -n "$TITLE" ] \
+	&& ENC_ARGS="$ENC_ARGS --title \"$TITLE\""
 
 	echo oggenc $ENC_ARGS -Q -o "$2" "$1" >&2
-	oggenc $ENC_ARGS -Q -o "$2" "$1"
+	eval "oggenc $ENC_ARGS -Q -o \"$2\" \"$1\""
     fi
 }
 
+get_artist () {
+    if `echo "$1" | grep -q '.mp3$'`
+    then
+	mp3info -p "%a\n" "$1"
+    else
+	vorbiscomment -l "$1" | sed -n s,^artist=,,p
+    fi
+}
 
-ARGS=`getopt b:B:c:q:f: $*`
+get_album () {
+    if `echo "$1" | grep -q '.mp3$'`
+    then
+	mp3info -p "%l\n" "$1"
+    else
+	vorbiscomment -l "$1" | sed -n s,^album=,,p
+    fi
+}
+
+get_title () {
+    if `echo "$1" | grep -q '.mp3$'`
+    then
+	mp3info -p "%t\n" "$1"
+    else
+	vorbiscomment -l "$1" | sed -n s,^title=,,p
+    fi
+}
+
+ARGS=`getopt b:B:c:q:f: "$@"`
 if [ $? != 0 ]
 then
     usage
@@ -118,6 +156,11 @@ if [ -z "$INPUT" -o -z "$OUTPUT" ]
 then
     usage
 fi
+
+# get artist, album, title info
+ARTIST=`get_artist "$INPUT"`
+ALBUM=`get_album "$INPUT"`
+TITLE=`get_title "$INPUT"`
 
 if `echo "$INPUT" | grep -q '.mp3$'` && `echo "$OUTPUT" | grep -q '.mp3$'`
 then
