@@ -4,12 +4,13 @@
 <%@ page import="org.scilla.info.*" %>
 <%
     String path = "";
-    if (request.getParameter("d") != null) path = request.getParameter("d");
+    if (request.getParameter("d") != null) {
+	path = request.getParameter("d");
+    }
     String pathEncoded = "d="+URLEncoder.encode(path);
 
     String imgScaleEncoded = "scale=66x100";
-    if (! request.getRemoteHost().equals("localhost"))
-    {
+    if (! request.getRemoteHost().equals("localhost")) {
 	imgScaleEncoded += "&negate=1";
     }
 %>
@@ -26,28 +27,29 @@
     org.scilla.Config scillaConfig = org.scilla.ConfigProvider.get();
     String sourceDir = scillaConfig.getString(org.scilla.Config.SOURCE_DIR_KEY);
     File dir = new File(sourceDir+"/"+path);
-    if (dir.isDirectory())
-    {
+    if (dir.isDirectory()) {
 	String[] files = dir.list();
 	Arrays.sort(files);
-	for (int i = 0; i < files.length; i++)
-	{
+	for (int i = 0; i < files.length; i++) {
 	    String s = files[i];
-	    if (s.startsWith(".")) continue;
 
-	    String type = org.scilla.util.MimeType.getTypeFromFilename(s);
-	    if (type != null && type.startsWith("image/"))
-	    {
-		vec.add(s);
+	    // hidden file?
+	    if (s.startsWith(".")) {
+		continue;
 	    }
-	    else
-	    {
-		String n = sourceDir+"/"+path+"/"+s;
-		File f = new File(n);
-		if (f.isDirectory())
-		{
-		    dirVec.add(s);
-		}
+
+	    // directory?
+	    File f = new File(sourceDir+"/"+path+"/"+s);
+	    if (f.isDirectory()) {
+		dirVec.add(s);
+		continue;
+	    }
+
+	    // image?
+	    String type = org.scilla.util.MimeType.getTypeFromFilename(s);
+	    if (type != null && type.startsWith("image/")) {
+		vec.add(s);
+		continue;
 	    }
 	}
 
@@ -60,8 +62,7 @@
 <%
 	}
 	Enumeration e = dirVec.elements();
-	while (e.hasMoreElements())
-	{
+	while (e.hasMoreElements()) {
 	    String s = (String) e.nextElement();
 	    String sEncoded = "d="+URLEncoder.encode(path+"/"+s);
 %>
@@ -69,15 +70,13 @@
 <%
 	}
 
-	if (vec.size() > 0)
-	{
+	if (vec.size() > 0) {
 %>
 	<HR>
 	<TABLE bgcolor=black cellspacing=0 cellpadding=0><%
 	    // loop the image list
 	    e = vec.elements();
-	    while (e.hasMoreElements())
-	    {
+	    while (e.hasMoreElements()) {
 		String fn = (String) e.nextElement();
 		String filepath = path+"/"+fn;
 		String fname = sourceDir+File.separator+path+File.separator+fn;
@@ -98,8 +97,7 @@
 <%
 	}
     }
-    else
-    {
+    else {
 %>
 	<BR><BIG><STRONG>Oeps: not a directory: <%=path%></STRONG></BIG>
 <%
