@@ -1,5 +1,4 @@
 For version 1.0:
-- rename MimeTypeFacory to MimeType
 - examples:
     - admin.jsp: all classes depending on Config should listen
       for changes

@@ -33,7 +33,7 @@ import org.scilla.util.*;
  * The Request class holds a scilla media object request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class Request
 {
@@ -141,7 +141,7 @@ public class Request
     {
 	String typeP = getParameter(OUTPUT_TYPE_PARAMETER);
 	return typeP != null
-		? MimeTypeFactory.getTypeFromFileExtension(typeP)
+		? MimeType.getTypeFromFileExtension(typeP)
 	    	: type;
     }
 

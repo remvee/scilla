@@ -54,7 +54,7 @@
 	    String s = files[i];
 	    if (s.startsWith(".")) continue;
 
-	    String type = org.scilla.util.MimeTypeFactory.getTypeFromFilename(s);
+	    String type = org.scilla.util.MimeType.getTypeFromFilename(s);
 	    if (type != null && type.startsWith("image/"))
 	    {
 		vec.add(s);

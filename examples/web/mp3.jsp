@@ -50,7 +50,7 @@ throws IOException
 	for (int i = 0; i < files.length; i++)
 	{
 	    String fname = files[i];
-	    String type = MimeTypeFactory.getTypeFromFilename(fname);
+	    String type = MimeType.getTypeFromFilename(fname);
 
 	    if (fname.startsWith(".") || fname.equals("CVS"))
 	    {

@@ -34,7 +34,7 @@ import org.scilla.util.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  * @author R.W. van 't Veer
  */
 public class CacheManager
@@ -218,7 +218,7 @@ public class CacheManager
 	// append suffix to fool simple OS converters
 	String str = result.toString();
 	String fn = str.substring(str.lastIndexOf(File.separator));
-	String suffix = MimeTypeFactory.getExtensionForType(req.getOutputType());
+	String suffix = MimeType.getExtensionForType(req.getOutputType());
 	if (fn.length() + suffix.length() + 1 > maxFilenameLen)
 	{
 	    // insert dummy data

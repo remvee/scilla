@@ -33,7 +33,7 @@ import org.scilla.util.*;
  * kind of request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class RequestFactory
 {
@@ -55,7 +55,7 @@ public class RequestFactory
 	}
 
         // source mime type
-        String type = MimeTypeFactory.getTypeFromFilename(source);
+        String type = MimeType.getTypeFromFilename(source);
 	if (type == null)
 	{
 	    throw new ScillaException("unknow input type");
@@ -95,7 +95,7 @@ public class RequestFactory
         String source = args[0];
 
         // mime type
-        String type = MimeTypeFactory.getTypeFromFilename(source);
+        String type = MimeType.getTypeFromFilename(source);
 
         // conversion parameters
         Vector pars = new Vector();

@@ -120,7 +120,7 @@ import org.scilla.util.*;
  * </DL>
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class ImageMagickConverter extends Converter
 {
@@ -324,7 +324,7 @@ public class ImageMagickConverter extends Converter
 	}
 	
 	// and the output file
-	v.add(MimeTypeFactory.getExtensionForType(getOutputType())
+	v.add(MimeType.getExtensionForType(getOutputType())
 		+":"+outputFile);
 
 	return (String[]) v.toArray(new String[0]);

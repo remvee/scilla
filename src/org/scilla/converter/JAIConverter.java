@@ -41,7 +41,7 @@ import org.scilla.util.*;
  * parameter.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class JAIConverter extends Converter
 {
@@ -106,7 +106,7 @@ public class JAIConverter extends Converter
 	    }
 
 	    // recode to output format
-	    String type = MimeTypeFactory.getExtensionForType(outputType);
+	    String type = MimeType.getExtensionForType(outputType);
 	    FileOutputStream out = new FileOutputStream(outputFile);
 	    JAI.create("encode", img, out, type, null);
 	}
