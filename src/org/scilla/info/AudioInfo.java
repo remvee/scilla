@@ -28,12 +28,13 @@ import java.io.InputStream;
 
 import org.scilla.util.MimeType;
 import org.scilla.util.mp3.*;
+import org.scilla.util.mp3.id3v2.*;
 import org.scilla.util.vorbis.*;
 
 /**
  * Audio info.
  *
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @author R.W. van 't Veer
  */
 public class AudioInfo extends Info {
@@ -44,13 +45,20 @@ public class AudioInfo extends Info {
 
     public final static String ALBUM = "album";
     public final static String ARTIST = "artist";
+    public final static String BAND = "band";
     public final static String COMMENT = "comment";
     public final static String COMPOSER = "composer";
     public final static String CONDUCTOR = "conductor";
     public final static String GENRE = "genre";
+    public final static String KEY = "key";
+    public final static String LANGUAGE = "language";
+    public final static String LYRICS = "lyrics";
     public final static String PERFORMER = "performer";
     public final static String RECORDING_DATE = "recdate";
     public final static String RECORDING_LOCATION = "reclocation";
+    public final static String REMIXER = "remixer";
+    public final static String SECTION = "section";
+    public final static String SUBTITLE = "subtitle";
     public final static String TITLE = "title";
     public final static String TRKNUM = "trknum";
 
@@ -65,18 +73,69 @@ public class AudioInfo extends Info {
 	}
     }
 
-    /**
-     * @return Kbits per second or <tt>-1</tt> when unknown.
-     */
+    /** @return Kbits per second or <tt>-1</tt> when unknown */
     public int getBitRate () {
 	return getInt(BITRATE);
     }
-
-    /**
-     * @return number of channels or <tt>-1</tt> when unknown.
-     */
+    /** @return number of channels or <tt>-1</tt> when unknown */
     public int getChannels () {
 	return getInt(CHANNELS);
+    }
+    /** @return number of second this track takes or <tt>-1</tt> when unknown */
+    public int getLength () {
+	return getInt(LENGTH);
+    }
+    /** @return album title or <tt>null</tt> when unkwown */
+    public String getAlbum () {
+	return getString(ALBUM);
+    }
+    /** @return lead performer name or <tt>null</tt> when unkwown */
+    public String getPerformer () {
+	return getString(PERFORMER);
+    }
+    /** @return band name or <tt>null</tt> when unkwown */
+    public String getBand () {
+	return getString(BAND);
+    }
+    /** @return general comment or <tt>null</tt> when unkwown */
+    public String getComment () {
+	return getString(COMMENT);
+    }
+    /** @return composer name or <tt>null</tt> when unkwown */
+    public String getComposer () {
+	return getString(COMPOSER);
+    }
+    /** @return conductor name or <tt>null</tt> when unkwown */
+    public String getConductor () {
+	return getString(CONDUCTOR);
+    }
+    /** @return genre or <tt>null</tt> when unkwown */
+    public String getGenre () {
+	return getString(GENRE);
+    }
+    /** @return lyrics writer name or <tt>null</tt> when unkwown */
+    public String getLyrics () {
+	return getString(LYRICS);
+    }
+    /** @return location of recording or <tt>null</tt> when unkwown */
+    public String getRecordingLocation () {
+	return getString(RECORDING_LOCATION);
+    }
+    /** @return remixer name or <tt>null</tt> when unkwown */
+    public String getRemixer () {
+	return getString(REMIXER);
+    }
+    /** @return section of piece or <tt>null</tt> when unkwown */
+    public String getSection () {
+	return getString(SECTION);
+    }
+    /** @return title of track or <tt>null</tt> when unkwown */
+    public String getTitle () {
+	return getString(TITLE);
+    }
+    /** @return subtitle of track or <tt>null</tt> when unkwown */
+    public String getSubtitle () {
+	return getString(SUBTITLE);
     }
 
     private void setupMPEG (String fname) {
@@ -126,7 +185,7 @@ public class AudioInfo extends Info {
 
 	    t = v1.getArtist();
 	    if (t != null && t.trim().length() != 0) {
-		setString(ARTIST, t);
+		setString(PERFORMER, t);
 	    }
 
 	    t = v1.getAlbum();
@@ -165,7 +224,52 @@ public class AudioInfo extends Info {
 	// read id3v2 tags
 	try {
 	    ID3v2 v2 = new ID3v2(f);
-	    // TODO
+
+	    String[][] keys = {
+		    { "TPE1", PERFORMER },
+		    { "TPE2", BAND },
+		    { "TPE3", CONDUCTOR },
+		    { "TPE4", REMIXER },
+		    { "TALB", ALBUM },
+		    { "TIT1", SECTION },
+		    { "TIT2", TITLE },
+		    { "TIT3", SUBTITLE },
+		    // TODO: possiblity to append frames into one field
+		    { "TIME", RECORDING_DATE },
+		    { "TDAT", RECORDING_DATE },
+		    { "TYER", RECORDING_DATE },
+		    { "TCOM", COMPOSER },
+		    { "TEXT", LYRICS },
+		    { "TCON", GENRE },
+		    { "TKEY", KEY },
+		    { "TLAN", LANGUAGE },
+	    };
+	    for (int i = 0; i < keys.length; i++) {
+		String frame = keys[i][0];
+		String key = keys[i][1];
+
+		try {
+		    TextFrame tf = (TextFrame) v2.getFrame(frame);
+		    if (tf != null) {
+			setString(key, tf.getText());
+		    }
+		} catch (Exception ex) {
+		    // ignore
+		}
+	    }
+
+	    try {
+		TextFrame tf = (TextFrame) v2.getFrame("TRCK");
+		if (tf != null) {
+		    String t = tf.getText();
+		    if (t.indexOf("/") != -1) {
+			t = t.substring(0, t.indexOf("/"));
+		    }
+		    setInt(TRKNUM, Integer.parseInt(t));
+		}
+	    } catch (Exception ex) {
+		// ignore
+	    }
 	} catch (Throwable ex) {
 	    // ignore
 	}
