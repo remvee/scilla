@@ -31,8 +31,7 @@ import org.scilla.core.*;
 /**
  * The Lame Converter.
  * <P>
- * This converter does not support other than MP3 input files.  This
- * implementation was made using LAME version 3.70 (www.sulaco.org/mp3) 
+ * This implementation was made using LAME version 3.70
  * <P>
  * Following are the supported options from the lame --help message:
  * <DL>
@@ -110,6 +109,10 @@ import org.scilla.core.*;
  * <BR>
  * <BR>MPEG2 samplerates(kHz): 16 22.05 24 
  * <BR>bitrates(kbs): 8 16 24 32 40 48 56 64 80 96 112 128 144 160 
+ *
+ * @version $Id: LameConverter.java,v 1.3 2001/09/21 10:13:08 remco Exp $
+ * @see <A href="http://www.sulaco.org/mp3/">The LAME Project</A>
+ * @author R.W. van 't Veer
  */
 
 public class LameConverter extends Converter
