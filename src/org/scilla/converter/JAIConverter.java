@@ -39,7 +39,7 @@ import org.scilla.util.*;
  * parameter.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class JAIConverter extends Converter
 {
@@ -64,7 +64,7 @@ public class JAIConverter extends Converter
 	};
 
 	parameterList = new String[] {
-		THIS_CONVERTER_PARAMETER, Request.OUTPUT_TYPE_PROPERTY,
+		THIS_CONVERTER_PARAMETER, Request.OUTPUT_TYPE_PARAMETER,
 		"scale"
 	};
     }
@@ -84,7 +84,7 @@ public class JAIConverter extends Converter
 	    {
 		RequestParameter rp = (RequestParameter) it.next();
 
-		if (rp.key.equals(Request.OUTPUT_TYPE_PROPERTY))
+		if (rp.key.equals(Request.OUTPUT_TYPE_PARAMETER))
 		{
 		    // handled outside this loop
 		}

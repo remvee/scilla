@@ -118,7 +118,7 @@ import org.scilla.util.*;
  * </DL>
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ImageMagickConverter extends Converter
 {
@@ -143,7 +143,7 @@ public class ImageMagickConverter extends Converter
 	outputTypeList = inputTypeList;
 
 	parameterList = new String[] {
-		THIS_CONVERTER_PARAMETER, Request.OUTPUT_TYPE_PROPERTY,
+		THIS_CONVERTER_PARAMETER, Request.OUTPUT_TYPE_PARAMETER,
 		"affine", "antialias", "blur", "border",
 		"bordercolor", "box", "channel", "charcoal",
 		"colorize", "colors", "colorspace", "comment",
@@ -274,7 +274,7 @@ public class ImageMagickConverter extends Converter
 		    v.add(c+"contrast");
 		}
 	    }
-	    else if (rp.key.equals(Request.OUTPUT_TYPE_PROPERTY))
+	    else if (rp.key.equals(Request.OUTPUT_TYPE_PARAMETER))
 	    {
 		// handled outside this loop
 	    }

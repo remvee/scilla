@@ -79,9 +79,8 @@
 
 
   <target name="scilla" depends="prepare">
-    <ant dir="${scilla.project}" target="jar">
-	<property name="jar.file" value="${lib.dir}/scilla.jar"/>
-
+    <ant dir="${scilla.project}" target="compile"/>
+    <ant dir="${scilla.project}" target="config">
 	<property name="source.dir" value="${source.dir}"/>
 	<property name="cache.dir" value="${cache.dir}"/>
 	<property name="imagick.exec" value="${imagick.exec}"/>

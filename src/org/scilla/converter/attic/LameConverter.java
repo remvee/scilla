@@ -110,7 +110,7 @@ import org.scilla.core.*;
  * <BR>MPEG2 samplerates(kHz): 16 22.05 24 
  * <BR>bitrates(kbs): 8 16 24 32 40 48 56 64 80 96 112 128 144 160 
  *
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @see <A href="http://www.sulaco.org/mp3/">The LAME Project</A>
  * @author R.W. van 't Veer
  */
@@ -131,7 +131,7 @@ public class LameConverter extends Converter
 		"audio/mp3", "audio/mpeg", "audio/wav", "audio/x-wav" };
 	outputTypeList = new String[] { "audio/mp3", "audio/mpeg" };
 	parameterList = new String[] {
-		THIS_CONVERTER_PARAMETER, Request.OUTPUT_TYPE_PROPERTY,
+		THIS_CONVERTER_PARAMETER, Request.OUTPUT_TYPE_PARAMETER,
 		"album", "artist", "bitrate", "checksum", "comment",
 		"copyright", "cwlimit", "genre", "highpass",
 		"highpasswidth", "lowpass", "lowpasswidth",
@@ -327,7 +327,7 @@ public class LameConverter extends Converter
 		v.add("--ty");
 		v.add(rp.val);
 	    }
-	    else if (rp.key.equals(Request.OUTPUT_TYPE_PROPERTY))
+	    else if (rp.key.equals(Request.OUTPUT_TYPE_PARAMETER))
 	    {
 		// handled outside this loop
 	    }
