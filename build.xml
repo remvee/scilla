@@ -21,7 +21,7 @@
   <property name="src.dir"      value="src"/>
   <property name="lib.dir"      value="lib"/>
   <property name="build.dir"    value="build"/>
-  <property name="download.dir" value="${build.dir}/download"/>
+  <property name="download.dir" value="download"/>
   <property name="expand.dir"   value="${download.dir}/expanded"/>
   <property name="jar.file"     value="scilla.jar"/>
 
@@ -41,9 +41,9 @@
     <mkdir dir="${build.dir}"/>
     <mkdir dir="${download.dir}"/>
     <mkdir dir="${expand.dir}"/>
-    <available property="jai.available" classname="javax.media.jai.JAI"/>
-    <available property="log4j.available" file="${lib.dir}/log4j.jar"/>
-    <available property="log4j.present" file="${expand.dir}/${log4j.jar}"/>
+    <available property="jai.inclasspath" classname="javax.media.jai.JAI"/>
+    <available property="log4j.havejar" file="${lib.dir}/log4j.jar"/>
+    <available property="log4j.downloaded" file="${expand.dir}/${log4j.jar}"/>
   </target>
 
   <target name="prepare.compile" depends="prepare,prepare.log4j">
@@ -56,11 +56,11 @@
     </available>
   </target>
 
-  <target name="prepare.log4j" unless="log4j.available" depends="download.log4j">
+  <target name="prepare.log4j" unless="log4j.havejar" depends="download.log4j">
     <copy file="${expand.dir}/${log4j.jar}" tofile="${lib.dir}/log4j.jar"/>
   </target>
 
-  <target name="download.log4j" unless="log4j.present">
+  <target name="download.log4j" unless="log4j.downloaded">
     <get src="${log4j.url}" dest="${download.dir}/${log4j.version}.tgz" verbose="on"/>
     <gunzip src="${download.dir}/${log4j.version}.tgz" dest="${expand.dir}/${log4j.version}.tar"/>
     <untar src="${expand.dir}/${log4j.version}.tar" dest="${expand.dir}"/>
@@ -75,12 +75,12 @@
     </copy>
   </target>
 
-  <target name="compile.nojai" unless="jai.available">
-    <javac verbose="true" srcdir="${src.dir}" destdir="${build.dir}"
+  <target name="compile.nojai" unless="jai.inclasspath">
+    <javac srcdir="${src.dir}" destdir="${build.dir}"
 	classpathref="compile.classpath" excludes="**/JAI*"/>
   </target>
 
-  <target name="compile.all" if="jai.available">
+  <target name="compile.all" if="jai.inclasspath">
     <javac srcdir="${src.dir}" destdir="${build.dir}"
 	classpathref="compile.classpath"/>
   </target>
