@@ -8,6 +8,8 @@ For version 1.0:
     - implement it!
     - sync parameters with lame so they will be interchangable for mp3
       conversions.  Interface?
+- LameConverter
+    - workaround 300 byte max output filename length
 - log4j
 - junit
 - examples:
