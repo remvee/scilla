@@ -25,6 +25,7 @@ import java.util.Vector;
 import java.util.Iterator;
 import java.io.InputStream;
 import java.io.File;
+import java.net.URL;
 
 import org.scilla.core.*;
 import org.scilla.util.*;
@@ -33,7 +34,7 @@ import org.scilla.util.*;
  * The Request class holds a scilla media object request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class Request {
     private final static Logger log = LoggerFactory.get(Request.class);
@@ -43,6 +44,7 @@ public class Request {
     public final static String OUTPUT_TYPE_PARAMETER = "outputtype";
 
     private String source = null;
+    private URL url = null;
     private String type = null;
     private Vector param = null;
 
@@ -63,12 +65,29 @@ public class Request {
     }
 
     /**
+     * Construct a new request object for a remote object.
+     * @param url	location of media source
+     * @param type	source mime-type
+     * @param param	conversion parameters
+     * @throws ScillaException when object not retrievable
+     */
+    public Request (URL url, String type, Vector param)
+    throws ScillaException {
+        this.url = url;
+        this.type = type;
+        this.param = param;
+
+	// fetch remote object
+	source = cache.getRemoteObjectFile(url);
+    }
+
+    /**
      * Wrapper around obj member.
      */
     private synchronized MediaObject getObject ()
     throws ScillaException {
         if (obj == null) {
-            obj = cache.get(this);
+            obj = cache.getMediaObject(this);
         }
         return obj;
     }
@@ -103,7 +122,10 @@ public class Request {
      * @see org.scilla.Config#SOURCE_DIR_KEY
      */
     public String getInputFile () {
-        return config.getString(Config.SOURCE_DIR_KEY) + File.separator + source;
+	if (url == null) {
+	    return config.getString(Config.SOURCE_DIR_KEY) + File.separator + source;
+	}
+	return source;
     }
 
     /**

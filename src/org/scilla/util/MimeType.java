@@ -33,7 +33,7 @@ import org.scilla.LoggerFactory;
 /**
  * Class for mapping filenames to mime types and visa versa.
  * TODO ugly handling of <tt>param</tt> element..
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @author R.W. van 't Veer
  */
 public class MimeType {
@@ -122,7 +122,7 @@ public class MimeType {
      * @param fname filename
      * @return filename extension
      */
-    private static String getExtensionFromFilename (String fname) {
+    public static String getExtensionFromFilename (String fname) {
         int i = fname.lastIndexOf('.');
         if (i != -1) {
             return fname.substring(i+1);

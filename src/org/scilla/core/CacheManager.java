@@ -21,7 +21,9 @@
 
 package org.scilla.core;
 
-import java.io.File;
+import java.io.*;
+import java.net.URL;
+
 import java.util.Iterator;
 import java.util.Hashtable;
 import java.util.Map;
@@ -33,7 +35,7 @@ import org.scilla.util.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  * @author R.W. van 't Veer
  */
 public class CacheManager implements RunnerChangeListener {
@@ -69,7 +71,7 @@ public class CacheManager implements RunnerChangeListener {
      * @return requested object
      * @throws ScillaException when object creation failed
      */
-    public MediaObject get (Request req)
+    public MediaObject getMediaObject (Request req)
     throws ScillaException {
 	File ifile = new File(req.getInputFile());
 
@@ -84,7 +86,7 @@ public class CacheManager implements RunnerChangeListener {
 	}
 
 	MediaObject obj = null;
-	String ofn = getCacheFilename(req);
+	String ofn = getCachedObjectFilename(req);
 	File ofile = new File(ofn);
 
 	// conversion still running?
@@ -124,6 +126,49 @@ public class CacheManager implements RunnerChangeListener {
 	return obj;
     }
 
+    public String getRemoteObjectFile (URL url)
+    throws ScillaException {
+	String suffix = MimeType.getExtensionFromFilename(url.toString());
+	String fn = getCachedRemoteObjectFilename(url, suffix);
+	ensureCacheDirectoryFor(fn);
+
+	// download object if not availble in cache
+	if (! (new File(fn)).exists()) {
+	    log.debug("fetching: "+url);
+
+	    InputStream in = null;
+	    OutputStream out = null;
+	    try {
+		out = new FileOutputStream(fn);
+		in = url.openStream();
+		byte[] b = new byte[BUFFER_SIZE];
+		int n = 0;
+		while ((n = in.read(b)) != -1) {
+		    out.write(b, 0, n);
+		}
+	    } catch (Throwable ex) {
+		log.warn("unable to fetch remote object", ex);
+		throw new ScillaException("unable to fetch remote object", ex);
+	    } finally {
+		if (in != null) {
+		    try {
+			in.close();
+		    } catch (IOException ex) {
+			// ignore
+		    }
+		}
+		if (out != null) {
+		    try {
+			out.close();
+		    } catch (IOException ex) {
+			// ignore
+		    }
+		}
+	    }
+	}
+	return fn;
+    }
+
     /**
      * Eventhandler for runner change events.
      * @param ro runner object where event came from
@@ -161,12 +206,20 @@ public class CacheManager implements RunnerChangeListener {
         }
     }
 
+    /** name of directory (in cache directory) to contain cached media objects */
+    public final static String CACHE_DIRNAME = "cache";
+    /** name of directory (in cache directory) to contain cached remote objects */
+    public final static String REMOTE_DIRNAME = "remote";
+
+    /** buffer size when fetching remote objects */
+    private static final int BUFFER_SIZE = 4096;
+
     /**
      * Create a uniq cache filename for given request.
      * @param req request to make filename for
      * @return absolute filename for object
      */
-    private String getCacheFilename (Request req) {
+    private String getCachedObjectFilename (Request req) {
         StringBuffer result = new StringBuffer(req.getSource());
         result.append("?");
 
@@ -180,65 +233,109 @@ public class CacheManager implements RunnerChangeListener {
                 result.append("&");
 	    }
         }
+	String fn = result.toString();
 
-        // encode this to a legal filename
-        StringBuffer encoded = new StringBuffer();
-        char[] data = result.toString().toCharArray();
-        for (int i = 0; i < data.length; i++) {
-            if (Character.isLetterOrDigit(data[i])) {
-                encoded.append(data[i]);
-            } else {
-                encoded.append("_"+(int)data[i]);
-            }
-        }
-        result = encoded;
-
-        // avoid filename/ directory clash
-        if (result.length() % (maxFilenameLen) == 0) {
-            result.append('x');
-	}
-
-        // chopup, making directories using maxFilenameLen
-        data = result.toString().toCharArray();
-        encoded = new StringBuffer();
-        for (int i = 0; i < data.length; i++) {
-            if (i % (maxFilenameLen) == 0) {
-                encoded.append(File.separator);
-	    }
-            encoded.append(data[i]);
-        }
-        result = encoded;
+	// make sure it's a legal filename
+	fn = fnEncodeCharacters(fn);
 
         // append suffix to fool simple OS converters
-        String str = result.toString();
-        String fn = str.substring(str.lastIndexOf(File.separator));
-        String suffix = MimeType.getExtensionForType(req.getOutputType());
-        if (fn.length() + suffix.length() + 1 > maxFilenameLen) {
-            // insert dummy data
-            for (int i = fn.length(); i < maxFilenameLen; i++) {
-                result.append('x');
-            }
-            result.append(File.separator);
-            result.append('x');
-        }
-        result.append('.');
-        result.append(suffix);
+	fn += "." + MimeType.getExtensionForType(req.getOutputType());
+
+	// make sure max filename length is not violated
+	fn = fnChopIntoDirectories(fn);
 
         // prepend cache path
-        fn = config.getString(Config.CACHE_DIR_KEY) + File.separator + result;
+        fn = config.getString(Config.CACHE_DIR_KEY)
+		+ File.separator + CACHE_DIRNAME + File.separator + fn;
 
         if (log.isDebugEnabled()) {
-            log.debug("getCacheFilename="+fn);
+            log.debug("getCachedObjectFilename="+fn);
 	}
         return fn;
+    }
+
+    /**
+     * Create a uniq cache filename for given remote object.
+     * @param url location of object
+     * @return absolute filename for object
+     */
+    private String getCachedRemoteObjectFilename (URL url, String suffix) {
+	// make legal filename from url and suffix
+	String fn = fnChopIntoDirectories(fnEncodeCharacters(url.toString()) + "." + suffix);
+
+        // prepend cache path
+        fn = config.getString(Config.CACHE_DIR_KEY)
+		+ File.separator + REMOTE_DIRNAME + File.separator + fn;
+
+        if (log.isDebugEnabled()) {
+            log.debug("getCachedRemoteObjectFilename="+fn);
+	}
+        return fn;
+    }
+
+    private static String fnEncodeCharacters (String in) {
+        // encode this to a legal filename
+        StringBuffer out = new StringBuffer();
+        char[] data = in.toCharArray();
+        for (int i = 0; i < data.length; i++) {
+            if (Character.isLetterOrDigit(data[i])) {
+                out.append(data[i]);
+            } else {
+                out.append("_" + (int) data[i]);
+            }
+        }
+	return out.toString();
+    }
+
+    private static String fnChopIntoDirectories (String in) {
+	// hold suffix
+	int suffixIdx = in.lastIndexOf('.');
+	String suffix = in.substring(suffixIdx);
+	int suffixLen = suffix.length();
+	in = in.substring(0, suffixIdx);
+
+        // chopup, making directories using maxFilenameLen
+	StringBuffer out = new StringBuffer();
+        char[] data = in.toCharArray();
+	int i = 0;
+        for (; i < data.length; i++) {
+            if (i % maxFilenameLen == 0) {
+                out.append(File.separator);
+	    }
+            out.append(data[i]);
+        }
+
+	// avoid file/ directory clash
+	for (; (i % maxFilenameLen) + suffixLen > maxFilenameLen; i++) {
+	    out.append('x');
+	}
+	if (i % maxFilenameLen == 0) {
+	    out.append(File.separator);
+	    out.append('x');
+	}
+
+	// reintroduce suffix
+	out.append(suffix);
+
+	return out.toString();
     }
 
     /**
      * Make sure given filename has directory to live in.
      * @param fn name of file to make directory for
      */
-    private void ensureCacheDirectoryFor (String fn) {
+    private static void ensureCacheDirectoryFor (String fn) {
         String path = fn.substring(0, fn.lastIndexOf(File.separator));
         (new File(path)).mkdirs();
+    }
+
+    /**
+     * Debugging..
+     */
+    public static void main (String[] args) {
+	for (int i = 0; i < args.length; i++) {
+	    String fn = fnChopIntoDirectories(fnEncodeCharacters(args[i])+".bla");
+	    System.out.println(""+fn);
+	}
     }
 }
