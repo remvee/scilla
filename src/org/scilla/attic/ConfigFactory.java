@@ -27,7 +27,7 @@ import java.io.IOException;
 /**
  * The scilla configuration factory.
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @author R.W. van 't Veer
  */
 public class ConfigFactory
@@ -59,7 +59,6 @@ public class ConfigFactory
      */
     public static synchronized Config get ()
     {
-	ClassLoader cl = ConfigFactory.getInstance().getClass().getClassLoader();
 
 	if (config == null)
 	{
@@ -68,6 +67,7 @@ public class ConfigFactory
 	    // configure scilla
 	    try
 	    {
+		ClassLoader cl = ConfigFactory.getInstance().getClass().getClassLoader();
 		in = cl.getResourceAsStream(PROPERTY_FILE);
 		if (in != null)
 		{
