@@ -25,24 +25,24 @@ import java.io.*;
 
 /**
  * Representation of two types of text frames.  The simple text
- * frames like in the <TT>T???</TT> series and the frames with a
- * language and identifier like <TT>COMM</TT> and <TT>USLT</TT>.
+ * frames like in the <tt>T???</tt> series and the frames with a
+ * language and identifier like <tt>COMM</tt> and <tt>USLT</tt>.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class TextFrame extends Frame {
-    String enc;
-    String text;
-    String lang = null;
-    String ident = null;
+    private String enc;
+    private String text;
+    private String lang = null;
+    private String ident = null;
+    private int type;
 
-    int type;
-    /** type constant for the <TT>T???</TT> series */
+    /** type constant for the <tt>Txxx</tt> series */
     public final static int PLAIN = 0;
-    /** type constant for <TT>COMM</TT> and others */
+    /** type constant for <tt>COMM</tt> and others */
     public final static int LANGUAGE = 1;
-    /** type constant for <TT>TXXX</TT> and others */
+    /** type constant for <tt>TXXX</tt> and others */
     public final static int TXXX = 2;
 
     /**
@@ -146,8 +146,8 @@ public class TextFrame extends Frame {
     }
 
     /**
-     * Constructor for new <TT>TXXX</TT> text frame.
-     * @param id typically set to <TT>TXXX</TT>
+     * Constructor for new <tt>TXXX</tt> text frame.
+     * @param id typically set to "TXXX"
      * @param enc string encoding
      * @param ident text identifier
      * @param text text for this frame
@@ -231,11 +231,11 @@ public class TextFrame extends Frame {
     public String getText () {
         return text;
     }
-    /** @return language of this frame or <TT>null</TT> */
+    /** @return language of this frame or <tt>null</tt> */
     public String getLanguage () {
         return lang;
     }
-    /** @return identifier of this frame or <TT>null</TT> */
+    /** @return identifier of this frame or <tt>null</tt> */
     public String getIdentifier () {
         return ident;
     }
