@@ -34,7 +34,7 @@ import org.scilla.util.vorbis.*;
 /**
  * Audio info.
  *
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  * @author R.W. van 't Veer
  */
 public class AudioInfo extends Info {
@@ -367,6 +367,7 @@ public class AudioInfo extends Info {
 			long fLength = (new File(fname)).length();
 			long samples = fLength / (bits / 8);
 			setInt(LENGTH, (int) (samples / samplerate) / channels);
+			setInt(BITRATE, (int) (samplerate * bits));
 
 			setString(CODEC, CODEC_WAV_MSPCM);
 			break;
