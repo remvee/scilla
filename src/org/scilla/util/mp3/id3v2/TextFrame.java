@@ -25,8 +25,12 @@ import java.io.*;
 import java.util.*;
 
 /**
+ * Representation of two types of text frames.  The simple text
+ * frames like in the <TT>T???</TT> series and the frames with a
+ * language and identifier like <TT>COMM</TT> and <TT>USLT</TT>.
+ *
  * @author Remco van 't Veer
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 class TextFrame extends Frame
 {
@@ -36,15 +40,30 @@ class TextFrame extends Frame
     String ident = null;
 
     int type;
+    /** type constant for the <TT>T???</TT> series */
     public final static int PLAIN = 0;
+    /** type constant for <TT>COMM</TT> and others */
     public final static int LANGUAGE = 1;
 
+    /**
+     * Constructor for plain text frame.
+     * @param data buffer of tag data
+     * @param offset offset in buffer
+     * @param minor minor version of tag
+     */
     public TextFrame (byte[] data, int offset, int minor)
     throws Exception
     {
 	this(data, offset, minor, PLAIN);
     }
 
+    /**
+     * Constructor for a text frame.
+     * @param data buffer of tag data
+     * @param offset offset in buffer
+     * @param minor minor version of tag
+     * @param type {@link #PLAIN} or {@link @LANGUAGE}
+     */
     public TextFrame (byte[] data, int offset, int minor, int type)
     throws Exception
     {
@@ -86,30 +105,17 @@ class TextFrame extends Frame
 	text = out.toString();
     }
 
-    public String getText ()
-    {
-	return text;
-    }
-
-    public String getLanguage ()
-    {
-	return language;
-    }
-
-    public String getIdentifier ()
-    {
-	return ident;
-    }
+    /** @return text of this frame */
+    public String getText () { return text; }
+    /** @return language of this frame or <TT>null</TT> */
+    public String getLanguage () { return language; }
+    /** @return identifier of this frame or <TT>null</TT> */
+    public String getIdentifier () { return ident; }
 
     public String toString ()
     {
-	if (type == LANGUAGE)
-	{
-	    return super.toString() + ": \"" + ident + "\"("+ language + ") \"" + text + "\"";
-	}
-	else
-	{
-	    return super.toString() + ": \"" + text + "\"";
-	}
+	return type == LANGUAGE
+		?  super.toString() + ": \"" + ident + "\"("+ language + ") \"" + text + "\""
+		: super.toString() + ": \"" + text + "\"";
     }
 }

@@ -25,11 +25,16 @@ import java.io.*;
 import java.util.*;
 
 /**
+ * Representation of a ID3v2 tag.
+ *
+ * @see <a href="http://www.id3.org/id3v2.3.0.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ID3v2
 {
+    boolean tagAvailable = false;
+
     // header data
     byte[] header;
     int tagLength;
@@ -50,15 +55,18 @@ public class ID3v2
     public ID3v2 (File f)
     throws IOException, Exception
     {
-	InputStream in = new FileInputStream(f);
+	readTag(new FileInputStream(f));
+    }
 
+    private void readTag (InputStream in)
+    throws IOException, Exception
+    {
 	// read header
 	header = new byte[10];
 	in.read(header);
-	if (header[0] != 'I' || header[1] != 'D' || header[2] != '3')
-	{
-	    throw new Exception("tag not available");
-	}
+	if (header[0] != 'I' || header[1] != 'D' || header[2] != '3') return;
+
+	// extract header info
 	minor = (int) header[3];
 	revis = (int) header[4];
 	bits = (int) header[5];
@@ -111,8 +119,12 @@ public class ID3v2
 	    frames.add(frame);
 	    bytesRead += frame.frameLength;
 	}
+
+	// tag successfully read
+	tagAvailable = true;
     }
 
+    public boolean hasTag () { return tagAvailable; }
     public int getMinorVersion () { return minor; }
     public int getRevision () { return revis; }
     public boolean isUnsynchronized () { return unsyncFlag; }
@@ -120,7 +132,9 @@ public class ID3v2
     public boolean isExperimental () { return expFlag; }
     public boolean hasFooter () { return extFlag; }
 
+    /** @return list of frames */
     public List getFrames () { return frames; }
+    /** @return first frame by given id or <TT>null</TT> */
     public Frame getFrame (String id)
     {
 	Iterator it = frames.iterator();
@@ -131,6 +145,7 @@ public class ID3v2
 	}
 	return null;
     }
+    /** @return list of frames by given id */
     public List getFrames (String id)
     {
 	List result = new Vector();
@@ -168,6 +183,7 @@ public class ID3v2
 	return sb.toString();
     }
 
+    /** debugging */
     public static void main (String[] args)
     throws Exception
     {

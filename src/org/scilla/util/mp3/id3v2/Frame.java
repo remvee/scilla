@@ -25,31 +25,38 @@ import java.io.*;
 import java.util.*;
 
 /**
+ * Basic representation of a frame.
+ *
  * @author Remco van 't Veer
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 class Frame
 {
     /* length of frame */
-    public int frameLength = 0;
+    int frameLength = 0;
     /* size of frame data */
-    public int frameSize = 0;
+    int frameSize = 0;
     /* ID of frame */
-    public String frameId = null;
+    String frameId = null;
     /* frame flags */
-    public int frameFlags = -1; // %0abc0000 %0h00kmnp
+    int frameFlags = -1; // %0abc0000 %0h00kmnp
 
-    public boolean tagAlterPreserv;
-    public boolean fileAlterPreserv;
-    public boolean readOnly;
-    public boolean groupingIdentity;
-    public boolean compression;
-    public boolean encryption;
-    public boolean unsynchronisation;
-    public boolean dataLengthIndicator;
+    boolean tagAlterPreserv;
+    boolean fileAlterPreserv;
+    boolean readOnly;
+    boolean groupingIdentity;
+    boolean compression;
+    boolean encryption;
+    boolean unsynchronisation;
+    boolean dataLengthIndicator;
 
-    public byte[] frameData;
+    byte[] frameData;
 
+    /**
+     * @param data buffer of tag data
+     * @param offset offset in buffer
+     * @param minor minor version of tag
+     */
     public Frame (byte[] data, int offset, int minor)
     {
 	int i = offset;
