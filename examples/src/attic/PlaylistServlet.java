@@ -16,48 +16,37 @@ public class PlaylistServlet extends HttpServlet {
     final static Config scillaConfig = ConfigProvider.get();
     final static Log log = LogFactory.getLog(PlaylistServlet.class);
 
-    final static String PATH_PARAM = "d"; // MUST NOT BE IN USE BY SCILLA!!
-    final static String RECURS_PARAM = "r"; // MUST NOT BE IN USE BY SCILLA!!
-    final static String OUTPUT_TYPE_PARAM = "t"; // MUST NOT BE IN USE BY SCILLA!!
+    final static String PATH_PARAM = "d";
+    final static String RECURS_PARAM = "r";
+    final static String OUTPUT_TYPE_PARAM = "t";
     final static String DEFAULT_OUTPUT_TYPE = "mp3";
-    final static String SCILLA_SERVLET = "scilla";
+    final static String SCILLA_SERVLET = "stream";
 
     public void doGet (HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-	// handle encoding parameters
-	String encoding = "?"+request.getQueryString();
-
 	// handle path parameter
 	String path = "";
 	if (request.getParameter(PATH_PARAM) != null) {
 	    path = request.getParameter(PATH_PARAM);
-	    encoding = stripParameter(encoding, PATH_PARAM);
 	}
 
 	// handle recurs parameter
 	boolean recursive = false;
 	if (request.getParameter(RECURS_PARAM) != null) {
 	    recursive = true;
-	    encoding = stripParameter(encoding, RECURS_PARAM);
 	}
 
 	// output type parameter
 	String outputType = DEFAULT_OUTPUT_TYPE;
 	if (request.getParameter(OUTPUT_TYPE_PARAM) != null) {
 	    outputType = request.getParameter(OUTPUT_TYPE_PARAM);
-	    encoding = stripParameter(encoding, OUTPUT_TYPE_PARAM);
-	}
-
-	// cleanup encoding
-	if (encoding.equals("?")) {
-	    encoding = "";
 	}
 
 	// determine output type (m3u, pls..)
 	String type = request.getServletPath();
 	type = type.substring(type.lastIndexOf('.')+1);
 
-	// request from localhost does need a stream or encoding
+	// request from localhost does need a stream
 	boolean isLocal = false;
 	String urlPrefix = null;
 	if (request.getServerName().equals("127.0.0.1")
@@ -107,7 +96,7 @@ public class PlaylistServlet extends HttpServlet {
 		File t = new File(source+File.separator+fn);
 		String url = isLocal
 		    ? (source + fn)
-		    : (urlPrefix + pathInfoEncode(fn) + "." + outputType + encoding);
+		    : (urlPrefix + pathInfoEncode(fn) + "." + outputType);
 
 		// track info
 		out.println("#EXTINF:"+getTrackLength(t)+","+getTrackTitle(t));
@@ -128,7 +117,7 @@ public class PlaylistServlet extends HttpServlet {
 		File t = new File(source+File.separator+fn);
 		String url = isLocal
 		    ? (source + fn)
-		    : (urlPrefix + pathInfoEncode(fn) + "." + outputType + encoding);
+		    : (urlPrefix + pathInfoEncode(fn) + "." + outputType);
 
 		out.println("File" + num + "=" + url);
 		out.println("Title" + num + "=" + getTrackTitle(t));

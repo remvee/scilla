@@ -422,9 +422,9 @@
 	String encoding = "";
 	if (! (remote.equals("localhost") || remote.equals("127.0.0.1"))) {
 	    if ("ogg".equals(request.getParameter("t"))) {
-		encoding = "&t=ogg&bitrate=50";
+		encoding = "&t=ogg";
 	    } else {
-		encoding = "&t=mp3&resample=16&maxbitrate=56";
+		encoding = "&t=mp3";
 	    }
 	}
 	String plstype = "pls".equals(request.getParameter("p")) ? "pls" : "m3u";
