@@ -55,7 +55,7 @@
 	<title>News</title>
 	<changelog file="../build/projects/scilla/ChangeLog.xml" max="15"/>
 	<para><![CDATA[
-	    You can find the full ChangeLog <A href="projects/scilla/ChangeLog.xml">here</A>.
+	    You can find the full ChangeLog <A href="projects/scilla/ChangeLog.html">here</A>.
 	]]></para>
     </section>
 
