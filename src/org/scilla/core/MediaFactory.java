@@ -32,7 +32,7 @@ import org.scilla.converter.*;
 /**
  * The MediaFactory creates a runner or file object.
  *
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  * @author R.W. van 't Veer
  */
 public class MediaFactory {
@@ -90,6 +90,9 @@ public class MediaFactory {
         // configure converter
         conv.setRequest(req);
         conv.setOutputFile(ofn);
+
+	// remove old output
+	(new File(ofn)).delete();
 
         // log creation of converter
         if (log.isDebugEnabled()) {
