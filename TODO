@@ -10,13 +10,13 @@ For version 1.0:
     - img:
 	- use accept headers to determine image type?
 	    - IE handles transparent gif but not png
+- org.scilla.util.mp3.FrameHeader
+    - try to read beyond big id3v2 tags
 - JAIConverter
     - sync parameters with imagick so they will be interchangable.
       Maybe we want to define parameter sets as kind of interface?
 - JMFConverter
     - implement it!
-- improve performance for singletons using "Double-Checked Locking"
-  <http://patterndigest.com/patterns/DoubleCheckedLocking.html>
 
 Future:
 - define uniq operations for all operations
