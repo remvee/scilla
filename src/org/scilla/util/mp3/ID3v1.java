@@ -29,7 +29,7 @@ import java.io.RandomAccessFile;
  * Access to ID3v1 (or v1.1) tag in MP3 file.
  * @see <a href="http://www.id3.org/id3v1.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ID3v1
 {
@@ -263,10 +263,10 @@ public class ID3v1
     {
         StringBuffer b = new StringBuffer("TAG");
 
-        b.append(fixLength(title,    MAX_TITLE_LEN));
+        b.append(fixLength(title, MAX_TITLE_LEN));
         b.append(fixLength(artist, MAX_ARTIST_LEN));
-        b.append(fixLength(album,    MAX_ALBUM_LEN));
-        b.append(fixLength(year,     MAX_YEAR_LEN));
+        b.append(fixLength(album, MAX_ALBUM_LEN));
+        b.append(fixLength(year, MAX_YEAR_LEN));
         if (trkn == -1)
         {
             b.append(fixLength(comment, MAX_COMMENT_LEN));
@@ -486,4 +486,4 @@ public class ID3v1
 }
 
 
-/* end of $Id: ID3v1.java,v 1.3 2001/09/21 20:04:45 remco Exp $ */
+/* end of $Id: ID3v1.java,v 1.4 2002/04/02 16:58:11 remco Exp $ */
