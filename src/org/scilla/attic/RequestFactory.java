@@ -21,6 +21,7 @@
 
 package org.scilla;
 
+import java.io.File;
 import java.net.URLDecoder;
 import java.util.List;
 import java.util.Vector;
@@ -34,9 +35,12 @@ import org.scilla.util.*;
  * kind of request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class RequestFactory {
+    /** scilla configuration object */
+    private final static Config config = ConfigProvider.get();
+
     /**
      * Interpret HTTP request to create a scilla request.
      * @param req HTTP request
@@ -47,8 +51,9 @@ public class RequestFactory {
     public static Request createFromHttpServletRequest (HttpServletRequest req)
     throws ScillaException {
         // source file
-        String source = req.getPathInfo();
-        if (("/"+source).indexOf("/../") != -1) {
+        String source = config.getString(Config.SOURCE_DIR_KEY) +
+		File.separator + req.getPathInfo();
+        if (source.indexOf("/../") != -1) {
             throw new ScillaIllegalRequestException();
         }
 

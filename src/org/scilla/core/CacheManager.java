@@ -38,7 +38,7 @@ import org.scilla.util.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.30 $
+ * @version $Revision: 1.31 $
  * @author R.W. van 't Veer
  */
 public class CacheManager implements RunnerChangeListener {
@@ -223,7 +223,7 @@ public class CacheManager implements RunnerChangeListener {
      * @return absolute filename for object
      */
     private String getCachedObjectFilename (Request req) {
-        StringBuffer result = new StringBuffer(req.getSource());
+        StringBuffer result = new StringBuffer(req.getInputFile());
         result.append("?");
 
         // append parameters to result
