@@ -26,7 +26,7 @@ import java.util.*;
 /**
  * The scilla media info base class.
  *
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @author R.W. van 't Veer
  */
 public class Info implements Map {
@@ -58,7 +58,7 @@ public class Info implements Map {
 	return infoMap.containsValue(value);
     }
     public Set entrySet () {
-	return new HashSet(infoMap.entrySet());
+	return infoMap.entrySet();
     }
     public Object get (Object key) {
 	return infoMap.get(key);
@@ -67,22 +67,22 @@ public class Info implements Map {
 	return infoMap.isEmpty();
     }
     public Set keySet () {
-	return new HashSet(infoMap.keySet());
+	return infoMap.keySet();
     }
     public Object put (Object key, Object val) {
-	throw new RuntimeException("not implemented");
+	return infoMap.put(key, val);
     }
     public void putAll (Map t) {
-	throw new RuntimeException("not implemented");
+	infoMap.putAll(t);
     }
     public Object remove (Object key) {
-	throw new RuntimeException("not implemented");
+	return infoMap.remove(key);
     }
     public int size () {
 	return infoMap.size();
     }
     public Collection values () {
-	return new HashSet(infoMap.values());
+	return infoMap.values();
     }
 
 // read methods
