@@ -31,7 +31,7 @@ import org.scilla.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * @author R.W. van 't Veer
  */
 public class CacheManager
@@ -95,15 +95,6 @@ public class CacheManager
     public synchronized MediaObject get (Request req)
     throws ScillaException 
     {
-{
-    java.util.Enumeration e = runners.keys();
-    System.err.println("<runners");
-    while (e.hasMoreElements())
-    {
-	System.err.println("  "+(String)e.nextElement());
-    }
-    System.err.println("runners>");
-}
 	MediaObject obj;
 
 	String infilename = req.getInputFile();
