@@ -52,6 +52,14 @@
     </section>
 
     <section>
+	<title>News</title>
+	<changelog file="../build/projects/scilla/ChangeLog.xml" max="5"/>
+	<para><![CDATA[
+	    You can find the full ChangeLog <A href="projects/scilla/ChangeLog.xml">here</A>.
+	]]></para>
+    </section>
+
+    <section>
 	<title>Downloads</title>
 	<para>
 	    The following releases are considered to be stable.
@@ -104,7 +112,6 @@
                     <A href="@snapshot.zip@">@snapshot.zip@</A>
                 </LI>
             </UL>
-            Checkout the <A href="projects/scilla/ChangeLog.html">ChangeLog</A>.
 	]]></para>
     </section>
 

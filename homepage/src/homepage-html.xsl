@@ -3,6 +3,63 @@
 <xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
     <xsl:output method="html"/>
 
+    <xsl:template match="title"/>
+
+    <xsl:template match="para">
+	<P>
+	    <xsl:value-of select="." disable-output-escaping="yes"/>
+	</P>
+    </xsl:template>
+
+    <xsl:template match="release">
+	<P>
+	    <xsl:variable name="filebase" select="@filebase"/>
+	    <A href="{$filebase}.zip"><xsl:value-of select="@filebase"/>.zip</A>
+	    <BR />
+	    <xsl:value-of select="." disable-output-escaping="yes"/>
+	</P>
+    </xsl:template>
+
+    <xsl:template match="changelog">
+	<xsl:variable name="file" select="@file"/>
+	<xsl:variable name="max" select="@max"/>
+	<P>
+	    Last <xsl:value-of select="@max"/> changelog messages.
+	    <UL>
+		<xsl:for-each select="document($file)/changelog/entry">
+		    <xsl:if test="position() &lt; $max">
+			<xsl:apply-templates select="."/>
+		    </xsl:if>
+		</xsl:for-each>
+	    </UL>
+	</P>
+    </xsl:template>
+
+    <!-- changelog entries -->
+    <xsl:template match="entry">
+	<LI>
+	    <xsl:value-of select="date"/>
+	    <xsl:text> </xsl:text>
+	    <xsl:value-of select="time"/>
+	    by <xsl:value-of select="author"/>
+
+	    <P>
+		<PRE><xsl:for-each select="./msg"><xsl:value-of select="."/></xsl:for-each></PRE>
+
+		<UL>
+		    <xsl:for-each select="./file/name">
+			<xsl:variable name="file" select="."/>
+			<LI>
+			    <A href="{$file}">
+				<xsl:value-of select="."/>
+			    </A>
+			</LI>
+		    </xsl:for-each>
+		</UL>
+	    </P>
+	</LI>
+    </xsl:template>
+
     <xsl:template match="/">
 	<xsl:variable name="location" select="/homepage/location"/>
 	<xsl:variable name="email" select="/homepage/email"/>
@@ -30,27 +87,16 @@
 		<xsl:for-each select="/homepage/section">
 		    <xsl:variable name="anchor"><xsl:number/></xsl:variable>
 		    <H2><A name="{$anchor}" href="#_{$anchor}"><xsl:value-of select="title"/></A></H2>
-		    <xsl:for-each select="para">
-			<P>
-			    <xsl:value-of select="." disable-output-escaping="yes"/>
-			</P>
+		    <xsl:for-each select=".">
+			<xsl:apply-templates select="."/>
 		    </xsl:for-each>
-		    <UL>
-			<xsl:for-each select="release">
-			    <LI>
-				<xsl:variable name="filebase" select="@filebase"/>
-				<A href="{$filebase}.zip"><xsl:value-of select="@filebase"/>.zip</A>
-				<P><xsl:value-of select="." disable-output-escaping="yes"/></P>
-			    </LI>
-			</xsl:for-each>
-		    </UL>
 		</xsl:for-each>
 		<HR/>
 
 		<DIV align="right">
 		    Problems with this site?
 		    Email <A href="mailto:{$email}?subject={$location}">me</A>!
-		    <BR/>$Date: 2002/02/23 15:13:34 $
+		    <BR/>$Date: 2002/03/01 14:56:45 $
 		</DIV>
 	    </BODY>
 	</HTML>

@@ -15,7 +15,7 @@
         <tar tarfile="${tar.file}" basedir="${build.dir}" excludes="**/CVS"/>
     </target>
 
-    <target name="homepage-html" depends="prepare">
+    <target name="homepage-html" depends="prepare,changelog">
 	<style style="src/homepage-html.xsl" in="src/homepage.xml" out="${build.dir}/index.html"/>
     </target>
 
