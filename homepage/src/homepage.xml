@@ -1,7 +1,7 @@
 <homepage>
     <title>Scilla - media server</title>
     <location>http://www.xs4all.nl/~rwvtveer/scilla</location>
-    <date>$Date: 2003/01/05 15:40:41 $</date>
+    <date>$Date: 2003/01/05 16:36:05 $</date>
     <description>
 	<html><![CDATA[
 	    <p>
@@ -28,7 +28,7 @@
 			    Allows conversions between various image types. Supports
 			    most of the options available for <code>convert</code>.
 			</dd>
-			<dt> <a href="http://www.sulaco.org/mp3/">Lame</a> </dt>
+			<dt> <a href="http://lame.sourceforge.net/">Lame</a> </dt>
 			<dd>
 			    Allows conversion from WAV to MP3 and recoding of MP3 to
 			    create streamable audio.
