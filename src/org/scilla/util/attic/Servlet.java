@@ -35,7 +35,7 @@ import org.scilla.util.mp3.*;
 /**
  * This servlet handles media requests.
  *
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  * @author R.W. van 't Veer
  */
 public class Servlet extends HttpServlet
@@ -94,7 +94,7 @@ public class Servlet extends HttpServlet
 	try
 	{
 	    req = RequestFactory.createFromHttpServletRequest(request);
-	    log.info("doGet: request="+req);
+	    log.info("doGet ["+request.getRemoteAddr()+"]: request="+req);
 
 	    long len = req.getLength();
 	    if (len != -1) response.setContentLength((int) len);
