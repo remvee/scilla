@@ -27,7 +27,7 @@
 	    Last <xsl:value-of select="@max"/> changelog messages.
 	    <UL>
 		<xsl:for-each select="document($file)/changelog/entry">
-		    <xsl:if test="position() &lt; $max">
+		    <xsl:if test="position() &lt;= $max">
 			<xsl:apply-templates select="."/>
 		    </xsl:if>
 		</xsl:for-each>
@@ -48,12 +48,7 @@
 
 		<UL>
 		    <xsl:for-each select="./file/name">
-			<xsl:variable name="file" select="."/>
-			<LI>
-			    <A href="{$file}">
-				<xsl:value-of select="."/>
-			    </A>
-			</LI>
+			<LI><xsl:value-of select="."/></LI>
 		    </xsl:for-each>
 		</UL>
 	    </P>
@@ -96,7 +91,7 @@
 		<DIV align="right">
 		    Problems with this site?
 		    Email <A href="mailto:{$email}?subject={$location}">me</A>!
-		    <BR/>$Date: 2002/03/01 14:56:45 $
+		    <BR/>$Date: 2002/03/01 15:03:20 $
 		</DIV>
 	    </BODY>
 	</HTML>
