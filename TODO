@@ -1,10 +1,9 @@
 For version 1.0:
-- ImageTag, PlaylistTag
-    - understand application and media scopes transparently
-	- application: media files inside the web application
-	- media: media files from scilla's source.dir
-- Servlet
-    - make PartialContent class reuseable
+- config:
+    - remove ConfigProvider and make Config interfase a class
+    - Config class should use values in Config.properties are
+      default and add values from env-entrys; scilla/cache.dir
+      etc.
 - taglib
     - put tld in META-INF
 - ImageInfo
