@@ -34,7 +34,7 @@ import org.scilla.util.mp3.id3v2.*;
  *
  * @see <a href="http://www.id3.org/id3v2.3.0.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class ID3v2
 {
@@ -43,9 +43,9 @@ public class ID3v2
     // header data
     byte[] header;
     int tagLength;
-    int minor;
-    int revis;
-    int bits;
+    int minor = 3;
+    int revis = 0;
+    int bits = 0;
     boolean unsyncFlag;
     boolean extFlag;
     boolean expFlag;
@@ -65,7 +65,7 @@ public class ID3v2
 	in.close();
     }
 
-    private void readTag (InputStream in)
+    public void readTag (InputStream in)
     throws Exception
     {
 	// read header
@@ -150,7 +150,7 @@ public class ID3v2
     }
 
     final static int padding = 0;
-    private void writeTag (OutputStream out)
+    public void writeTag (OutputStream out)
     throws IOException, Exception
     {
 	// prepare tag properties
@@ -274,8 +274,6 @@ public class ID3v2
     }
     public void setFrame (Frame frame)
     {
-	tagAvailable = true; // we have a frame so we have a tag
-
 	Frame f = getFrame(frame.getID());
 	if (f != null) frames.remove(f);
 	frames.add(frame);
@@ -283,10 +281,9 @@ public class ID3v2
 
     public String toString ()
     {
-	if (! tagAvailable) return "no ID3v2 tag";
-
 	StringBuffer sb = new StringBuffer();
-	sb.append("v2."+minor+"."+revis);
+	sb.append(tagAvailable ? "existing" : "new");
+	sb.append(" v2."+minor+"."+revis);
     	if (unsyncFlag) sb.append(" unsync");
     	if (extFlag) sb.append(" extended");
     	if (expFlag) sb.append(" experimental");

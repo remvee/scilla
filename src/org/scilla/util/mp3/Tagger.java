@@ -30,7 +30,7 @@ import org.scilla.util.mp3.id3v2.*;
  * MP3 tag commandline utillity.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class Tagger
 {
@@ -56,6 +56,8 @@ public class Tagger
     private String filename = null;
     private ID3v1 v1tag = null;
     private ID3v2 v2tag = null;
+    boolean v1tagModified = true;
+    boolean v2tagModified = true;
 
     public Tagger (String[] args)
     throws Exception
@@ -123,6 +125,52 @@ public class Tagger
 	}
 
 	// write tags if modified
+	if (v1tagModified || v1tagModified)
+	{
+	    File oldf = new File(filename);
+	    File newf = new File(filename+".new");
+
+	    if (v2tagModified && v2tag.getFrames().size() > 0)
+	    {
+		InputStream in = new FileInputStream(oldf);
+		OutputStream out = new FileOutputStream(newf);
+
+		ID3v2 dummy = new ID3v2(oldf);
+		dummy.readTag(in);
+		if (! dummy.hasTag()) in = new FileInputStream(oldf);
+System.out.println("writing v2 tag");
+		v2tag.writeTag(out);
+
+		byte[] b = new byte[4096];
+		int n;
+		while ((n = in.read(b, 0, b.length)) != -1) out.write(b, 0, n);
+		out.close(); in.close();
+	    }
+	    else
+	    {
+		InputStream in = new FileInputStream(oldf);
+		OutputStream out = new FileOutputStream(newf);
+		byte[] b = new byte[4096];
+		int n;
+		while ((n = in.read(b, 0, b.length)) != -1) out.write(b, 0, n);
+		out.close(); in.close();
+	    }
+
+	    if (v1tagModified)
+	    {
+System.out.println("writing v1 tag");
+		RandomAccessFile f = new RandomAccessFile(newf, "rw");
+		try
+		{
+		    f.seek(v1tag.fileHasTag() ? f.length() - 128 : f.length());
+		    f.write(v1tag.getFromID3Tag());
+		}
+		finally
+		{
+		    f.close();
+		}
+	    }
+	}
     }
 
     public boolean hasOption (String name) { return options.contains(name); }
@@ -237,10 +285,14 @@ class V2ToV1Command extends Command
 	TextFrame f;
 	f = (TextFrame) v2tag.getFrame("TALB");;
 	if (f != null) v1tag.setAlbum(f.getText());
+
 	f = (TextFrame) v2tag.getFrame("TIT2");;
 	if (f != null) v1tag.setTitle(f.getText());
+
 	f = (TextFrame) v2tag.getFrame("TPE1");;
 	if (f != null) v1tag.setArtist(f.getText());
+	// TODO or TPE2, TPE3, TPE4
+
 	f = (TextFrame) v2tag.getFrame("TYER");;
 	if (f != null) v1tag.setYear(f.getText());
 	// TODO TRCK
