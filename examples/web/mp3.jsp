@@ -119,6 +119,7 @@
 		o = getTextFrame("TIT2"); if (o != null) props.put("TIT2", o);
 		o = getTextFrame("TIT3"); if (o != null) props.put("TIT3", o);
 		o = getTextFrame("TYER"); if (o != null) props.put("TYER", o);
+		o = getTextFrame("TCOM"); if (o != null) props.put("TCOM", o);
 	    }
 	}
 
@@ -339,8 +340,9 @@ System.out.println("getProp("+key+")="+r);
 <HTML>
     <HEAD>
 	<TITLE>
-	    mp3: <%= toHTML(mp3List.getProp("TPE1")) %> - <%= toHTML(mp3List.getProp("TALB")) %>
+	    mp3: <%= mp3List.getProp("TPE1") %> - <%= mp3List.getProp("TALB") %>
 	</TITLE>
+	<LINK rel="stylesheet" type="text/css" href="mp3.css"/>
     </HEAD>
 <%
 	out.print("<BODY" + (background == null ? " bgcolor=\"#EEEEEE\">"
@@ -428,7 +430,8 @@ System.out.println("getProp("+key+")="+r);
 	    Object artist = mp3List.getProp("TPE1");
 	    Object album = mp3List.getProp("TALB");
 	    Object year = mp3List.getProp("TYER");
-	    Object comment = mp3List.getProp("XCOM");
+	    Object comment = mp3List.getProp("TPE3") != null
+		    ?  mp3List.getProp("TPE3") : mp3List.getProp("XCOM");
 
 	    int artistCount = mp3List.count("TPE1");
 	    int albumCount = mp3List.count("TALB");
@@ -436,32 +439,48 @@ System.out.println("getProp("+key+")="+r);
 	    int commentCount = mp3List.count("XCOM");
 	    if (artistCount > 0 || albumCount == 1 || yearCount == 1 || commentCount == 1)
 	    {
+		Object o = null;
+		String txt = null;
 %>
 			<TR>
 			    <TD>
 				<TABLE width="100%">
 				    <TR>
 					<TD valign=top align=left>
-					    <BIG><STRONG>
-						<%= (albumCount == 1 && ! album.equals(artist) ? toHTML(album) : "")%>
-					    </STRONG></BIG>
+<%
+		if (mp3List.count("TCOM") == 1)
+		{
+%>
+					    <BIG><EM> <%= toHTML(mp3List.getProp("TCOM")) %> </EM></BIG>
+<%
+		    if (albumCount == 1 && !  album.equals(artist)) { %> - <% }
+		}
+		o = albumCount == 1 && ! album.equals(artist) ? album : "";
+%>
+					    <BIG><STRONG> <%= toHTML(o) %> </STRONG></BIG>
+<%
+		streamLinks(request, out, path);
+%>
 					</TD>
 					<TD valign=top align=right>
-					    <SMALL>
-						<%= (yearCount == 1 ? toHTML(year) : "") %>
-					    </SMALL>
+<%
+		o = yearCount == 1 ? year : "";
+%>
+					    <SMALL> <%= toHTML(o) %> </SMALL>
 					</TD>
 				    </TR>
 				    <TR>
 					<TD valign=bottom align=left>
-					    <SMALL><STRONG>
-						<%= (artistCount == 1 ? toHTML(artist) : (artistCount != 0 ? "Various" : ""))%>
-					    </SMALL></BIG>
+<%
+		o = artistCount == 1 ? artist : (artistCount != 0 ? "Various" : "");
+%>
+					    <SMALL> <%= toHTML(o) %> </SMALL>
 					</TD>
 					<TD valign=bottom align=right>
-					    <SMALL>
-						<%= (commentCount == 1 ?  toHTML(comment) : "") %>
-					    </SMALL>
+<%
+		o = commentCount == 1 ? comment : "";
+%>
+					    <SMALL> <%= toHTML(o) %> </SMALL>
 					</TD>
 				    </TR>
 				</TABLE>
@@ -476,65 +495,58 @@ System.out.println("getProp("+key+")="+r);
 <%
 	    // loop through list
 	    {
+		List columnList = new Vector();
+		if (mp3List.count("TPE1") > 1) columnList.add("TPE1");
+		if (mp3List.count("TALB") > 1) columnList.add("TALB");
+		if (mp3List.count("TIT1") > 1) columnList.add("TIT1");
+		columnList.add("TIT2");
+		if (mp3List.count("TIT3") > 1) columnList.add("TIT3");
+		if (mp3List.count("TYER") > 1) columnList.add("TYER");
+
 		int tlength = 0;
 		Iterator it = mp3List.iterator();
+		Map lastMap = new HashMap();
 		for (int num = 1; it.hasNext(); num++)
 		{
 		    Mp3File f = (Mp3File) it.next();
 		    String filepath = path+"/"+f.getName();
+%>
+				    <TR>
+					<TD valign="top" align="right" class="num"><%=num%></TD>
+<%
+		    Iterator cit = columnList.iterator();
+		    while (cit.hasNext())
+		    {
+			String key = (String) cit.next();
+			Object prop = f.getProp(key);
+			Object last = lastMap.get(key);
+			lastMap.put(key, prop);
+			boolean isSameAsLast = last != null && last.equals(prop);
+			boolean isEmpty = prop == null || prop.toString().length() == 0;
+			if (isEmpty)
+			{
+%>
+					<TD valign="top" class="<%= key %>"></TD>
+<%
+			}
+			else if (isSameAsLast)
+			{
+%>
+					<TD valign="top" class="<%= key %>"><SMALL>,,</SMALL></TD>
+<%
+			}
+			else
+			{
+%>
+					<TD valign="top" class="<%= key %>"><%= toHTML(prop) %></TD>
+<%
+			}
+		    }
 
 		    int length = ((Integer)f.getProp("playlength")).intValue();
 		    tlength += length;
-
-		    Object artistT = f.getProp("TPE1");
-		    Object albumT = f.getProp("TALB");
-		    Object partT = f.getProp("TIT1");
-		    Object titleT = f.getProp("TIT2");
-		    Object commentT = f.getProp("TIT3");
-		    Object yearT = f.getProp("TYER");
 %>
-				    <TR>
-					<TD valign="top" align="right"><%=num%></TD>
-<%
-		    if (mp3List.count("TPE1") > 1)
-		    {
-%>
-					<TD valign="top"><%= toHTML(artistT) %></TD>
-<%
-		    }
-		    if (mp3List.count("TALB") > 1)
-		    {
-%>
-					<TD valign="top"><%= toHTML(albumT) %></TD>
-<%
-		    }
-		    if (mp3List.count("TIT1") > 1)
-		    {
-%>
-					<TD valign="top"><%= toHTML(partT) %></TD>
-<%
-		    }
-%>
-					<TD valign="top">
-					    <STRONG>
-						<%= toHTML(titleT) %>
-					    </STRONG>
-					</TD>
-<%
-		    if (mp3List.count("TIT3") > 1)
-		    {
-%>
-				    <TD valign="top"><%= toHTML(commentT) %></TD>
-<%
-		    }
-		    if (mp3List.count("TYER") > 1)
-		    {
-%>
-					<TD valign="top"><%= toHTML(yearT) %></TD>
-<%
-		    }
-%>
-					<TD valign="top" align=right>
+					<TD valign="top" align="right" class="playlength">
 					    <TT>
 						<%= formatTime(length) %>
 					    </TT>
@@ -554,12 +566,7 @@ System.out.println("getProp("+key+")="+r);
 <%
 		// padding
 		out.write("<TD></TD>");
-		if (mp3List.count("TPE1") > 1) out.write("<TD></TD>");
-		if (mp3List.count("TALB") > 1) out.write("<TD></TD>");
-		if (mp3List.count("TIT1") > 1) out.write("<TD></TD>");
-		out.write("<TD></TD>");
-		if (mp3List.count("TIT3") > 1) out.write("<TD></TD>");
-		if (mp3List.count("TYER") > 1) out.write("<TD></TD>");
+		for (int i = 0; i < columnList.size(); i++) out.write("<TD></TD>");
 %>
 					<TD align=right>
 					    <TT>
