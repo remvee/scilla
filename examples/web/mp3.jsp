@@ -241,10 +241,17 @@ throws IOException
 		    titleT = tag.getTitle();
 		    commentT = tag.getComment();
 		    yearT = tag.getYear();
+
+		    if ((artistT+albumT+titleT).length() == 0)
+		    {
+			titleT = f.getName();
+			titleT = titleT.substring(0, titleT.lastIndexOf('.'));
+		    }
 		}
 		else
 		{
 		    titleT = f.getName();
+		    titleT = titleT.substring(0, titleT.lastIndexOf('.'));
 		}
 
 %>

@@ -28,7 +28,18 @@ public class SServlet extends org.scilla.util.Servlet
 		try
 		{
 		    ID3v1 id3 = new ID3v1(new File(req.getInputFile()));
-		    String name = id3.getArtist()+" - "+id3.getAlbum()+" - "+id3.getTitle();
+		    String name = "";
+		    if (id3.getArtist() != null && id3.getArtist().length() != 0) name += id3.getArtist() + " - ";
+		    if (id3.getAlbum() != null && id3.getAlbum().length() != 0) name += id3.getAlbum() + " - ";
+		    if (id3.getTitle() != null && id3.getTitle().length() != 0) name += id3.getTitle();
+		    if (name.endsWith(" - ")) name = name.substring(0, name.lastIndexOf(" - "));
+		    if (name.length() == 0)
+		    {
+			name = req.getInputFile();
+			name = name.substring(name.lastIndexOf(File.separator)+1);
+			name = name.substring(0, name.lastIndexOf('.'));
+		    }
+
 		    response.setHeader("icy-name", name);
 		    response.setHeader("x-audiocast-name", name);
 		}
