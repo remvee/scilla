@@ -34,7 +34,7 @@ import org.scilla.util.MimeType;
 /**
  * Image info.
  *
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  * @author R.W. van 't Veer
  */
 public class ImageInfo extends Info {
@@ -466,10 +466,8 @@ public class ImageInfo extends Info {
     }
     private int jpegNextMarker (InputStream in)
     throws IOException {
-	int skipped = 0;
 	int c = in.read();
-	while (c != 0xff) {
-	    skipped++;
+	while (c != 0xff && c != -1) {
 	    c = in.read();
 	}
 	do {
