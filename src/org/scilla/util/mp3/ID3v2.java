@@ -34,7 +34,7 @@ import org.scilla.util.mp3.id3v2.*;
  *
  * @see <a href="http://www.id3.org/id3v2.3.0.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class ID3v2
 {
@@ -171,7 +171,8 @@ public class ID3v2
 	while (it.hasNext())
 	{
 	    Frame f = (Frame) it.next();
-	    bout.write(f.getByteArray());
+	    byte[] b = f.getByteArray();
+	    if (b != null) bout.write(b);
 	}
 	byte[] data = bout.toByteArray();
 
@@ -321,39 +322,8 @@ public class ID3v2
 	    System.out.print(args[i]+": ");
 	    try
 	    {
-		String origFn = args[i];
-		File origF = new File(origFn);
-		ID3v2 tag = new ID3v2(origF);
+		ID3v2 tag = new ID3v2(new File(args[i]));
 		System.out.println(""+tag);
-		String bakFn = args[i]+".new";
-/*
-		{
-		    File f = new File(bakFn);
-		    while (f.exists())
-		    {
-			bakFn += "~";
-			f = new File(bakFn);
-		    }
-		}
-		File bakF = new File(bakFn);
-		origF.renameTo(bakF);
-*/
-		InputStream in = new FileInputStream(origFn); //bakF);
-		OutputStream out = new FileOutputStream(bakFn);
-
-System.err.println("reading tag");
-		tag.readTag(in);
-		tag.getFrames().add(new TextFrame("COMM", null, "eng", "gotya!", "bla die bla"));
-		tag.getFrames().add(new LinkFrame("WPUB", "http://www.xs4all.nl"));
-
-System.err.println("writing tag");
-		tag.writeTag(out);
-		byte[] buf = new byte[4096];
-		int n;
-		while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
-
-		out.close();
-		in.close();
 	    }
 	    catch (Throwable ex)
 	    {

@@ -30,7 +30,7 @@ import org.scilla.util.mp3.ID3v2;
  * Basic representation of a frame.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class Frame
 {
@@ -105,18 +105,22 @@ public class Frame
     }
 
     /**
-     * @throws RuntimeException only specific frame
-     * implementations can create frame data.
+     * @return <TT>null</TT> implementations should override this
+     * method
      */
     public byte[] getBytes ()
     throws UnsupportedEncodingException
     {
-	throw new RuntimeException("OPERATION NOT SUPPORTED");
+	System.err.println("WARNING: frame \""+frameId+"\" omitted");
+	return null;
     }
 
     public byte[] getByteArray ()
     throws UnsupportedEncodingException
     {
+	byte[] data = getBytes();
+	if (data == null) return null;
+
 	ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 	// ID
@@ -127,7 +131,6 @@ public class Frame
 
 	// length
 	byte[] length = new byte[4];
-	byte[] data = getBytes();
 	ID3v2.writeUnsyncInt(data.length, length, 0);
 	try { out.write(length); }
 	catch (IOException ex) { /* will never happen */ }
