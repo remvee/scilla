@@ -32,7 +32,7 @@ package org.scilla;
  *   <LI>debug</LI>
  * </OL>
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @author R.W. van 't Veer
  */
 public interface Logger
@@ -51,7 +51,7 @@ public interface Logger
      * @param assertion
      * @param msg error message
      */
-    public void assert (boolean assertion, String msg);
+    public void assertLog (boolean assertion, String msg);
     /**
      * Log a message at <EM>debug</EM> level.
      * @param msg message to log

@@ -26,7 +26,7 @@ import java.io.PrintStream;
 /**
  * The scilla simple logger implementation.
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @author R.W. van 't Veer
  */
 public class LoggerSimpleImpl implements Logger
@@ -49,7 +49,7 @@ public class LoggerSimpleImpl implements Logger
 
     public void configure () throws Exception { /* nop */ }
 
-    public void assert (boolean assertion, String msg)
+    public void assertLog (boolean assertion, String msg)
     {
 	if (! assertion) debug(msg);
     }

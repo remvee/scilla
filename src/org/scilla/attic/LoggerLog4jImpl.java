@@ -29,7 +29,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -38,26 +37,26 @@ import org.apache.log4j.xml.DOMConfigurator;
 /**
  * The scilla log4j logger implementation.
  *
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @author R.W. van 't Veer
  */
 public class LoggerLog4jImpl implements Logger
 {
-    Category cat;
+    org.apache.log4j.Logger logger;
 
     public static final String LOG4J_PROPERTY_FILE = "org/scilla/log4j.properties";
     public static final String LOG4J_XML_FILE      = "org/scilla/log4j.xml";
 
     public LoggerLog4jImpl () { }
 
-    private LoggerLog4jImpl (Category cat)
+    private LoggerLog4jImpl (org.apache.log4j.Logger logger)
     {
-	this.cat = cat;
+	this.logger = logger;
     }
 
     public static Logger getInstance (Class clazz)
     {
-	return new LoggerLog4jImpl(Category.getInstance(clazz));
+	return new LoggerLog4jImpl(org.apache.log4j.Logger.getLogger(clazz));
     }
 
     /**
@@ -133,17 +132,17 @@ public class LoggerLog4jImpl implements Logger
 	}
     }
 
-    public void assert (boolean assertion, String msg) { cat.assert(assertion, msg); }
-    public void debug (Object msg) { cat.debug(msg); }
-    public void debug (Object msg, Throwable t) { cat.debug(msg, t); }
-    public void info(Object msg) { cat.info(msg); }
-    public void info(Object msg, Throwable t) { cat.info(msg, t); }
-    public void warn(Object msg) { cat.warn(msg); }
-    public void warn(Object msg, Throwable t) { cat.warn(msg, t); }
-    public void error(Object msg) { cat.error(msg); }
-    public void error(Object msg, Throwable t) { cat.error(msg, t); }
-    public void fatal(Object msg) { cat.fatal(msg); }
-    public void fatal(Object msg, Throwable t) { cat.fatal(msg, t); }
-    public boolean isDebugEnabled() { return cat.isDebugEnabled(); }
-    public boolean isInfoEnabled() { return cat.isInfoEnabled(); }
+    public void assertLog (boolean assertion, String msg) { logger.assertLog(assertion, msg); }
+    public void debug (Object msg) { logger.debug(msg); }
+    public void debug (Object msg, Throwable t) { logger.debug(msg, t); }
+    public void info(Object msg) { logger.info(msg); }
+    public void info(Object msg, Throwable t) { logger.info(msg, t); }
+    public void warn(Object msg) { logger.warn(msg); }
+    public void warn(Object msg, Throwable t) { logger.warn(msg, t); }
+    public void error(Object msg) { logger.error(msg); }
+    public void error(Object msg, Throwable t) { logger.error(msg, t); }
+    public void fatal(Object msg) { logger.fatal(msg); }
+    public void fatal(Object msg, Throwable t) { logger.fatal(msg, t); }
+    public boolean isDebugEnabled() { return logger.isDebugEnabled(); }
+    public boolean isInfoEnabled() { return logger.isInfoEnabled(); }
 }
