@@ -1,93 +1,63 @@
 <project name="MServ Homepage" default="dist" basedir=".">
 
-  <property name="build.dir" value="build"/>
+    <property name="build.dir" value="build"/>
 
-  <property name="cvsroot"        value="/home/remco/cvsroot"/>
-  <property name="cvsprefix"      value="projects"/>
-  <property name="scilla.project" value="projects/scilla"/>
-  <property name="tar.file"       value="scilla-homepage.tar"/>
+    <property name="cvsroot"        value="/home/remco/cvsroot"/>
+    <property name="cvsprefix"      value="projects"/>
+    <property name="scilla.project" value="projects/scilla"/>
+    <property name="tar.file"       value="scilla-homepage.tar"/>
 
+    <property name="homepage.build" value="homepage-build.xml"/>
 
-  <target name="prepare">
-    <mkdir dir="${build.dir}"/>
-  </target>
+    <target name="dist" depends="prepare,homepage-html,homepage-build,changelog,snapshot,apidoc">
+	<replace file="${build.dir}/index.html" token="@today@" value="${TODAY}"/>
+	<replace file="${build.dir}/index.html" token="@snapshot.zip@" value="${snapshot.zip}"/>
+        <tar tarfile="${tar.file}" basedir="${build.dir}" excludes="**/CVS"/>
+    </target>
 
+    <target name="homepage-html" depends="prepare">
+	<style style="src/homepage-html.xsl" in="src/homepage.xml" out="${build.dir}/index.html"/>
+    </target>
 
-  <target name="dist" depends="prepare,changelog,snapshot,releases,apidoc">
-    <filter token="today"        value="${TODAY}"/>
-    <filter token="snapshot.zip" value="${snapshot.zip}"/>
-    <filter token="snapshot.tgz" value="${snapshot.tgz}"/>
-    <copy todir="${build.dir}" filtering="true">
-      <fileset dir="web"/>
-    </copy>
-    <tar tarfile="${tar.file}" basedir="${build.dir}" excludes="**/CVS"/>
-  </target>
-
-
-  <target name="checkout" depends="prepare">
-    <cvs cvsRoot="${cvsroot}" dest="${build.dir}" package="${scilla.project}"/>
-  </target>
+    <target name="homepage-build">
+	<style style="src/homepage-build.xsl" in="src/homepage.xml" out="${homepage.build}"/>
+	<ant antfile="${homepage.build}"/>
+    </target>
 
 
-  <target name="timestamp">
-    <tstamp/>
-    <property name="snapshot.zip"   value="scilla-${DSTAMP}.zip"/>
-    <property name="snapshot.tar"   value="scilla-${DSTAMP}.tar"/>
-    <property name="snapshot.tgz"   value="scilla-${DSTAMP}.tar.gz"/>
-  </target>
+    <target name="prepare">
+        <mkdir dir="${build.dir}"/>
+    </target>
 
 
-  <target name="snapshot" depends="checkout,timestamp">
-    <zip zipfile="${build.dir}/${snapshot.zip}"
-	basedir="${build.dir}/${cvsprefix}" excludes="**/CVS"/>
-    <tar tarfile="${build.dir}/${snapshot.tar}"
-	basedir="${build.dir}/${cvsprefix}" excludes="**/CVS"/>
-    <gzip src="${build.dir}/${snapshot.tar}"
-	zipfile="${build.dir}/${snapshot.tgz}"/>
-    <delete file="${build.dir}/${snapshot.tar}"/>
-  </target>
+    <target name="clean">
+	<delete dir="${build.dir}"/>
+	<delete file="${homepage.build}"/>
+	<delete file="${tar.file}"/>
+    </target>
+
+    <target name="timestamp">
+        <tstamp/>
+        <property name="snapshot.zip" value="scilla-${DSTAMP}.zip"/>
+    </target>
+
+    <target name="checkout" depends="prepare">
+        <cvs cvsRoot="${cvsroot}" dest="${build.dir}" package="${scilla.project}"/>
+    </target>
+
+    <target name="snapshot" depends="checkout,timestamp">
+        <zip zipfile="${build.dir}/${snapshot.zip}"
+		basedir="${build.dir}/${cvsprefix}" excludes="**/CVS"/>
+    </target>
 
 
-  <target name="releases">
-    <antcall target="build.release">
-      <param name="rel" value="0_9_2"/>
-    </antcall>
-    <antcall target="build.release">
-      <param name="rel" value="0_9_1"/>
-    </antcall>
-    <antcall target="build.release">
-      <param name="rel" value="0_9"/>
-    </antcall>
-  </target>
-
-  <target name="build.release">
-    <mkdir dir="${build.dir}/${rel}"/>
-    <cvs cvsRoot="${cvsroot}" dest="${build.dir}/${rel}" tag="RELEASE_${rel}" package="${scilla.project}"/>
-    <zip zipfile="${build.dir}/scilla-${rel}.zip"
-	basedir="${build.dir}/${rel}/${cvsprefix}" excludes="**/CVS"/>
-    <tar tarfile="${build.dir}/scilla-${rel}.tar"
-	basedir="${build.dir}/${rel}/${cvsprefix}" excludes="**/CVS"/>
-    <gzip src="${build.dir}/scilla-${rel}.tar"
-	zipfile="${build.dir}/scilla-${rel}.tgz"/>
-    <delete file="${build.dir}/scilla-${rel}.tar"/>
-    <delete dir="${build.dir}/${rel}"/>
-  </target>
+    <target name="apidoc" depends="checkout">
+        <ant dir="${build.dir}/${scilla.project}" target="apidoc"/>
+    </target>
 
 
-  <target name="apidoc" depends="checkout">
-    <ant dir="${build.dir}/${scilla.project}" target="apidoc"/>
-  </target>
-
-
-  <target name="changelog" depends="checkout">
-    <ant dir="${build.dir}/${scilla.project}" target="changelog"/>
-  </target>
-
-
-  <target name="clean">
-    <delete dir="${build.dir}"/>
-    <delete file="${tar.file}"/>
-  </target>
-
+    <target name="changelog" depends="checkout">
+        <ant dir="${build.dir}/${scilla.project}" target="changelog"/>
+    </target>
 
 </project>

@@ -1,0 +1,112 @@
+<homepage>
+    <title>Scilla - media server</title>
+    <location>http://www.xs4all.nl/~rwvtveer/scilla</location>
+    <email>rwvtveer@xs4all.nl</email>
+    <description>
+	Scilla answers media file requests and takes conversion
+	parameters for various media converters.  Manipulated media
+	files can be cached for future requests.  Scilla is designed to
+	take requests using the servlet API.  A HttpServlet is included,
+	it maps path-info to a file and passes request parameters to
+	converters.
+    </description>
+
+    <section>
+	<title>Features</title>
+	<para><![CDATA[
+	    <UL>
+		<LI> caching mechanism </LI>
+		<LI> real-time; by following files being generated </LI>
+		<LI> pluggable converters; currently implemented in development version:
+		    <DL>
+			<DT> <A href="http://www.imagemagick.org/">ImageMagick</A> </DT>
+			<DD>
+			    Allows conversions between various image types. Supports
+			    most of the options available for <CODE>convert</CODE>.
+			</DD>
+			<DT> <A href="http://www.sulaco.org/mp3/">Lame</A> </DT>
+			<DD>
+			    Allows conversion from WAV to MP3 and recoding of MP3 to
+			    create streamable audio.
+			</DD>
+			<DT> <A href="http://ffmpeg.sourceforge.net/">FFMpeg</A> </DT>
+			<DD>
+			    Allows conversions between various video types. Including
+			    scaling of picture size, framerate, video/ audio bitrate
+			    etc.    Also the possiblity to create a MP3 audio stream.
+			</DD>
+			<DT> <A href="http://java.sun.com/products/java-media/jai/">JAI</A> </DT>
+			<DD>
+			    Allows conversions between various images types.    Currently
+			    only image scaling (with a ImageMagick like syntax) is
+			    supported.
+			</DD>
+		    </DL>
+		</LI>
+	    </UL>
+	]]></para>
+	<para><![CDATA[
+	    Please see the <A href="projects/scilla/TODO">TODO</A> file for bugs
+	    and future enhancements.
+	]]></para>
+    </section>
+
+    <section>
+	<title>Downloads</title>
+	<para>
+	    The following releases are considered to be stable.
+	</para>
+	<release tag="RELEASE_0_9_2" filebase="scilla-0_9_2"><![CDATA[
+	    <UL>
+		<LI>replaced lame, imagick and ffmpeg converters by external converter</LI>
+		<LI>configuration revamped</LI>
+		<LI>logging</LI>
+		<LI>many example improvements</LI>
+		<LI>bug fixes..</LI>
+	    </UL>
+	]]></release>
+	<release tag="RELEASE_0_9_1" filebase="scilla-0_9_1"><![CDATA[
+	    <UL>
+		<LI>convertsion error handling</LI>
+		<LI>added ffmpeg converter</LI>
+		<LI>bug fixes..</LI>
+	    </UL>
+	]]></release>
+	<release tag="RELEASE_0_9" filebase="scilla-0_9"><![CDATA[
+	    Initial release.
+	]]></release>
+    </section>
+
+    <section>
+	<title>Developement</title>
+	<para><![CDATA[
+            <A name="dev-dist">Source snapshots</A> (@today@) available for
+            downloading:
+            <UL>
+                <LI>
+                    <A href="@snapshot.zip@">@snapshot.zip@</A>
+                </LI>
+            </UL>
+            Checkout the <A href="projects/scilla/ChangeLog.html">ChangeLog</A>.
+	]]></para>
+    </section>
+
+    <section>
+	<title>Documentation</title>
+	<para><![CDATA[
+            A <A href="projects/scilla/INSTALL.html">Installation guide</A>
+            is included.    The source code is well documented using
+            <A href="projects/scilla/doc/index.html">javadoc</A>..
+	]]></para>
+    </section>
+
+    <section>
+        <title>Bug reports etc.</title>
+	<para><![CDATA[
+            Please email <A HREF="mailto:rwvtveer@xs4all.nl">me</A> if you
+            find a problem not mentioned in
+            <A href="projects/scilla/TODO">TODO</A>.    Please include
+            information about the version you are using.
+	]]></para>
+    </section>
+</homepage>
