@@ -429,17 +429,39 @@
     {
 	if (in == null) return "";
 
-	StringBuffer out = new StringBuffer();
 	if (in instanceof List) {
-	    Iterator it = ((List) in).iterator();
-	    while (it.hasNext()) {
-		out.append(it.next()+"");
-		if (it.hasNext()) out.append("<BR>");
+	    List l = (List) in;
+	    StringBuffer out = new StringBuffer();
+	    for (Iterator it = l.iterator(); it.hasNext();) {
+		out.append(toHTML(it.next()+""));
+		if (it.hasNext()) {
+		    out.append("<br />");
+		}
 	    }
-	} else {
-	    out.append(in);
+	    return out.toString();
 	}
-	// TODO XML escape!!
+
+	char[] data = (in+"").toCharArray();
+	StringBuffer out = new StringBuffer();
+	for (int i = 0; i < data.length; i++) {
+	    char c = data[i];
+	    switch (c) {
+		case '&':
+		    out.append("&amp;");
+		    break;
+		case '>':
+		    out.append("&lt;");
+		    break;
+		case '<':
+		    out.append("&gt;");
+		    break;
+		case '"':
+		    out.append("&quot;");
+		    break;
+		default:
+		    out.append(c);
+	    }
+	}
 	return out.toString();
     }
 
