@@ -27,16 +27,22 @@ import java.util.StringTokenizer;
 import java.io.InputStream;
 import java.io.IOException;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Category;
+
 import org.scilla.converter.*;
 
 /**
  * The scilla configuration wrapper.
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @author R.W. van 't Veer
  */
 public class Config
 {
+    static Category log = Category.getInstance(Config.class);
+    static { BasicConfigurator.configure(); }
+
     private static Config _instance = null;
     public static final String PROPERTY_FILE = "org/scilla/Config.properties";
     public static final String CACHE_DIR_PROPERTY = "Config.cacheDir";
@@ -54,11 +60,11 @@ public class Config
 	    if (in != null)
 	    {
 		param.load(in);
-		System.err.println("Config: properties loaded");
+		log.info("properties loaded");
 	    }
 	    else
 	    {
-		System.err.println("Config: no properties loaded");
+		log.warn("no properties loaded");
 	    }
 	}
 	catch (Exception e)
@@ -89,7 +95,7 @@ public class Config
      * @param key parameter name
      * @return value of parameter
      */
-    public static String getParameter (String key)
+    public String getParameter (String key)
     {
         String value = getInstance().param.getProperty(key);
         return value;
@@ -100,7 +106,7 @@ public class Config
      * @return cache directory location
      * @see #CACHE_DIR_PROPERTY
      */
-    public static String getCacheDir ()
+    public String getCacheDir ()
     {
 	return getParameter(CACHE_DIR_PROPERTY);
     }
@@ -110,18 +116,20 @@ public class Config
      * @return source directory location
      * @see #SOURCE_DIR_PROPERTY
      */
-    public static String getSourceDir ()
+    public String getSourceDir ()
     {
 	return getParameter(SOURCE_DIR_PROPERTY);
     }
 
-    private static Class[] converters = null;
+    // list of converters
+    private Class[] converters = null;
+
     /**
      * convenience method
      * @return array of converter classes
      * @see #CONVERTERS_PROPERTY
      */
-    public static Class[] getConverters ()
+    public Class[] getConverters ()
     {
 	if (converters == null)
 	{
@@ -142,12 +150,12 @@ public class Config
 		    }
 		    else
 		    {
-			System.err.println("Config.getConverters: converter not functional: " + cn);
+			log.warn("getConverters: converter not functional: " + cn);
 		    }
 		}
 		catch (Throwable ex)
 		{
-		    System.err.println("Config.getConverters: unable to access converter: " + cn + ": " + ex.toString());
+		    log.warn("getConverters", ex);
 		}
 	    }
 	    converters = (Class[]) v.toArray(new Class[0]);

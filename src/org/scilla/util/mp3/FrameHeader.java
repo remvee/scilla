@@ -26,14 +26,18 @@ import java.io.RandomAccessFile;
 import java.io.IOException;
 import java.io.EOFException;
 
+import org.apache.log4j.Category;
+
 /**
  * Read only access to MP3 frame header information.
  * @see <a href="http://www.mp3-tech.org/programmer/frame_header.html">MP3'Tech - Frame header</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class FrameHeader
 {
+    static Category log = Category.getInstance(FrameHeader.class);
+
 /// constants
 ///
 
@@ -431,7 +435,7 @@ public class FrameHeader
 		|| emphasis == 2
 	     )
 	{
-	    System.err.println("FrameHeader: RESERVED VALUES");
+	    log.warn("next: RESERVED VALUES");
 	    mp3File.seek(mp3File.getFilePointer()-3);
 	    next(forwardToNextFrame);
 	}
@@ -464,7 +468,7 @@ public class FrameHeader
 		|| bitRate == 384 && isSingleChannel()
 	     )
 	{
-	    System.err.println("FrameHeader: ILLEGAL COMBINATION:" + this.toString());
+	    log.warn("next: ILLEGAL COMBINATION");
 	    mp3File.seek(mp3File.getFilePointer()-3);
 	    next(forwardToNextFrame);
 	}
@@ -522,4 +526,4 @@ public class FrameHeader
 }
 
 
-/* end of $Id: FrameHeader.java,v 1.4 2001/09/21 20:04:45 remco Exp $ */
+/* end of $Id: FrameHeader.java,v 1.5 2001/11/02 11:18:13 remco Exp $ */

@@ -34,12 +34,14 @@ import org.scilla.util.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  * @author R.W. van 't Veer
  */
 public class CacheManager
 {
     static Category log = Category.getInstance(CacheManager.class);
+
+    static Config config = Config.getInstance();
 
     private static CacheManager _instance = null;
     Hashtable runners = new Hashtable();
@@ -158,7 +160,7 @@ public class CacheManager
     // try to set max filename len from config
     static
     {
-	String s = Config.getInstance().getParameter(MAX_FN_LEN_PROPERTY);
+	String s = config.getParameter(MAX_FN_LEN_PROPERTY);
 	if (s != null) try
 	{
 	    MAX_FILENAME_LEN = Integer.parseInt(s);
@@ -229,7 +231,7 @@ public class CacheManager
 	result.append(suffix);
 
 	// prepend cache path
-	return Config.getCacheDir() + File.separator + result;
+	return config.getCacheDir() + File.separator + result;
     }
 
     void ensureCacheDirectoryFor (String fn)

@@ -25,6 +25,8 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.apache.log4j.Category;
+
 import org.scilla.*;
 import org.scilla.core.*;
 
@@ -110,13 +112,17 @@ import org.scilla.core.*;
  * <BR>MPEG2 samplerates(kHz): 16 22.05 24 
  * <BR>bitrates(kbs): 8 16 24 32 40 48 56 64 80 96 112 128 144 160 
  *
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  * @see <A href="http://www.sulaco.org/mp3/">The LAME Project</A>
  * @author R.W. van 't Veer
  */
 
 public class LameConverter extends Converter
 {
+    static Category log = Category.getInstance(LameConverter.class);
+
+    static Config config = Config.getInstance();
+
     /** parameter name to force the use of this converter */
     public final static String THIS_CONVERTER_PARAMETER = "lame";
     public final static String LAME_EXEC_PROPERTY = "LameConverter.exec";
@@ -174,7 +180,7 @@ public class LameConverter extends Converter
      */
     public boolean isFunctional ()
     {
-	File f = new File(Config.getParameter(LAME_EXEC_PROPERTY));
+	File f = new File(config.getParameter(LAME_EXEC_PROPERTY));
 	return f.exists();
     }
 
@@ -206,7 +212,7 @@ public class LameConverter extends Converter
 
 	// create command line
 	Vector v = new Vector();
-	v.add(Config.getParameter(LAME_EXEC_PROPERTY));
+	v.add(config.getParameter(LAME_EXEC_PROPERTY));
 
 	// added conversion parameters to command line
 	for (Iterator it = pars.iterator(); it.hasNext(); )
@@ -360,7 +366,7 @@ public class LameConverter extends Converter
 	    }
 	    else
 	    {
-		System.err.println("LameConverter.convert: param '"+rp.key+"' NOT YET IMPLEMENTED");
+		log.warn("convert: param '"+rp.key+"' NOT YET IMPLEMENTED");
 	    }
 	}
 

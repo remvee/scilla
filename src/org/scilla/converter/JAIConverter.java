@@ -29,6 +29,8 @@ import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
 import java.awt.image.renderable.ParameterBlock;
 
+import org.apache.log4j.Category;
+
 import org.scilla.*;
 import org.scilla.core.*;
 import org.scilla.util.*;
@@ -39,10 +41,12 @@ import org.scilla.util.*;
  * parameter.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class JAIConverter extends Converter
 {
+    static Category log = Category.getInstance(JAIConverter.class);
+
     /** parameter name to force the use of this converter */
     public final static String THIS_CONVERTER_PARAMETER = "jai";
 
@@ -164,8 +168,7 @@ public class JAIConverter extends Converter
 	    return scale(img, new GeometryParameter(rp.val));
 	}
 
-	System.err.println("JAIConverter.handleConversion: "
-		+ rp.key + ": NOT YET IMPLEMENTED");
+	log.warn("handleConversion: param '"+rp.key+"' NOT YET IMPLEMENTED");
 	return null;
     }
 

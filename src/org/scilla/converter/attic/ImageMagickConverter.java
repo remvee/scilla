@@ -25,6 +25,8 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.apache.log4j.Category;
+
 import org.scilla.*;
 import org.scilla.core.*;
 import org.scilla.util.*;
@@ -118,10 +120,14 @@ import org.scilla.util.*;
  * </DL>
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ImageMagickConverter extends Converter
 {
+    static Category log = Category.getInstance(ImageMagickConverter.class);
+
+    static Config config = Config.getInstance();
+
     /** parameter name to force the use of this converter */
     public final static String THIS_CONVERTER_PARAMETER = "imagick";
     public final static String CONVERT_EXEC_PROPERTY = "ImageMagickConverter.exec";
@@ -194,7 +200,7 @@ public class ImageMagickConverter extends Converter
      */
     public boolean isFunctional ()
     {
-	File f = new File(Config.getParameter(CONVERT_EXEC_PROPERTY));
+	File f = new File(config.getParameter(CONVERT_EXEC_PROPERTY));
 	return f.exists();
     }
 
@@ -269,7 +275,7 @@ public class ImageMagickConverter extends Converter
     {
 	// create command line
 	Vector v = new Vector();
-	v.add(Config.getParameter(CONVERT_EXEC_PROPERTY));
+	v.add(config.getParameter(CONVERT_EXEC_PROPERTY));
 	v.add(inputFile);
 
 	// added conversion parameters to command line
@@ -305,7 +311,7 @@ public class ImageMagickConverter extends Converter
 	    }
 	    else
 	    {
-		System.err.println("ImageMagickConverter.convert: parameter '"+rp.key+"' NOT IMPLEMENTED");
+		log.warn("convert: param '"+rp.key+"' NOT YET IMPLEMENTED");
 	    }
 	}
 	

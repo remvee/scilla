@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Category;
 
 import org.scilla.*;
@@ -38,14 +37,12 @@ import org.scilla.util.mp3.*;
 /**
  * This servlet handles media requests.
  *
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  * @author R.W. van 't Veer
  */
 public class Servlet extends HttpServlet
 {
     static Category log = Category.getInstance(Servlet.class);
-
-    static { BasicConfigurator.configure(); }
 
     void addStreamHeaders (Request req, HttpServletResponse response)
     {

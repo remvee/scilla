@@ -26,14 +26,22 @@ import java.util.Properties;
 import java.io.InputStream;
 import java.io.IOException;
 
+import org.apache.log4j.Category;
+
+import org.scilla.Config;
+
 /**
  * Class for mapping filenames to mime types and visa versa.
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @author R.W. van 't Veer
  */
 public class MimeTypeFactory
 {
+    static Category log = Category.getInstance(MimeTypeFactory.class);
+
+    static Config config = Config.getInstance();
+
     public static final String PROPERTY_FILE = "org/scilla/util/MimeTypeFactory.properties";
     static final String PROPERTY_PREFIX = "MimeTypeExt";
 
@@ -54,11 +62,11 @@ public class MimeTypeFactory
 	    if (in != null)
 	    {
 		param.load(in);
-		System.err.println("MimeTypeFactory: properties loaded");
+		log.info("properties loaded");
 	    }
 	    else
 	    {
-		System.err.println("MimeTypeFactory: no properties loaded");
+		log.warn("no properties loaded");
 	    }
 	}
 	catch (Exception e)

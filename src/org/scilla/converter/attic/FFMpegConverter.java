@@ -25,6 +25,8 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.apache.log4j.Category;
+
 import org.scilla.*;
 import org.scilla.core.*;
 
@@ -64,7 +66,7 @@ import org.scilla.core.*;
  *     </DL>
  * </DL>
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @see <A href="http://ffmpeg.sourceforge.net/">FFMpeg Streaming
  * Multimedia System</A>
  * @author R.W. van 't Veer
@@ -72,6 +74,10 @@ import org.scilla.core.*;
 
 public class FFMpegConverter extends Converter
 {
+    static Category log = Category.getInstance(FFMpegConverter.class);
+
+    static Config config = Config.getInstance();
+
     /** parameter name to force the use of this converter */
     public final static String THIS_CONVERTER_PARAMETER = "ffmpeg";
     public final static String FFMPEG_EXEC_PROPERTY = "FFMpegConverter.exec";
@@ -129,7 +135,7 @@ public class FFMpegConverter extends Converter
      */
     public boolean isFunctional ()
     {
-	File f = new File(Config.getParameter(FFMPEG_EXEC_PROPERTY));
+	File f = new File(config.getParameter(FFMPEG_EXEC_PROPERTY));
 	return f.exists();
     }
 
@@ -159,7 +165,7 @@ public class FFMpegConverter extends Converter
     {
 	// create command line
 	Vector v = new Vector();
-	v.add(Config.getParameter(FFMPEG_EXEC_PROPERTY));
+	v.add(config.getParameter(FFMPEG_EXEC_PROPERTY));
 
 	// input file
 	v.add("-i");
@@ -270,7 +276,7 @@ public class FFMpegConverter extends Converter
 	    }
 	    else
 	    {
-		System.err.println("FFMpegConverter.convert: param '"+rp.key+"' NOT YET IMPLEMENTED");
+		log.warn("convert: param '"+rp.key+"' NOT YET IMPLEMENTED");
 	    }
 	}
 

@@ -38,7 +38,7 @@ import org.apache.log4j.Category;
  *
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class QueuedProcess
 {
@@ -54,23 +54,22 @@ public class QueuedProcess
 
     static Semaphore sem = null;
     static int maxRunners = 5;
+    static Config config = Config.getInstance();
     static
     {
 	// get maxRunners from scilla configuration
-	String s = Config.getInstance().getParameter(MAX_RUNNERS_PROPERTY);
+	String s = config.getParameter(MAX_RUNNERS_PROPERTY);
 	try
 	{
 	    maxRunners = Integer.parseInt(s);
 	}
 	catch (NullPointerException npe)
 	{
-	    System.err.println("QueuedProcess: "+MAX_RUNNERS_PROPERTY
-		+" not availble, defaulting to: "+maxRunners);
+	    log.warn(MAX_RUNNERS_PROPERTY+" not availble, defaulting to: "+maxRunners);
 	}
 	catch (NumberFormatException nfe)
 	{
-	    System.err.println("QueuedProcess: "+MAX_RUNNERS_PROPERTY
-		+"='"+s+"': not a number, defaulting to: "+maxRunners);
+	    log.warn(MAX_RUNNERS_PROPERTY+" not a number, defaulting to: "+maxRunners, nfe);
 	}
 
 	// initialized semaphore
@@ -81,7 +80,7 @@ public class QueuedProcess
     static
     {
 	// get wrapper script from scilla configuration
-	String s = Config.getInstance().getParameter(WRAPPER_PROPERTY);
+	String s = config.getParameter(WRAPPER_PROPERTY);
 	if (s != null)
 	{
 	    wrapper = new Vector();
