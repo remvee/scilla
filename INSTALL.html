@@ -14,10 +14,10 @@
 	<DD>Used to build and install Scilla.  Available at the
 	  <A href="http://jakarta.apache.org/">Jakarta project</A>.
 	</DD>
-	<DT>Tomcat</DT>
-	<DD>A servlet/ JSP application server used to deploy Scilla.
-	  Also available at the
-	  <A href="http://jakarta.apache.org/">Jakarta project</A>.
+	<DT>Servlet/JSP application server</DT>
+	<DD>Should work with any modern servlet engine.  Tested
+	  with <A href="http://jakarta.apache.org/tomcat">Tomcat</A> and
+	  <A href="http://jetty.mortbay.com/">Jetty</A>.
 	</DD>
 	<DT>ImageMagick</DT>
 	<DD>A image manipulation suite.  Available at the
@@ -40,101 +40,95 @@
       </DL>
     </P>
 
-    <H2>Installation</H2>
+    <H2>Examples installation</H2>
     <P>
       Extract the distributed zip or tar.gz file and change directory
       to the <CODE>examples</CODE> directory.  This directory
-      contains a Ant build file called
+      contains a <CODE>ant</CODE> build file called
       <A href="examples/build.xml"><CODE>build.xml</CODE></A>.
-      This file is used to compile all the Scilla Java classes and
-      setup the Scilla configuration.
+      This file is used to compile all the Scilla Java classes,
+      create a deployment hierarchy and a war file.
     </P>
     <P>
-      The build file uses several parameters to setup the
-      configuration.
-      <TABLE border="1">
-	<TR>
-	  <TH>Property</TH>
-	  <TH>Description</TH>
-	  <TH>Default value</TH>
-	</TR>
-	<TR>
-	  <TD><CODE>build.compiler</CODE></TD>
-	  <TD>Standard Ant property to determine which Java compile is
-	    used.
-	  <TD><CODE>jikes</CODE></TD>
-	</TR>
-	<TR>
-	  <TD><CODE>tomcat.home</CODE></TD>
-	  <TD>Points to the directory where tomcat is installed.</TD>
-	  <TD><CODE>/usr/local/tomcat</CODE></TD>
-	<TR>
-	  <TD><CODE>imagick.exec</CODE></TD>
-	  <TD>Full path of the <CODE>convert</CODE> executable</TD>
-	  <TD><CODE>/usr/local/bin/convert</CODE></TD>
-	</TR>
-	<TR>
-	  <TD><CODE>lame.exec</CODE></TD>
-	  <TD>Full path of the <CODE>lame</CODE> executable</TD>
-	  <TD><CODE>/usr/local/bin/lame</CODE></TD>
-	</TR>
-	<TR>
-	  <TD><CODE>ffmpeg.exec</CODE></TD>
-	  <TD>Full path of the <CODE>ffmpeg</CODE> executable</TD>
-	  <TD><CODE>/usr/local/bin/ffmpeg</CODE></TD>
-	</TR>
-      </TABLE>
-    </P>
-    <P>
-      Install Scilla by running Ant.  Here is an example:
+      Building Scilla by running Ant.  Here is an example:
 <PRE>
-$ ant -Dtomcat.home=/opt/tomcat
+$ cd examples
+$ ant war
 Buildfile: build.xml
 
 prepare:
-    [mkdir] Created dir: /opt/tomcat/webapps/scilla/WEB-INF
-     [copy] Copying 1 file to /opt/tomcat/webapps/scilla/WEB-INF
-     [copy] Copying 11 files to /opt/tomcat/webapps/scilla
-    [mkdir] Created dir: /opt/tomcat/webapps/scilla/WEB-INF/lib
-    [mkdir] Created dir: /opt/tomcat/webapps/scilla/WEB-INF/classes
-    [mkdir] Created dir: /hm/remco/work/projects/scilla/examples/data/cache
+    [mkdir] Created dir: /tmp/scilla/examples/deploy
+     [copy] Copying 11 files to /tmp/scilla/examples/deploy
+    [mkdir] Created dir: /tmp/scilla/examples/deploy/WEB-INF
+     [copy] Copying 1 file to /tmp/scilla/examples/deploy/WEB-INF
+    [mkdir] Created dir: /tmp/scilla/examples/deploy/WEB-INF/lib
+    [mkdir] Created dir: /tmp/scilla/examples/deploy/WEB-INF/classes
+    [mkdir] Created dir: /tmp/scilla/examples/data/cache
 
 scilla:
 
 prepare:
+    [mkdir] Created dir: /tmp/scilla/examples/deploy/doc
+    [mkdir] Created dir: /tmp/scilla/build
+    [touch] Creating /tmp/scilla/excludes.txt
 
-compile.all:
+prepare.jai:
 
-compile.nojai:
-    [javac] Compiling 29 source files to /opt/tomcat/webapps/scilla/WEB-INF/classes
+prepare.log4j:
+
+prepare.compile:
 
 compile:
-     [copy] Copying 2 files to /opt/tomcat/webapps/scilla/WEB-INF/classes
+    [javac] Compiling 34 source files to /tmp/scilla/build
+     [copy] Copying 4 files to /tmp/scilla/build
+
+jar:
+      [jar] Building jar: /tmp/scilla/examples/deploy/WEB-INF/lib/scilla.jar
+
+compile:
+    [javac] Compiling 1 source file to /tmp/scilla/examples/deploy/WEB-INF/classes
+
+apidoc:
 
 prepare:
+   [delete] Deleting: /tmp/scilla/excludes.txt
+    [touch] Creating /tmp/scilla/excludes.txt
 
-config:
-   [delete] Deleting: /opt/tomcat/webapps/scilla/WEB-INF/classes/org/scilla/Config.properties
-     [copy] Copying 1 file to /opt/tomcat/webapps/scilla/WEB-INF/classes/org/scilla
-
-compile:
-    [javac] Compiling 2 source files to /opt/tomcat/webapps/scilla/WEB-INF/classes
+apidoc:
+  [javadoc] Generating Javadoc
+  [javadoc] Javadoc execution
+  [javadoc] Loading source files for package org.scilla...
+  [javadoc] Loading source files for package org.scilla.converter...
+  [javadoc] Loading source files for package org.scilla.core...
+  [javadoc] Loading source files for package org.scilla.util...
+  [javadoc] Loading source files for package org.scilla.util.mp3...
+  [javadoc] Constructing Javadoc information...
+  [javadoc] Building tree for all the packages and classes...
+  [javadoc] Building index for all the packages and classes...
+  [javadoc] Generating /tmp/scilla/examples/deploy/doc/stylesheet.css...
 
 all:
      [echo] FIN
 
+war:
+      [jar] Building jar: /tmp/scilla/examples/scilla.war
+
 BUILD SUCCESSFUL
 
-Total time: 6 seconds
+Total time: 17 seconds
+$
 </PRE>
-      In this example all but the <CODE>tomcat.home</CODE> defaults
-      are used.  JAI is not available so the JAI converter is not
-      compiled.  The other converters will always be compiled even
-      when they are not installed on the machine.
+    <P>
+      Now copy the war file to the application server deployment
+      directory (typically called <CODE>webapps</CODE>).  Tomcat
+      needs no further configuration, upon restart it will
+      recognize the new application and start it.  Jetty needs to
+      be told a new application is added but that's out of the
+      scope of this document.
     </P>
     <P>
-      Now restart the Tomcat server and point your browser to
-      something like
+      Now restart the server and point your browser to the scilla
+      examples site; something like:
       <A href="http://localhost:8080/scilla/">http://localhost:8080/scilla/</A>.
       A page with links to the examples should be visible now.  Drop
       some MP3 files (or make symlinks) in the
@@ -144,15 +138,16 @@ Total time: 6 seconds
 
     <H2>Usage</H2>
     <P>
-      Please look at the included <CODE>build.xml</CODE> files to
+      Please look at the included <CODE>build.xml</CODE> files
+      and <CODE>web.xml</CODE> file for
       details on installation and look at the examples JSPs (and HTML
       source as generated by the JSPs) for pointers on the usage of
       the converters.  All converters are documented using
-      <CODE>javadoc</CODE>.  Run <CODE>ant doc</CODE> at the top level
-      of the distributed source to generate it.
+      <CODE>javadoc</CODE>.  The API documention is included in
+      the example site.
     </P>
 
     <HR>
-    <DIV align="right"><SMALL>$Revision: 1.2 $</SMALL></DIV>
+    <DIV align="right"><SMALL>$Revision: 1.3 $</SMALL></DIV>
   </BODY>
 </HTML>
