@@ -114,7 +114,7 @@ import org.scilla.util.*;
  * </DL>
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class ExternalConverter implements Converter {
     private static final Log log = LogFactory.getLog(ExternalConverter.class);
@@ -398,7 +398,7 @@ public class ExternalConverter implements Converter {
 	}
 
         // can handle output?
-        c = (Collection) inputTypeMap.get(req.getInputType());
+        c = (Collection) outputTypeMap.get(req.getOutputType());
         if (c == null) {
             return false;
 	}
