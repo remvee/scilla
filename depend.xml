@@ -11,11 +11,4 @@
     <zip>Jetty-4.2.4.zip</zip>
     <jar>Jetty-4.2.4/lib/javax.servlet.jar</jar>
   </package>
-  <package name="jstl" packaged="true" runtime="true">
-    <class>javax.servlet.jsp.jstl.core.LoopTagStatus</class>
-    <baseurl>http://www.apache.org/dist/jakarta/taglibs/standard/binaries</baseurl>
-    <zip>jakarta-taglibs-standard-1.1.0-B1.zip</zip>
-    <jar>jakarta-taglibs-standard-1.1.0-B1/lib/jstl.jar</jar>
-    <jar>jakarta-taglibs-standard-1.1.0-B1/lib/standard.jar</jar>
-  </package>
 </dependencies>
