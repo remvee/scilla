@@ -1,4 +1,10 @@
 For version 1.0:
+- scilla taglib, load media via
+	config.getServletContext().getResourceAsStream("spam.jpg")
+    image tag:
+	<scilla:img src="spam.jpg" scale="100x100"/>
+    yields:
+	<img src="servlet/img.jpg?1234567890" width="100" height="75" alt=""/>
 - examples:
     - mp3.jsp
 	- stream mono originals as mono stream
@@ -23,11 +29,6 @@ Future:
 	- mp3: format and id3
 	- image: type, format, size..
     - taglibs for accessing request info?
-- scilla taglib:
-    image tag:
-	<scilla:img src="spam.jpg" scale="100x100"/>
-    yields:
-	<img src="servlet/img.jpg?1234567890" width="100" height="75" alt=""/>
 - RequestFactory:
     - command line
     - xml for a ant task
