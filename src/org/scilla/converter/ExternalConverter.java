@@ -110,7 +110,7 @@ import org.scilla.util.*;
  * </DL>
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class ExternalConverter implements Converter
 {
@@ -163,9 +163,9 @@ public class ExternalConverter implements Converter
 		StringTokenizer keyst = new StringTokenizer(tail, ""+keyDelimiter);
 		String name = keyst.nextToken();
 		String type = keyst.nextToken();
+		String val = config.getString(key);
 		if (type.equals("exec"))
 		{
-		    final String val = config.getString(key);
 		    execMap.put(name, val);
 
 		    // blacklist it if executable not available
@@ -180,7 +180,7 @@ public class ExternalConverter implements Converter
 		}
 		else if (type.equals("format"))
 		{
-		    formatMap.put(name, config.getString(key));
+		    formatMap.put(name, val);
 		}
 		else if (type.equals("ignore_exitstat"))
 		{
@@ -192,11 +192,11 @@ public class ExternalConverter implements Converter
 		}
 		else if (type.equals("silent_switch"))
 		{
-		    silentSwitchMap.put(name, config.getString(key));
+		    silentSwitchMap.put(name, val);
 		}
 		else if (type.equals("inputtypes"))
 		{
-		    StringTokenizer st = new StringTokenizer(config.getString(key));
+		    StringTokenizer st = new StringTokenizer(val);
 		    while (st.hasMoreTokens())
 		    {
 			String mtype = st.nextToken();
@@ -211,7 +211,7 @@ public class ExternalConverter implements Converter
 		}
 		else if (type.equals("outputtypes"))
 		{
-		    StringTokenizer st = new StringTokenizer(config.getString(key));
+		    StringTokenizer st = new StringTokenizer(val);
 		    while (st.hasMoreTokens())
 		    {
 			String mtype = st.nextToken();
@@ -229,11 +229,11 @@ public class ExternalConverter implements Converter
 		    if (keyst.hasMoreTokens())
 		    {
 			String mtype = keyst.nextToken();
-			inputSwitchMap.put(name+keyDelimiter+mtype, config.getString(key));
+			inputSwitchMap.put(name+keyDelimiter+mtype, val);
 		    }
 		    else
 		    {
-			inputSwitchMap.put(name, config.getString(key));
+			inputSwitchMap.put(name, val);
 		    }
 		}
 		else if (type.equals("outputswitch"))
@@ -241,11 +241,11 @@ public class ExternalConverter implements Converter
 		    if (keyst.hasMoreTokens())
 		    {
 			String mtype = keyst.nextToken();
-			outputSwitchMap.put(name+keyDelimiter+mtype, config.getString(key));
+			outputSwitchMap.put(name+keyDelimiter+mtype, val);
 		    }
 		    else
 		    {
-			outputSwitchMap.put(name, config.getString(key));
+			outputSwitchMap.put(name, val);
 		    }
 		}
 		else if (type.equals("switch"))
@@ -271,7 +271,7 @@ public class ExternalConverter implements Converter
 			    h = new Hashtable();
 			    stringSwitchMap.put(name, h);
 			}
-			h.put(sname, config.getString(key));
+			h.put(sname, val);
 		    }
 		    else if (stype.equals("number"))
 		    {
@@ -281,7 +281,7 @@ public class ExternalConverter implements Converter
 			    h = new Hashtable();
 			    numberSwitchMap.put(name, h);
 			}
-			h.put(sname, config.getString(key));
+			h.put(sname, val);
 		    }
 		    else if (stype.equals("boolean"))
 		    {
@@ -291,7 +291,7 @@ public class ExternalConverter implements Converter
 			    h = new Hashtable();
 			    booleanSwitchMap.put(name, h);
 			}
-			h.put(sname, config.getString(key));
+			h.put(sname, val);
 		    }
 		}
 	    }
