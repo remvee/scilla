@@ -15,7 +15,7 @@ throws IOException
     String encoding = (request.getRemoteHost().equals("localhost")
 	    || request.getRemoteHost().equals("127.0.0.1"))
 	    ? "file" : "stream";
-    String imgSrc = "servlet/scilla/speaker.png?scale=14x14";
+    String imgSrc = "servlet/scilla/speaker.png?scale=14x14&outputtype=gif";
     out.println("<A href=\"servlet/playlist.m3u"+
 	    "?f="+encoding+
 	    "&d="+pathEncoded+
@@ -466,7 +466,7 @@ throws IOException
 		    s = s.replace(' ', '+');
 %>
 			    <TD>
-				<A href="<%=urlHead+s%>"><IMG src="<%=urlHead+s%>?scale=75x75" border=0></A>
+				<A href="<%=urlHead+s%>"><IMG src="<%=urlHead+s%>?scale=75x75&outputtype=jpg" border=0></A>
 			    </TD>
 <%
 		}
