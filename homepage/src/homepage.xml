@@ -57,6 +57,7 @@
 	    The following releases are considered to be stable.
 	</para>
 	<release tag="RELEASE_0_9_3" filebase="scilla-0_9_3"><![CDATA[
+	    23.II.2002
 	    <UL>
 		<LI>no longer depended on tomcat; generate war-file now</LI>
 		<LI>simplified configuration; executable location
@@ -68,6 +69,7 @@
 	    </UL>
 	]]></release>
 	<release tag="RELEASE_0_9_2" filebase="scilla-0_9_2"><![CDATA[
+	    30.XI.2001
 	    <UL>
 		<LI>replaced lame, imagick and ffmpeg converters by external converter</LI>
 		<LI>configuration revamped</LI>
@@ -77,6 +79,7 @@
 	    </UL>
 	]]></release>
 	<release tag="RELEASE_0_9_1" filebase="scilla-0_9_1"><![CDATA[
+	    12.X.2001
 	    <UL>
 		<LI>convertsion error handling</LI>
 		<LI>added ffmpeg converter</LI>
@@ -84,7 +87,10 @@
 	    </UL>
 	]]></release>
 	<release tag="RELEASE_0_9" filebase="scilla-0_9"><![CDATA[
-	    Initial release.
+	    28.IX.2001
+	    <UL>
+		<LI>initial release</LI>
+	    </UL>
 	]]></release>
     </section>
 
