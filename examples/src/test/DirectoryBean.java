@@ -16,14 +16,9 @@ public class DirectoryBean {
     public DirectoryBean (String path)
     throws Exception {
 	if (path == null || path.length() == 0) {
-	    path = AppConfig.getSourceDir();
+	    path = "";
 	}
 	this.path = path;
-
-	// "security"
-	if (!path.startsWith(AppConfig.getSourceDir())) {
-	    throw new Exception("illegal access");
-	}
 
 	// basename
 	int i = path.lastIndexOf(File.separator);
@@ -40,14 +35,9 @@ public class DirectoryBean {
     public void setPath (String path)
     throws Exception {
 	if (path == null || path.length() == 0) {
-	    path = AppConfig.getSourceDir();
+	    path = "";
 	}
 	this.path = path;
-
-	// "security"
-	if (!path.startsWith(AppConfig.getSourceDir())) {
-	    throw new Exception("illegal access");
-	}
 
 	scan(true);
     }
@@ -60,10 +50,7 @@ public class DirectoryBean {
     throws Exception {
 	int i = path.lastIndexOf('/');
 	if (i != -1) {
-	    String parent = path.substring(0, i);
-	    if (parent.startsWith(AppConfig.getSourceDir())) {
-		return parent;
-	    }
+	    return path.substring(0, i);
 	}
 	return null;
     }
@@ -74,8 +61,8 @@ public class DirectoryBean {
 	Map typemap = new HashMap();
 	///////////////////////////////////////
 
-	String source = AppConfig.getSourceDir();
-	String pathname = path;
+	String pathname = AppConfig.getSourceDir() + File.separator + path;
+System.out.println("pathname="+pathname);
 
 	String[] files = (new File(pathname)).list();
 	Arrays.sort(files);
@@ -98,7 +85,7 @@ public class DirectoryBean {
 		    list = new ArrayList();
 		    lists.put(type, list);
 		}
-		list.add(new DirectoryBean(fname));
+		list.add(new DirectoryBean(path + File.separator + files[i]));
 	    } else {
 		Info info = InfoFactory.get(fname);
 		if (info != null) {

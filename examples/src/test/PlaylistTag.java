@@ -17,7 +17,7 @@ import org.scilla.info.AudioInfo;
  * attributes.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class PlaylistTag extends TagSupport {
     /** logger */
@@ -60,12 +60,6 @@ public class PlaylistTag extends TagSupport {
 	    Object obj = pageContext.findAttribute(name);
 	    if (obj instanceof DirectoryBean) {
 		String fname = ((DirectoryBean) obj).getPath();
-		String source = AppConfig.getSourceDir();
-		if (! fname.startsWith(source)) {
-		    log.error("! "+fname+".startsWith("+source+")");
-		    throw new Exception("data not found");
-		}
-		fname = fname.substring(source.length());
 		out.append(URLEncoder.encode(fname));
 	    } else if (obj instanceof AudioInfo) {
 		String fname = ((AudioInfo) obj).getPathName();
