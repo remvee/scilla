@@ -128,7 +128,6 @@
 	Object getTextFrame (String id)
 	{
 	    TextFrame f = (TextFrame) tag2.getFrame(id);
-System.out.println("getTextFrame="+f);
 	    if (f == null) return null;
 
 	    String t = f.getText();
@@ -161,7 +160,6 @@ System.out.println("getTextFrame="+f);
 		    Mp3File f = (Mp3File) it.next();
 		    keySet.addAll(f.getKeySet());
 		}
-System.out.println("keySet="+keySet);
 	    }
 	    return keySet;
 	}
@@ -182,7 +180,6 @@ System.out.println("keySet="+keySet);
 		set.add(f.getProp(key));
 	    }
 
-System.out.println("count("+key+")="+set.size());
 	    countMap.put(key, new Integer(set.size()));
 	    return set.size();
 	}
@@ -206,8 +203,6 @@ System.out.println("count("+key+")="+set.size());
 	    }
 
 	    Object r = set.size() > 1 ? set : last;
-System.out.println("getProp("+key+"):"+set);
-System.out.println("getProp("+key+")="+r);
 	    propMap.put(key, r);
 	    return r;
 	}
@@ -316,7 +311,7 @@ System.out.println("getProp("+key+")="+r);
 	if (vec.size() + imgVec.size() + m3uVec.size() + htmVec.size() == 0
 		    && dirVec.size() == 1)
 	{
-	    String s = (path + "/" + dirVec.get(0)).replace(' ', '+');
+	    String s = (path + "/"+dirVec.get(0)).replace(' ', '+');
 	    response.sendRedirect("mp3.jsp?d="+s);
 	}
 
@@ -357,20 +352,95 @@ System.out.println("getProp("+key+")="+r);
 	</TITLE>
 	<LINK rel="stylesheet" type="text/css" href="mp3.css"/>
     </HEAD>
-<%
-	out.print("<BODY" + (background == null ? " bgcolor=\"#EEEEEE\">"
-		: " background=\""+background+"\">"));
-%>
-       <TABLE bgcolor="#FFFFFF" cellpadding=10>
-           <TR>
+    <%= "<BODY "+(background == null?"bgcolor=\"#EEEEEE":"background=\""+background)+"\">" %>
+        <TABLE bgcolor="#FFFFFF" cellpadding=10>
 <%
 	int colWidth = 0;
 
+	// subdirectories, htmls, playlists in this directory
+	{
+	    List other = new Vector();
+	    other.addAll(dirVec);
+	    other.addAll(htmVec);
+	    other.addAll(m3uVec);
+
+	    if (other.size() > 0)
+	    {
+%>
+	    <TR>
+		<TD>
+		    <TABLE>
+<%
+		// subdirectories
+		{
+		    Iterator it = dirVec.iterator();
+		    for (int i = 0; it.hasNext(); i++)
+		    {
+			if (i % 5 == 0)
+			{
+			    if (i > 0)
+			    {
+%>
+			</TR>
+<%
+			    }
+%>
+			<TR>
+<%
+			}
+			String s = (String) it.next();
+			String sEncoded = (path + "/" + s).replace(' ', '+');
+%>
+                           <TD>
+				<A href="mp3.jsp?d=<%= sEncoded %>"><%= s %></A>/
+<%
+			streamLinks(request, out, path+"/"+s, true);
+%>
+				&nbsp;&nbsp;&nbsp;
+                           </TD>
+<%
+		    }
+		}
+		// html files
+		{
+		    Iterator it = htmVec.iterator();
+		    for (int i = 0; it.hasNext(); i++)
+		    {
+			if (i % 5 == 0)
+			{
+			    if (i > 0)
+			    {
+%>
+			</TR>
+<%
+			    }
+%>
+			<TR>
+<%
+			}
+			String s = (String) it.next();
+			String sEnc = s.replace(' ', '+');
+%>
+			    <TD>
+				<A href="<%=urlHead+sEnc%>"><%= s %></A>
+				&nbsp;&nbsp;&nbsp;
+			    </TD>
+<%
+		    }
+		}
+%>
+		    </TABLE>
+		</TD>
+	    </TR>
+<%
+	    }
+	}
 
 	// audio tracks in this directory
 	if (vec.size() > 0)
 	{
 %>
+	    <TR>
 		<TD align="left" valign="top">
 		    <TABLE>
 <%
@@ -536,10 +606,10 @@ System.out.println("getProp("+key+")="+r);
 <%
 		colWidth++;
 	    }
-	}
 %>
 	    </TR>
 <%
+	}
 	// images in this directory
 	{
 	    Iterator it = imgVec.iterator();
@@ -547,7 +617,7 @@ System.out.println("getProp("+key+")="+r);
 	    {
 %>
 	    <TR>
-		<TD colspan="<%= colWidth %>">
+		<TD>
 		    <TABLE>
 <%
 		for (int i = 0; it.hasNext(); i++)
@@ -580,70 +650,6 @@ System.out.println("getProp("+key+")="+r);
 	    }
 	}
 
-	// subdirectories, htmls, playlists in this directory
-	Iterator it1 = dirVec.iterator();
-	Iterator it2 = m3uVec.iterator();
-	Iterator it3 = htmVec.iterator();
-	if (it1.hasNext() || it2.hasNext() || it3.hasNext())
-	{
-%>
-		<TD colspan="<%= colWidth %>" align="left" valign="top">
-		    <TABLE>
-<%
-	    // subdirectories in this directory
-	    while (it1.hasNext())
-	    {
-		String s = (String) it1.next();
-		String sEncoded = (path + "/" + s).replace(' ', '+');
-%>
-			<TR>
-			    <TD>
-				<A href="mp3.jsp?d=<%= sEncoded %>"><%= s %></A>/
-			    </TD>
-			    <TD>
-<%
-		streamLinks(request, out, path+"/"+s, true);
-%>
-			    </TD>
-			</TR>
-<%
-	    }
-	    // playlists in this directory
-	    while (it2.hasNext())
-	    {
-		String s = (String) it2.next();
-%>
-			<TR>
-			    <TD>
-				<%=s.substring(0, s.lastIndexOf('.'))%>
-			    </TD>
-			    <TD>
-<%
-		streamLinks(request, out, path+"/"+s);
-%>
-			    </TD>
-			</TR>
-<%
-	    }
-	    // htmls in this directory
-	    while (it3.hasNext())
-	    {
-		String s = (String) it3.next();
-		String url = "servlet/scilla/"+path+"/"+s;
-%>
-			<TR>
-			    <TD colspan="2">
-				<A href="<%= url %>"><%= s %></A>
-			    </TD>
-			</TR>
-<%
-	    }
-%>
-		    </TABLE>
-		</TD>
-<%
-	    colWidth++;
-	}
 %>
 	</TABLE>
 <%
