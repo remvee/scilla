@@ -34,7 +34,7 @@ import org.scilla.converter.*;
  * A runner object is a media object currently being converted.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class RunnerObject implements MediaObject
 {
@@ -65,31 +65,34 @@ public class RunnerObject implements MediaObject
     public void start ()
     {
 	// are we caching this?
-	if (! deleteOutput)
-	{
-	    cache.addRunner(conv.getOutputFile(), this);
-	}
+	if (! deleteOutput) cache.addRunner(conv.getOutputFile(), this);
 
 	// start converter thread
 	conv.start();
     }
 
     /**
-     * @return true if runner has finished
+     * Determine if converter still running.  If so try to remove
+     * runner from the CacheManager runner list.
+     * @return true if converter has finished
+     * @see org.scilla.core.CacheManager#removeRunner(String)
      */
     public boolean hasFinished ()
     {
-	return conv.hasFinished();
+	boolean flag = conv.hasFinished();
+
+	// remove me runner list when we are finished
+	if (flag) cache.removeRunner(conv.getOutputFile());
+
+	return flag;
     }
 
     /**
      * Write data to stream.  First wait for the file to appear then
-     * follow it till converter is finished.  Upon completion remove
-     * this runner from the CacheManager runner list.
+     * follow it till converter is finished.
      * @param out stream to write to
      * @throws ScillaException when a read or write problem occures
      * @see #start()
-     * @see org.scilla.core.CacheManager#removeRunner(String)
      */
     public void write (OutputStream out)
     throws ScillaException
@@ -98,7 +101,7 @@ public class RunnerObject implements MediaObject
 
 	// wait for file to appear
 	File f = new File(filename);
-	while (! f.exists() && ! conv.hasFinished())
+	while (! f.exists() && ! hasFinished())
 	{
 	    try
 	    {
@@ -123,7 +126,7 @@ public class RunnerObject implements MediaObject
 		}
 		catch (InterruptedException ex) { }
 
-		while (in.available() > 0 && ! conv.hasFinished())
+		while (in.available() > 0 && ! hasFinished())
 		{
 		    n = in.read(b);
 		    try
@@ -136,7 +139,7 @@ public class RunnerObject implements MediaObject
 		    }
 		}
 	    }
-	    while (! conv.hasFinished()); // until converter thread ready
+	    while (! hasFinished()); // until converter thread finished
 
 	    // till EOF
 	    while ((n = in.read(b)) != -1)
@@ -155,16 +158,12 @@ public class RunnerObject implements MediaObject
 	{
 	    throw new ScillaInputIOException(ex);
 	}
-
-	// remove runner if we cached this
-	if (! deleteOutput)
+	finally
 	{
+	    // remove runner if we cached this
 	    cache.removeRunner(filename);
-	}
-	else
-	{
-	    // delete file
-	    f.delete();
+
+	    if (deleteOutput) f.delete();
 	}
     }
 
