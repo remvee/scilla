@@ -1,4 +1,7 @@
 For version 1.0:
+- Servlet:
+    don't hard code only source and cache dir, but allow all
+    properties to be set.
 - JAIConverter
     - sync parameters with imagick so they will be interchangable.
       Maybe we want to define parameter sets as kind of interface?
