@@ -1,71 +1,44 @@
-<%@ page import="java.io.File" %>
-<%@ page import="org.scilla.*,org.scilla.info.*" %>
-<%
-    String file = "";
-    if (request.getParameter("f") != null) {
-	file = request.getParameter("f");
-    }
-%>
+<%@ taglib uri="/WEB-INF/scilla.tld" prefix="scilla" %>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+
+<jsp:useBean id="image" scope="request" class="test.ImageBean"/>
+<c:if test="${param.f != null}">
+    <jsp:setProperty name="image" property="fileName" value='<%= request.getParameter("f") %>'/>
+</c:if>
+
 <html>
-    <head>
-	<title>
-	    img: <%= file %>
-	</title>
-    </head>
     <body bgcolor="white">
 	<table width="100%" height="100%">
-	    <tr>
-		<td align="center" valign="center">
-<%
-    if (! file.equals(""))
-    {
-	String fname = ConfigProvider.get().getString(Config.SOURCE_DIR_KEY)+File.separator+file;
-	ImageInfo info = (ImageInfo) InfoFactory.get(fname);
-	String spec = "";
-	if (info != null) {
-	    spec = " ("+info.getWidth()+"x"+info.getHeight()
-		    +" "+info.getString(ImageInfo.CODEC)+")";
-	}
-
-	String imgUrl = "scilla/"+file+"?outputtype=jpg&scale=600x600";
-	String img640x480 = "scilla/"+file+"?outputtype=jpg&scale=640x480";
-	String img800x600 = "scilla/"+file+"?outputtype=jpg&scale=800x600";
-	String img1024x768 = "scilla/"+file+"?outputtype=jpg&scale=1024x768";
-	String img1280x1024 = "scilla/"+file+"?outputtype=jpg&scale=1280x1024";
-	String img1600x1200 = "scilla/"+file+"?outputtype=jpg&scale=1600x1200";
-	String img1800x1440 = "scilla/"+file+"?outputtype=jpg&scale=1800x1440";
-	String imgOrig = "scilla/"+file;
-%>
-		    <div align="center">
-			<code><%=file%></code>
+	    <tr><td align="center" valign="center"><div align="center">
+		<c:choose>
+		    <c:when test="${param.f != null}">
+			<code><c:out value="${image.fileName}"/></code>
 			<p>
-			    <img src="<%= imgUrl %>" border="1" />
+			    <scilla:img name="image" transform="scale(600x600)" border="1"/>
+			</p>
 			<p>
-			<a href="<%= img640x480 %>">640x480</a>
-			|
-			<a href="<%= img800x600 %>">800x600</a>
-			|
-			<a href="<%= img1024x768 %>">1024x768</a>
-			|
-			<a href="<%= img1280x1024 %>">1280x1024</a>
-			|
-			<a href="<%= img1600x1200 %>">1600x1200</a>
-			|
-			<a href="<%= img1800x1440 %>">1800x1440</a>
-			|
-			<a href="<%= imgOrig %>">Original<small><%=spec%></small></a>
-		    </div>
-<%
-    }
-    else
-    {
-%>
-		    <strong>Image Browser</strong>
-<%
-    }
-%>
-		</td>
-	    </tr>
+			    <scilla:img name="image" var="url" transform="scale(640x480)"/>
+			    <a href="<c:out value="${url}"/>">640x480</a> |
+			    <scilla:img name="image" var="url" transform="scale(800x600)"/>
+			    <a href="<c:out value="${url}"/>">800x600</a> |
+			    <scilla:img name="image" var="url" transform="scale(1024x768)"/>
+			    <a href="<c:out value="${url}"/>">1024x768</a> |
+			    <scilla:img name="image" var="url" transform="scale(1280x1024)"/>
+			    <a href="<c:out value="${url}"/>">1280x1024</a> |
+			    <scilla:img name="image" var="url" transform="scale(1600x1200)"/>
+			    <a href="<c:out value="${url}"/>">1600x1200</a> |
+			    <scilla:img name="image" var="url" transform="scale(1800x1440)"/>
+			    <a href="<c:out value="${url}"/>">1800x1440</a> |
+			    <scilla:img name="image" var="url"/>
+			    <a href="<c:out value="${url}"/>">Original
+			    <small><c:out value="${image.width}x${image.height}"/></small></a>
+			</p>
+		    </c:when>
+		    <c:otherwise>
+			<strong>Image Browser</strong>
+		    </c:otherwise>
+		</c:choose>
+	    </div></td></tr>
 	</table>
     </body>
 </html>
