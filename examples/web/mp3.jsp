@@ -129,10 +129,10 @@ throws IOException
 	}
 
 %>
-	<HTML>
-	    <HEAD>
-		<TITLE>
-		    mp3:
+<HTML>
+    <HEAD>
+	<TITLE>
+	    mp3:
 <%
 	int artistCount = artistHash.size();
 	int albumCount = albumHash.size();
@@ -144,13 +144,13 @@ throws IOException
 	    if (artist.equals(album))
 	    {
 %>
-		    <%= artist %>
+	    <%= artist %>
 <%
 	    }
 	    else
 	    {
 %>
-		    <%= artist %> - <%= album %>
+	    <%= artist %> - <%= album %>
 <%
 	    }
 	}
@@ -158,109 +158,125 @@ throws IOException
 		|| artistCount == 0 && albumCount == 0)
 	{
 %>
-		    Miscellaneous
+	    Miscellaneous
 <%
 	}
 	else if (artistCount == 1)
 	{
 %>
-		    <%= artist %>
+	    <%= artist %>
 <%
 	}
 	else if (albumCount == 1)
 	{
 %>
-		    <%= album %>
+	    <%= album %>
 <%
 	}
 	else
 	{
 %>
-		    Huh?
+	    Huh?
 <%
 	}
 %>
-		</TITLE>
-	    </HEAD>
+	</TITLE>
+    </HEAD>
 <%
 	out.print("<BODY" + (background == null ? " BGCOLOR=WHITE>"
 		: " BACKGROUND=\""+background+"\">"));
 %>
-
-	<UL>
+	<TABLE>
+	    <TR>
 <%
-	e = dirVec.elements();
-	for (int num = 1; e.hasMoreElements(); num++)
+	Enumeration e1 = dirVec.elements();
+	Enumeration e2 = m3uVec.elements();
+	if (e1.hasMoreElements() || e2.hasMoreElements())
 	{
-	    String s = (String) e.nextElement();
-	    String sEncoded = (path + "/" + s).replace(' ', '+');
+	    int num = 1;
 %>
-	    <LI>
-		<A href="mp3.jsp?d=<%=sEncoded%>"> <%=s%> </A>
-	    </LI>
+		<TD align="left" valign="top">
+		    <UL>
 <%
-	}
+	    for (; e1.hasMoreElements(); num++)
+	    {
+		String s = (String) e1.nextElement();
+		String sEncoded = (path + "/" + s).replace(' ', '+');
 %>
-	</UL>
-
-	<UL>
+			<LI>
+			    <A href="mp3.jsp?d=<%= sEncoded %>"><%= s %></A>/
+			</LI>
 <%
-	e = m3uVec.elements();
-	for (int num = 1; e.hasMoreElements(); num++)
-	{
-	    String s = (String) e.nextElement();
+	    }
+	    for (; e2.hasMoreElements(); num++)
+	    {
+		String s = (String) e2.nextElement();
 %>
-	    <LI>
-		<%=s%>
+			<LI>
+			    <%=s.substring(0, s.lastIndexOf('.'))%>
 <%
 		streamLinks(request, out, path+"/"+s);
 %>
-	    </LI>
+			</LI>
+<%
+	    }
+	    if (num != 1)
+	    {
+%>
+		    </UL>
+<%
+	    }
+%>
+		</TD>
+		<TD>&nbsp;&nbsp;&nbsp;</TD>
 <%
 	}
-%>
-	</UL>
-<%
-	if (vec.size() > 0 && dirVec.size() > 0) out.write("<HR>");
 	if (vec.size() > 0)
 	{
 %>
-	<DIV align=left>
-	    <TABLE>
-		<TR>
-		    <TD>
-			<TABLE width="100%">
-			    <TR>
-				<TD align=left>
-				    <BIG><STRONG>
-					<%=(artistCount == 1 ? artist : "")%>
-				    </STRONG></BIG>
-				</TD>
-				<TD>&nbsp;</TD>
-				<TD align=right rowspan=2>
-				    <SMALL>
-					<%=(yearCount == 1 ? year : "")%>
-					<BR>
-					<%=(commentCount == 1 ? comment : "")%>
-				    </SMALL>
-				</TD>
-			    </TR>
-			    <TR>
-				<TD align=left>
-				    <BIG><STRONG>
-					<%=(albumCount == 1 ? album : "")%>
-				    </STRONG></BIG>
-				</TD>
-				<TD>&nbsp;</TD>
-			    </TR>
-			</TABLE>
-		    </TD>
-		</TR>
-		<TR>
-		    <TD>
-			<TABLE width="100%" bgcolor="#EEEEEE" cellspacing=5 cellpadding=5>
+		<TD align="left" valign="top">
+		    <TABLE>
 <%
-	    // loop to list
+	    if (artistCount > 0 || albumCount == 1 || yearCount == 1 || commentCount == 1)
+	    {
+%>
+			<TR>
+			    <TD>
+				<TABLE width="100%">
+				    <TR>
+					<TD align=left>
+					    <BIG><STRONG>
+						<%=(artistCount == 1 ?  artist : (artistCount != 0 ? "Various" : ""))%>
+					    </STRONG></BIG>
+					</TD>
+					<TD>&nbsp;</TD>
+					<TD align=right rowspan=2>
+					    <SMALL>
+						<%=(yearCount == 1 ? year : "")%>
+						<BR>
+						<%=(commentCount == 1 ? comment : "")%>
+					    </SMALL>
+					</TD>
+				    </TR>
+				    <TR>
+					<TD align=left>
+					    <BIG><STRONG>
+						<%=(albumCount == 1 && ! album.equals(artist) ? album : "")%>
+					    </STRONG></BIG>
+					</TD>
+					<TD>&nbsp;</TD>
+				    </TR>
+				</TABLE>
+			    </TD>
+			</TR>
+<%
+	    }
+%>
+			<TR>
+			    <TD>
+				<TABLE width="100%" bgcolor="#EEEEEE" cellspacing=5 cellpadding=5>
+<%
+	    // loop through list
 	    int tlength = 0;
 	    e = vec.elements();
 	    for (int num = 1; e.hasMoreElements(); num++)
@@ -305,60 +321,60 @@ throws IOException
 		}
 
 %>
-			    <TR>
-				<TD align="right"><%=num%></TD>
+				    <TR>
+					<TD align="right"><%=num%></TD>
 <%
 		if (artistHash.size() > 1) out.write("<TD> "+artistT+"</TD>");
 		if (albumHash.size() > 1) out.write("<TD> "+albumT+"</TD>");
 %>
-				<TD>
-				    <STRONG>
-					<%=titleT%>
-				    </STRONG>
-				</TD>
+					<TD>
+					    <STRONG>
+						<%=titleT%>
+					    </STRONG>
+					</TD>
 <%
 		if (commentHash.size() > 1) out.write("<TD>"+commentT+"</TD>");
 		if (yearHash.size() > 1) out.write("<TD> "+yearT+"</TD>");
 %>
-				<TD align=right>
-				    <TT>
-					<%=length/60+":"+(length%60>9?"":"0")+length%60%>
-				    </TT>
-				</TD>
-				<TD>
-				    <FONT size=-2>
+					<TD align=right>
+					    <TT>
+						<%=length/60+":"+(length%60>9?"":"0")+length%60%>
+					    </TT>
+					</TD>
+					<TD>
+					    <FONT size=-2>
 <%
 		streamLinks(request, out, filepath);
 %>
-				    </FONT>
-				</TD>
+					    </FONT>
+					</TD>
 <%
 		if (fh != null)
 		{
 %>
 <!--
-				<TD align=right>
-				    <FONT size=-5>
-					<%="MPEG"+fh.mpegVersionToString()%>
-					<%=fh.layerToInt()==1?"I":fh.layerToInt()==2?"II":"III"%>
-					<%=fh.getBitRate()%>Kbit/s
-					<%=fh.getSampleRate()/1000%>Khz
-					<%=fh.channelModeToString()%>
-					<BR>
-					<%=f.length()<1024?f.length():f.length()<1024*1024?f.length()/1024:f.length()/(1024*1024)%>
-					<%=f.length()<1024?"bytes":f.length()<1024*1024?"Kbytes":"Mbytes"%>
-					<A href="<%=urlHead+f.getName().replace(' ', '+')%>">Download</A>
-				    </FONT>
-				</TD>
+					<TD align=right>
+					    <FONT size=-5>
+						<%="MPEG"+fh.mpegVersionToString()%>
+						<%=fh.layerToInt()==1?"I":fh.layerToInt()==2?"II":"III"%>
+						<%=fh.getBitRate()%>Kbit/s
+						<%=fh.getSampleRate()/1000%>Khz
+						<%=fh.channelModeToString()%>
+						<BR>
+						<%=f.length()<1024?f.length():f.length()<1024*1024?f.length()/1024:f.length()/(1024*1024)%>
+						<%=f.length()<1024?"bytes":f.length()<1024*1024?"Kbytes":"Mbytes"%>
+						<A href="<%=urlHead+f.getName().replace(' ', '+')%>">Download</A>
+					    </FONT>
+					</TD>
 -->
 <%
 		}
 %>
-			    </TR>
+				    </TR>
 <%
 	    }
 %>
-			    <TR>
+				    <TR>
 <%
 	    // padding
 	    out.write("<TD></TD>");
@@ -368,27 +384,30 @@ throws IOException
 	    if (commentCount > 1) out.write("<TD></TD>");
 	    if (yearCount > 1) out.write("<TD></TD>");
 %>
-				<TD align=right>
-				    <TT>
-					<%=tlength/60+":"+(tlength%60>9?"":"0")+tlength%60%>
-				    </TT>
-				</TD>
-				<TD>
-				    <FONT size=-2>
+					<TD align=right>
+					    <TT>
+						<%=tlength/60+":"+(tlength%60>9?"":"0")+tlength%60%>
+					    </TT>
+					</TD>
+					<TD>
+					    <FONT size=-2>
 <%
 	    streamLinks(request, out, path);
 %>
-				    </FONT>
-				</TD>
-			    </TR>
-			</TABLE>
-		    </TD>
-		</TR>
-	    </TABLE>
-	</DIV>
-
+					    </FONT>
+					</TD>
+				    </TR>
+				</TABLE>
+			    </TD>
+			</TR>
+		    </TABLE>
+		</TD>
 <%
 	}
+%>
+	    </TR>
+	</TABLE>
+<%
 
 	if (imgVec.size() > 0) out.print("<HR>");
 	e = imgVec.elements();
@@ -397,7 +416,7 @@ throws IOException
 	    String s = (String) e.nextElement();
 	    s = s.replace(' ', '+');
 %>
-	    <A href="<%=urlHead+s%>"><IMG SRC="<%=urlHead+s%>?scale=75x75"></A>
+	<A href="<%=urlHead+s%>"><IMG SRC="<%=urlHead+s%>?scale=75x75"></A>
 <%
 	}
     }
@@ -408,4 +427,5 @@ throws IOException
 <%
     }
 %>
-</BODY></HTML>
+    </BODY>
+</HTML>
