@@ -1,7 +1,10 @@
 For version 1.0:
+- property log4j configuration
 - examples:
-    - admin.jsp: all classes depending on Config should listen
-      for changes
+    - admin.jsp
+	- only from localhost
+	- all classes depending on Config should listen for
+	  changes
 - make work with orion
 - review threading mess
 - JAIConverter
