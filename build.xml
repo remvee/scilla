@@ -56,7 +56,7 @@
     </available>
   </target>
 
-  <target name="prepare.log4j" unless="log4j.available">
+  <target name="prepare.log4j" unless="log4j.available" depends="download.log4j">
     <copy file="${expand.dir}/${log4j.jar}" tofile="${lib.dir}/log4j.jar"/>
   </target>
 
