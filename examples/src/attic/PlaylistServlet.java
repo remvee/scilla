@@ -9,6 +9,7 @@ import org.scilla.Config;
 import org.scilla.ConfigProvider;
 import org.scilla.Logger;
 import org.scilla.LoggerFactory;
+import org.scilla.util.mp3.*;
 
 public class PlaylistServlet extends HttpServlet
 {
@@ -85,10 +86,17 @@ public class PlaylistServlet extends HttpServlet
 	{
 	    // create mpegurl data
 	    response.setContentType("audio/mpegurl");
+	    out.println("#EXTM3U");
 	    Iterator it = files.iterator();
 	    while (it.hasNext())
 	    {
 		String fn = (String) it.next();
+
+		// track info
+		File t = new File(source+File.separator+fn);
+		out.println("#EXTINF:"+getTrackLength(t)+","+getTrackTitle(t));
+
+		// url
 		fn = fn.replace(File.separatorChar, '/');
 		fn = fn.replace(' ', '+');
 		out.println(urlPrefix+fn+encoding);
@@ -103,6 +111,51 @@ public class PlaylistServlet extends HttpServlet
 	    out.println("<H1>Playlist of type: '"+type+"' NOT YET IMPLEMENTED</H1>");
 	    out.println("</BODY></HTML>");
 	}
+    }
+
+    String getTrackTitle (File track)
+    {
+	String title = "";
+	try
+	{
+	    ID3v1 id3 = new ID3v1(track);
+	    if (id3.getArtist() != null && id3.getArtist().length() != 0)
+	    {
+		title += id3.getArtist() + " - ";
+	    }
+	    if (id3.getAlbum() != null && id3.getAlbum().length() != 0)
+	    {
+		title += id3.getAlbum() + " - ";
+	    }
+	    if (id3.getTitle() != null && id3.getTitle().length() != 0)
+	    {
+		title += id3.getTitle();
+	    }
+	    if (title.endsWith(" - "))
+	    {
+		title = title.substring(0, title.lastIndexOf(" - "));
+	    }
+	    if (title.length() == 0)
+	    {
+		title = track.getName();
+		title = title.substring(title.lastIndexOf(File.separator)+1);
+		title = title.substring(0, title.lastIndexOf('.'));
+	    }
+	}
+	catch (Throwable ex) { }
+	return title;
+    }
+
+    int getTrackLength (File track)
+    {
+	int length = -1;
+	try
+	{
+	    FrameHeader fh = new FrameHeader(track);
+	    length = fh.getLength();
+	}
+	catch (Throwable ex) { }
+	return length;
     }
 
     String stripParameter (String in, String param)
