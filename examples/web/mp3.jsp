@@ -517,6 +517,7 @@
 		List columnList = new Vector();
 		if (mp3List.count("TPE1") > 1) columnList.add("TPE1");
 		if (mp3List.count("TALB") > 1) columnList.add("TALB");
+		if (mp3List.count("TCOM") > 1) columnList.add("TCOM");
 		if (mp3List.count("TIT1") > 1) columnList.add("TIT1");
 		columnList.add("TIT2");
 		if (mp3List.count("TIT3") > 1) columnList.add("TIT3");
