@@ -1,0 +1,21 @@
+<dependencies>
+  <package name="commons-logging" packaged="true" runtime="true">
+    <class>org.apache.commons.logging.Log</class>
+    <baseurl>http://www.apache.org/dist/jakarta/commons/logging/binaries</baseurl>
+    <zip>commons-logging-1.0.3.zip</zip>
+    <jar>commons-logging-1.0.3/commons-logging.jar</jar>
+  </package>
+  <package name="servlet" packaged="true">
+    <class>javax.servlet.Servlet</class>
+    <baseurl>http://dl.sourceforge.net/sourceforge/jetty</baseurl>
+    <zip>Jetty-4.2.4.zip</zip>
+    <jar>Jetty-4.2.4/lib/javax.servlet.jar</jar>
+  </package>
+  <package name="jstl" packaged="true" runtime="true">
+    <class>javax.servlet.jsp.jstl.core.LoopTagStatus</class>
+    <baseurl>http://www.apache.org/dist/jakarta/taglibs/standard/binaries</baseurl>
+    <zip>jakarta-taglibs-standard-1.1.0-B1.zip</zip>
+    <jar>jakarta-taglibs-standard-1.1.0-B1/lib/jstl.jar</jar>
+    <jar>jakarta-taglibs-standard-1.1.0-B1/lib/standard.jar</jar>
+  </package>
+</dependencies>

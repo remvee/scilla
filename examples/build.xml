@@ -17,6 +17,8 @@
     <!-- example compilation -->
     <property name="src.dir" value="src"/>
     <property name="lib.dir" value="lib"/>
+    <property name="lib.runtime.dir" value="lib/runtime"/>
+    <property name="depend.dir" value="depend"/>
 
     <!-- build class path -->
     <path id="build.classpath">
@@ -28,13 +30,18 @@
     </path>
 
 <!-- targets -->
-    <target name="deploy" depends="prepare,compile,webxml1,webxml2">
+    <target name="deploy" depends="scilla,prepare,compile,webxml1,webxml2">
         <echo>FIN</echo>
     </target>
 
 
-    <target name="prepare">
+    <target name="scilla">
+	<ant dir=".." target="jar"/>
+	<copy file="../scilla.jar" todir="${lib.runtime.dir}"/>
+    </target>
 
+
+    <target name="prepare" depends="depend">
         <!-- copy all JSP and HTML files -->
         <mkdir  dir="${deploy.dir}"/>
         <copy todir="${deploy.dir}">
@@ -62,6 +69,16 @@
         <mkdir dir="${classes.dir}"/>
     </target>
 
+    <target name="depend"
+	    description="fetch libraries this code depends on from the web">
+        <mkdir dir="${depend.dir}"/>
+
+        <style style="../misc/depend-build.xsl" in="depend.xml" out="depend-build.xml"/>
+        <ant antfile="depend-build.xml">
+            <property name="lib.dir" value="${lib.dir}"/>
+            <property name="work.dir" value="${depend.dir}"/>
+        </ant>
+    </target>
 
     <target name="compile" depends="prepare"
 	    description="compile example specific java source files">
@@ -100,7 +117,6 @@
 	    description="delete generated files">
         <delete dir="${deploy.dir}"/>
 	<delete file="${war.file}"/>
-	<delete file="${installer.jar}"/>
     </target>
 
 
