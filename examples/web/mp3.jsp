@@ -386,13 +386,14 @@
 			    int i = (x * rows) + y;
 			    if (i >= len) continue;
 
-			    String s = (String) dirVec.get(i);
-			    String sEnc = (path + "/" + s).replace(' ', '+');
+			    String p = (String) dirVec.get(i);
+			    String s = p;
+			    String sEnc = (path + "/" + p).replace(' ', '+');
 			    if (s.length() > 15) s = s.substring(0, 15)+"..";
 %>
                            <TD>
 				<A href="mp3.jsp?d=<%= sEnc %>"><%= s %></A>/&nbsp;<%
-			    streamLinks(request, out, path+"/"+s, true); %>&nbsp;&nbsp;&nbsp;
+			    streamLinks(request, out, path+"/"+p, true); %>&nbsp;&nbsp;&nbsp;
                            </TD>
 <%
 			}
