@@ -9,6 +9,9 @@ For version 1.0:
       conversions.  Interface?
 
 Future:
+- pipes
+- netpbm converters (needs pipes)
+- sox converter (handy with lame and pipes)
 - junit
 - database interface for source (blobs?)
 - request info
@@ -36,8 +39,5 @@ Future:
       imagick converters
 - gimp converter
 - mmbase (http://www.mmbase.org) interface to replace mmbase's servdb
-- pipes
-- netpbm converter (needs pipes)
-- sox converter (handy with lame and pipes)
 - texi2html converter (multipage output, hmm interesting)
 - docbook converter (hmm)
