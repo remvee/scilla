@@ -92,7 +92,7 @@ throws IOException
 		    || s.toLowerCase().indexOf("cover") != -1)
 		{
 		    s = s.replace(' ', '+');
-		    background = urlHead+s+"?scale=640x480&modulate=400x400x400";
+		    background = urlHead+s+"?scale=640x480";
 		}
 		imgVec.add(fname);
 	    }
@@ -191,12 +191,14 @@ throws IOException
 	</TITLE>
     </HEAD>
 <%
-	out.print("<BODY" + (background == null ? " BGCOLOR=WHITE>"
-		: " BACKGROUND=\""+background+"\">"));
+	out.print("<BODY" + (background == null ? " bgcolor=\"#EEEEEE\">"
+		: " background=\""+background+"\">"));
 %>
-	<TABLE cellpadding=10>
+	<TABLE bgcolor="#FFFFFF" cellpadding=10>
 	    <TR>
 <%
+	int colWidth = 0;
+
 	Enumeration e1 = dirVec.elements();
 	Enumeration e2 = m3uVec.elements();
 	if (e1.hasMoreElements() || e2.hasMoreElements())
@@ -242,6 +244,7 @@ throws IOException
 		    </TABLE>
 		</TD>
 <%
+	    colWidth++;
 	}
 	if (vec.size() > 0)
 	{
@@ -415,22 +418,47 @@ throws IOException
 		    </TABLE>
 		</TD>
 <%
+	    colWidth++;
 	}
 %>
 	    </TR>
-	</TABLE>
+	    <TR>
+		<TD colspan="<%= colWidth %>">
 <%
 
-	if (imgVec.size() > 0) out.print("<HR>");
-	e = imgVec.elements();
-	for (int num = 1; e.hasMoreElements(); num++)
 	{
-	    String s = (String) e.nextElement();
-	    s = s.replace(' ', '+');
+	    Iterator it = imgVec.iterator();
+	    if (it.hasNext())
+	    {
 %>
-	<A href="<%=urlHead+s%>"><IMG SRC="<%=urlHead+s%>?scale=75x75"></A>
+		    <TABLE bgcolor="#FFFFFF">
 <%
+		for (int i = 0; it.hasNext(); i++)
+		{
+		    if (i % 5 == 0)
+		    {
+%>
+			<TR>
+<%
+		    }
+		    String s = (String) it.next();
+		    s = s.replace(' ', '+');
+%>
+			    <TD>
+				<A href="<%=urlHead+s%>"><IMG SRC="<%=urlHead+s%>?scale=75x75"></A>
+			    </TD>
+<%
+		}
+%>
+		    </TABLE>
+<%
+	    }
 	}
+%>
+		</TD>
+	    </TD>
+	</TABLE>
+<%
     }
     else
     {
