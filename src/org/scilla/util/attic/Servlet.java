@@ -34,7 +34,7 @@ import org.scilla.util.mp3.*;
 /**
  * This servlet handles media requests.
  *
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  * @author R.W. van 't Veer
  */
 public class Servlet extends HttpServlet {
@@ -270,7 +270,9 @@ public class Servlet extends HttpServlet {
                         response.setContentLength((int)(endpoint-offset+1));
                         isPartial = true;
                     }
-                }
+                } else {
+		    response.setContentLength((int)len);
+		}
             }
         }
     }
