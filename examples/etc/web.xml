@@ -43,6 +43,11 @@
     </servlet-mapping>
 
     <servlet-mapping>
+	<servlet-name>playlist</servlet-name>
+	<url-pattern>/playlist.pls</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
 	<servlet-name>image</servlet-name>
 	<url-pattern>/img/*</url-pattern>
     </servlet-mapping>

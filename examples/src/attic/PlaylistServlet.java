@@ -63,8 +63,6 @@ public class PlaylistServlet extends HttpServlet {
 	if (request.getServerName().equals("127.0.0.1")
 		|| request.getServerName().equals("localhost")) {
 	    isLocal = true;
-	    urlPrefix = scillaConfig.getString(Config.SOURCE_DIR_KEY);
-	    encoding = "";
 	} else {
 	    // determine scilla url
 	    urlPrefix = "http://"
@@ -106,19 +104,35 @@ public class PlaylistServlet extends HttpServlet {
 	    while (it.hasNext()) {
 		String fn = (String) it.next();
 
-		// track info
 		File t = new File(source+File.separator+fn);
+		String url = isLocal
+		    ? (source + fn)
+		    : (urlPrefix + pathInfoEncode(fn) + "." + outputType + encoding);
+
+		// track info
 		out.println("#EXTINF:"+getTrackLength(t)+","+getTrackTitle(t));
 
 		// url
-		if (isLocal) {
-		    out.println(urlPrefix+fn+encoding);
-		} else {
-		    fn = fn.replace(File.separatorChar, '/');
-		    fn = fn.replace(' ', '+');
-		    fn += "." + outputType;
-		    out.println(urlPrefix+fn+encoding);
-		}
+		out.println(url);
+	    }
+	} else if (type.equals("pls")) {
+	    // create pls data
+	    response.setContentType("audio/scpls");
+	    out.println("[playlist]");
+	    out.println("NumberOfEntries=" + files.size());
+
+	    Iterator it = files.iterator();
+	    for (int num = 1; it.hasNext(); num++) {
+		String fn = (String) it.next();
+
+		File t = new File(source+File.separator+fn);
+		String url = isLocal
+		    ? (source + fn)
+		    : (urlPrefix + pathInfoEncode(fn) + "." + outputType + encoding);
+
+		out.println("File" + num + "=" + url);
+		out.println("Title" + num + "=" + getTrackTitle(t));
+		out.println("Length" + num + "=" + getTrackLength(t));
 	    }
 	} else {
 	    response.setContentType("text/html");
@@ -209,5 +223,10 @@ public class PlaylistServlet extends HttpServlet {
 	}
 
 	return vec;
+    }
+
+    private String pathInfoEncode (String fname) {
+	String t = fname.replace(File.separatorChar, '/');
+	return t.replace(' ', '+');
     }
 }

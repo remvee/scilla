@@ -17,6 +17,11 @@
 	enctype = request.getParameter("t");
     }
 
+    String plstype = "m3u";
+    if (request.getParameter("p") != null) {
+	plstype = request.getParameter("p");
+    }
+
     String background = null;
     AudioList audioList = new AudioList();
     List imgVec = new Vector();
@@ -65,7 +70,7 @@
 	if (audioList.size() + imgVec.size() + m3uVec.size() + htmVec.size() == 0
 		    && dirVec.size() == 1) {
 	    String s = (path + "/"+dirVec.get(0)).replace(' ', '+');
-	    response.sendRedirect("mp3.jsp?t="+enctype+"&d="+s);
+	    response.sendRedirect("mp3.jsp?t="+enctype+"&p="+plstype+"&d="+s);
 	}
 
 	// redirect to index page if only html files here
@@ -135,7 +140,7 @@
 			    }
 %>
 			    <TD align="left">
-				<A href="mp3.jsp?t=<%= enctype %>&d=<%= sEnc %>"><%= s %></A>/&nbsp;
+				<A href="mp3.jsp?t=<%= enctype %>&p=<%= plstype %>&d=<%= sEnc %>"><%= s %></A>/&nbsp;
 			    </TD>
 			    <TD align="right">
 				<A href="<%= streamLink(request, path+"/"+p, true) %>"><scilla:img src="images/speaker.png" transform="scale(14x14)" border="0" alt="Play"/></A>
@@ -422,7 +427,8 @@
 		encoding = "&t=mp3&resample=16&maxbitrate=56";
 	    }
 	}
-	return "playlist.m3u?d="+URLEncoder.encode(path)+(recursive ? "&r=1" : "")+encoding;
+	String plstype = "pls".equals(request.getParameter("p")) ? "pls" : "m3u";
+	return "playlist."+plstype+"?d="+URLEncoder.encode(path)+(recursive ? "&r=1" : "")+encoding;
     }
 
     String toHTML (Object in)
