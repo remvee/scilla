@@ -484,7 +484,17 @@ throws IOException
     else
     {
 %>
-	<BR><BIG><STRONG>Oeps: not a directory: <%=path%></STRONG></BIG>
+<HTML>
+    <HEAD>
+	<META http-equiv="refresh" content="5; url=mp3.jsp">
+    </HEAD>
+    <BODY>
+	<H1>Oeps: not a directory: <%=path%></H1>
+	<P>
+	    will
+	    <A href="mp3.jsp">reload to top directory</A>
+	    in 10 seconds
+	</P>
 <%
     }
 %>
