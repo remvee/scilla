@@ -1,3 +1,4 @@
+<%@ taglib uri="/WEB-INF/scilla.tld" prefix="scilla" %>
 <%@ page import="java.io.*,java.net.*,java.util.*,javax.servlet.*" %>
 <%@ page import="org.scilla.*,org.scilla.util.*" %>
 <%@ page import="org.scilla.util.mp3.*,org.scilla.util.mp3.id3v2.*" %>
@@ -12,28 +13,11 @@
 		+ (seconds > 9 ? "" : "0") + seconds;
     }
 
-    void streamLinks (ServletRequest request, JspWriter out, String path)
-    throws IOException
-    {
-	streamLinks (request, out, path, false);
-    }
-
-    void streamLinks (ServletRequest request, JspWriter out, String path, boolean recursive)
-    throws IOException
-    {
-	String pathEncoded = URLEncoder.encode(path);
-	String encoding = (request.getRemoteHost().equals("localhost")
-		|| request.getRemoteHost().equals("127.0.0.1"))
-		? ""
-		: "&outputtype=mp3&mode=j&resample=16&vbr=1&vbrquality=6&maxbitrate=56";
-	String imgSrc = "servlet/scilla/speaker.png?scale=14x14&outputtype=gif";
-	out.println("<A href=\"servlet/playlist.m3u"+
-		"?d="+pathEncoded+
-		(recursive ? "&r=1" : "")+
-		encoding+
-		"\">"+
-		"<IMG src=\""+imgSrc+"\" alt=\"play\" border=0>"+
-		"</A>");
+    String streamLink (ServletRequest request, String path, boolean recursive) {
+	String remote = request.getRemoteHost();
+	String encoding = (remote.equals("localhost") || remote.equals("127.0.0.1"))
+		? "" : "&outputtype=mp3&mode=j&resample=16&vbr=1&vbrquality=6&maxbitrate=56";
+	return "servlet/playlist.m3u?d="+URLEncoder.encode(path)+(recursive ? "&r=1" : "")+encoding;
     }
 
     String toHTML (Object in)
@@ -373,7 +357,7 @@
 <%
 		// subdirectories
 		{
-		    int cols = 4;
+		    int cols = 3;
 		    int rows = (dirVec.size() + cols - 1) / cols;
 		    int len = dirVec.size();
 		    for (int y = 0; y < rows; y++)
@@ -391,10 +375,13 @@
 			    String sEnc = (path + "/" + p).replace(' ', '+');
 			    if (s.length() > 15) s = s.substring(0, 15)+"..";
 %>
-                           <TD>
-				<A href="mp3.jsp?d=<%= sEnc %>"><%= s %></A>/&nbsp;<%
-			    streamLinks(request, out, path+"/"+p, true); %>&nbsp;&nbsp;&nbsp;
-                           </TD>
+			    <TD align="left">
+				<A href="mp3.jsp?d=<%= sEnc %>"><%= s %></A>/&nbsp;
+			    </TD>
+			    <TD align="right">
+				<A href="<%= streamLink(request, path+"/"+p, true) %>"><scilla:img src="images/speaker.png" scale="14x14" border="0" alt="Play"/></A>
+				&nbsp;&nbsp;&nbsp;
+			    </TD>
 <%
 			}
 %>
@@ -420,7 +407,7 @@
 			    String s = (String) htmVec.get(i);
 			    String sEnc = s.replace(' ', '+');
 %>
-                           <TD>
+                           <TD colspan="2">
 				<A href="<%= urlHead+sEnc %>"><%= s %></A>&nbsp;&nbsp;&nbsp;
                            </TD>
 <%
@@ -477,9 +464,7 @@
 		o = albumCount == 1 && ! album.equals(artist) ? album : "";
 %>
 					    <BIG><STRONG> <%= toHTML(o) %> </STRONG></BIG>
-<%
-		streamLinks(request, out, path);
-%>
+					    <A href="<%= streamLink(request, path, false) %>"><scilla:img src="images/speaker.png" scale="14x14" border="0" alt="Play"/></A>
 					</TD>
 					<TD valign=top align=right>
 <%
@@ -573,9 +558,7 @@
 					</TD>
 					<TD valign="top">
 					    <FONT size=-2>
-<%
-		    streamLinks(request, out, filepath);
-%>
+					    <A href="<%= streamLink(request, filepath, false) %>"><scilla:img src="images/speaker.png" scale="14x14" border="0" alt="Play"/></A>
 					    </FONT>
 					</TD>
 				    </TR>
@@ -595,9 +578,8 @@
 					</TD>
 					<TD>
 					    <FONT size=-2>
-<%
-		streamLinks(request, out, path);
-%>
+						<A href="<%=
+						streamLink(request, path, false) %>"><scilla:img src="images/speaker.png" scale="14x14" border="0" alt="Play"/></A>
 					    </FONT>
 					</TD>
 				    </TR>
