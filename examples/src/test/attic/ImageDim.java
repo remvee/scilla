@@ -5,8 +5,14 @@ import java.awt.*;
 import java.util.*;
 
 public class ImageDim {
-    public int width = -1;
-    public int height = -1;
+    public int getWidth () {
+	return width;
+    }
+    private int width = -1;
+    public int getHeight () {
+	return height;
+    }
+    private int height = -1;
 
     public static ImageDim measure (String fn)
     throws FileNotFoundException, IOException, InterruptedException {
@@ -37,12 +43,23 @@ public class ImageDim {
 
 	return ce.dim;
     }
-    private static Map dimCache = new HashMap();
+    /** filename to dim map for caching image dimensions */
+    private static Map dimCache = Collections.synchronizedMap(new HashMap());
+    /** simple cache entry */
     private static class CacheEntry {
+	/** dimensions */
 	ImageDim dim = null;
+	/** file timestamp */
 	long timestamp = -1L;
     }
 
+    /**
+     * Determine dimensions from a PNG file.
+     * @param fn filename
+     * @throws FileNotFoundException when file is not available
+     * @throws IOException when image can not be loaded or image
+     * is not really a PNG file
+     */
     public static ImageDim measurePNG (String fn)
     throws FileNotFoundException, IOException {
 	// from /etc/magic:
@@ -97,6 +114,13 @@ public class ImageDim {
 	return dim;
     }
 
+    /**
+     * Determine dimensions from a GIF file.
+     * @param fn filename
+     * @throws FileNotFoundException when file is not available
+     * @throws IOException when image can not be loaded or image
+     * is not really a GIF file
+     */
     public static ImageDim measureGIF (String fn)
     throws FileNotFoundException, IOException {
 	// from /etc/magic:
@@ -139,6 +163,13 @@ public class ImageDim {
 	return dim;
     }
 
+    /**
+     * Determine dimensions from a BMP file.
+     * @param fn filename
+     * @throws FileNotFoundException when file is not available
+     * @throws IOException when image can not be loaded or image
+     * is not really a BMP file
+     */
     public static ImageDim measureBMP (String fn)
     throws FileNotFoundException, IOException {
 	// from /etc/magic:
@@ -195,10 +226,29 @@ public class ImageDim {
 	return dim;
     }
 
+    /**
+     * Use <tt>java.awt.Toolkit</tt> to determine image dimensions.
+     * @param fn filename
+     * @throws InterruptedException when waiting for image
+     * loading was interupted
+     * @throws IOException when image can not be loaded or no
+     * graphics toolkit is available
+     */
     public static ImageDim measureOther (String fn)
     throws InterruptedException, IOException {
-	Image img = Toolkit.getDefaultToolkit().getImage(fn);
-	boolean err;
+	// get default toolkit
+	if (! tkLoaded) {
+	    tkLoaded = true;
+	    tk = Toolkit.getDefaultToolkit();
+	}
+	// determine if toolkit loading failed
+	if (tk == null) {
+	    throw new IOException("unable to load image");
+	}
+
+	// read image
+	Image img = tk.getImage(fn);
+	boolean err = false;
 	synchronized (tracker) {
 	    tracker.addImage(img, 0);
 	    tracker.waitForAll();
@@ -208,11 +258,29 @@ public class ImageDim {
 	if (err) {
 	    throw new IOException("unable to load image");
 	}
+
 	ImageDim dim = new ImageDim();
 	dim.width = img.getWidth(null);
 	dim.height = img.getHeight(null);
 	return dim;
     }
-    private final static Component component = new Component() {};
-    private final static MediaTracker tracker = new MediaTracker(component);
+    /** keep toolkit for reuse */
+    private static Toolkit tk = null;
+    /** prevent loading toolkit multiple times when not possible */
+    private static boolean tkLoaded = false;
+    /** mediatracker to track image loading */
+    private final static MediaTracker tracker = new MediaTracker(new Component() {});
+
+    /** debug */
+    public static void main (String[] args)
+    throws Exception {
+	for (int i = 0; i < args.length; i++) {
+	    try {
+		ImageDim dim = ImageDim.measure(args[i]);
+		System.out.println(args[i]+": "+dim.getWidth()+"x"+dim.getHeight());
+	    } catch (Throwable ex) {
+		ex.printStackTrace();
+	    }
+	}
+    }
 }

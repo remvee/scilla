@@ -31,12 +31,11 @@ public class ImageTag extends TagSupport {
 	    String fn = getRequest().getOutputFile();
 	    ImageDim dim = ImageDim.measure(fn);
 	    out.append(" width=\"");
-	    out.append(dim.width+"");
+	    out.append(dim.getWidth()+"");
 	    out.append("\" height=\"");
-	    out.append(dim.height+"");
+	    out.append(dim.getHeight()+"");
 	    out.append('"');
 	} catch (Throwable ex) {
-	    ex.printStackTrace();
 	    // ignore..
 	}
 
