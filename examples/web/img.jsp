@@ -43,7 +43,7 @@
     java.util.Vector vec = new java.util.Vector();
     java.util.Vector dirVec = new java.util.Vector();
     org.scilla.Config scillaConfig = org.scilla.ConfigFactory.get();
-    String sourceDir = scillaConfig.getString(Config.SOURCE_DIR_KEY);
+    String sourceDir = scillaConfig.getString(org.scilla.Config.SOURCE_DIR_KEY);
     java.io.File dir = new java.io.File(sourceDir+"/"+path);
     if (dir.isDirectory())
     {

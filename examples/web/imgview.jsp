@@ -1,4 +1,4 @@
-<%@ page import="java.io.*,java.net.*,org.scilla.Config" %>
+<%@ page import="java.io.*,java.net.*,org.scilla.*" %>
 <%
     String file = "";
     if (request.getParameter("f") != null) file = request.getParameter("f");
