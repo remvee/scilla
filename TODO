@@ -11,23 +11,20 @@ For version 1.0:
       conversions.  Interface?
 - LameConverter
     - workaround 300 byte max output filename length
+    - enherit ID3v1 tag
 - log4j
-- junit
 
 Future:
+- junit
 - database interface for source (blobs?)
 - request info
     - cached! (need a database for speed?)
     - types
 	- mp3: format and id3
 	- image: type, format, size..
+    - taglibs for accessing request info?
 - title streaming using icy-name and x-audiocast-name (need request
   info)
-- referer protection
-- crc url protection
-- LameConverter:
-    - enherit ID3v1/ID3v2 info using nl.rveer.mp3.ID3
-    - clips?
 - CacheManager
     - optional cache to database (blob) to allow keeping of last access time
 	- has it's own jdbc-url to allow separate cache database
