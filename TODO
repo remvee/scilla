@@ -1,11 +1,5 @@
-- DOCUMENT DOCUMENT DOCUMENT!!
-- DOCUMENT DOCUMENT DOCUMENT!!
-- DOCUMENT DOCUMENT DOCUMENT!!
-
-- change MP3 class indentation to 4 spaces standard
 - get rid of allowCaching and setDeleteOutput methods, useless untill
   properly implemented
-- get rid of Mp3Exception
 - implement content-length
 - write INSTALL INSTALL.html (referenced by homepage)
 - JAIConverter
