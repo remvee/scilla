@@ -31,7 +31,7 @@ import java.util.Set;
 
 /**
  * @author Remco van 't Veer
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class VorbisInfo {
     public final String PAGE_MARKER = "OggS";
@@ -230,7 +230,7 @@ public class VorbisInfo {
 	    int c1 = in.read();
 	    int c2 = in.read();
 	    int c3 = in.read();
-	    return c0 + (c1 << 8) + (c1 << 16) + (c1 << 24);
+	    return c0 + (c1 << 8) + (c2 << 16) + (c3 << 24);
 	}
 
 	private long readLong (InputStream in)
