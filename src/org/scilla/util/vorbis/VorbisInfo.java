@@ -31,7 +31,7 @@ import java.util.Set;
 
 /**
  * @author Remco van 't Veer
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class VorbisInfo {
     public final String PAGE_MARKER = "OggS";
@@ -43,14 +43,15 @@ public class VorbisInfo {
     private int maxBitrate;
     private int bitrate;
     private int minBitrate;
+    private float seconds;
     private String vendor;
     private Map commentMap;
 
     public VorbisInfo (InputStream in)
     throws Exception {
 	// first 2 frames should be enough..
-	Frame f1 = new Frame(in);
-	Frame f2 = new Frame(in);
+	Frame f1 = new Frame(in, false);
+	Frame f2 = new Frame(in, false);
 	// append page data
 	byte[] data = new byte[f1.length + f2.length];
 	System.arraycopy(f1.data, 0, data, 0, f1.length);
@@ -106,6 +107,18 @@ public class VorbisInfo {
 		commentMap.put(key, val);
 	    }
 	}
+	// goto last frame
+	{
+	    Frame frame = null;
+	    try {
+		do {
+		    frame = new Frame(in, true);
+		} while (frame.headerType != 4);
+	    } catch (Throwable ex) {
+		// ignore
+	    }
+	    seconds = (float) frame.granulePosition / sampleRate;
+	}
     }
 
     public int getVorbisVersion () {
@@ -126,6 +139,9 @@ public class VorbisInfo {
     public int getMinimumBitrate () {
 	return minBitrate;
     }
+    public float getLength () {
+	return seconds;
+    }
     public String getVendor () {
 	return vendor;
     }
@@ -145,6 +161,7 @@ public class VorbisInfo {
 	    "\nnominalBitrate="+bitrate+
 	    "\nminBitrate="+minBitrate+
 	    "\nvendor="+vendor+
+	    "\nseconds="+seconds+
 	    "\ncomments="+commentMap;
     }
 
@@ -156,18 +173,6 @@ public class VorbisInfo {
 	    }
 	}
 	return true;
-    }
-
-    /** debug */
-    public static void main (String[] args)
-    throws Exception {
-	for (int i = 0; i < args.length; i++) {
-	    System.out.println(args[i]);
-	    FileInputStream in = new FileInputStream(args[i]);
-	    VorbisInfo info = new VorbisInfo(in);
-	    in.close();
-	    System.out.println("  "+info);
-	}
     }
 
     private class Frame {
@@ -182,7 +187,7 @@ public class VorbisInfo {
 	int length;
 	byte[] data;
 
-	Frame (InputStream in)
+	Frame (InputStream in, boolean skipData)
 	throws IOException {
 	    // read page marker
 	    char[] marker = PAGE_MARKER.toCharArray();
@@ -209,9 +214,13 @@ public class VorbisInfo {
 	    }
 
 	    // read data
-	    data = new byte[length];
-	    if (in.read(data) != length) {
-		throw new IOException("NOT AN OGG VORBIS FILE");
+	    if (skipData) {
+		in.skip((long)length);
+	    } else {
+		data = new byte[length];
+		if (in.read(data) != length) {
+		    throw new IOException("NOT AN OGG VORBIS FILE");
+		}
 	    }
 	}
 
@@ -234,8 +243,20 @@ public class VorbisInfo {
 	    long c5 = (long) in.read();
 	    long c6 = (long) in.read();
 	    long c7 = (long) in.read();
-	    return c0 + (c1 << 8) + (c1 << 16) + (c1 << 24) +
-		    (c1 << 32) + (c1 << 40) + (c1 << 48) + (c1 << 56);
+	    return c0 + (c1 << 8) + (c2 << 16) + (c3 << 24) +
+		    (c4 << 32) + (c5 << 40) + (c6 << 48) + (c7 << 56);
+	}
+    }
+
+    /** debug */
+    public static void main (String[] args)
+    throws Exception {
+	for (int i = 0; i < args.length; i++) {
+	    System.out.println(args[i]);
+	    FileInputStream in = new FileInputStream(args[i]);
+	    VorbisInfo info = new VorbisInfo(in);
+	    in.close();
+	    System.out.println("  "+info);
 	}
     }
 }

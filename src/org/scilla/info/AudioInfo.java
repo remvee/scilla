@@ -33,13 +33,14 @@ import org.scilla.util.vorbis.*;
 /**
  * Audio info.
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @author R.W. van 't Veer
  */
 public class AudioInfo extends Info {
     public final static String BITRATE = "bitrate";
     public final static String SAMPLERATE = "samplerate";
     public final static String CHANNELS = "channels";
+    public final static String LENGTH = "length";
 
     public final static String ALBUM = "album";
     public final static String ARTIST = "artist";
@@ -88,6 +89,7 @@ public class AudioInfo extends Info {
 	    setInt(BITRATE, xi.getBitRate() * 1000);
 	    setInt(SAMPLERATE, xi.getSampleRate());
 	    setInt(CHANNELS, xi.isMono() ? 1 : 2);
+	    setInt(LENGTH, xi.getLength());
 	    setString(CODEC, xi.toString());
 	} catch (Throwable ex) {
 	    // ignore..
@@ -102,9 +104,11 @@ public class AudioInfo extends Info {
 	    FrameHeader fh = null;
 	    try {
 		fh = new FrameHeader(f);
+		fh.examineAll();
 		setInt(BITRATE, fh.getBitRate() * 1000);
 		setInt(SAMPLERATE, fh.getSampleRate());
 		setInt(CHANNELS, fh.isMono() ? 1 : 2);
+		setInt(LENGTH, fh.getLength());
 		setString(CODEC, fh.toString());
 	    } catch (Throwable ex) {
 		// ignore..
@@ -150,7 +154,10 @@ public class AudioInfo extends Info {
 		setString(GENRE, t);
 	    }
 
-	    setInt(TRKNUM, v1.getTrkNum());
+	    int trknum = v1.getTrkNum();
+	    if (trknum != -1) {
+		setInt(TRKNUM, trknum);
+	    }
 	} catch (Throwable ex) {
 	    // ignore
 	}
@@ -174,6 +181,7 @@ public class AudioInfo extends Info {
 	    setInt(BITRATE, info.getBitrate());
 	    setInt(SAMPLERATE, info.getSampleRate());
 	    setInt(CHANNELS, info.getChannels());
+	    setInt(LENGTH, (int) info.getLength());
 
 	    String t;
 	    t = info.getComment("ALBUM");
