@@ -1,7 +1,14 @@
 For version 1.0:
+- bugs:
+    - nocache yields NullPointerException:
+	java.lang.NullPointerException
+		at java.io.File.(File.java:180)
+		at org.scilla.core.MediaStream.(MediaStream.java:57)
+		at org.scilla.core.RunnerObject.getStream(RunnerObject.java:162)
+		at org.scilla.Request.getStream(Request.java:101)
+		at org.scilla.util.Servlet.doGet(Servlet.java:86)
 - examples:
     - mp3.jsp
-	- use ID3v2 tags
 	- stream mono originals as mono stream
 - RequestFactory:
     - command line
@@ -27,6 +34,11 @@ Future:
 	- mp3: format and id3
 	- image: type, format, size..
     - taglibs for accessing request info?
+- scilla taglib:
+    image tag:
+	<scilla:img src="spam.jpg" scale="100x100"/>
+    yields:
+	<img src="servlet/img.jpg?1234567890" width="100" height="75" alt=""/>
 - title streaming using icy-name and x-audiocast-name (need request
   info)
 - CacheManager
