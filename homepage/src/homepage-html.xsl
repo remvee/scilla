@@ -87,7 +87,7 @@
 		<HR/>
 
 		<DIV align="right">
-		    $Date: 2002/05/13 10:55:12 $
+		    <xsl:apply-templates select="/homepage/date"/>
 		</DIV>
 	    </BODY>
 	</HTML>

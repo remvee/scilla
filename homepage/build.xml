@@ -15,11 +15,13 @@
         <tar tarfile="${tar.file}" basedir="${build.dir}" excludes="**/CVS"/>
     </target>
 
-    <target name="homepage-html" depends="prepare,changelog">
+    <target name="homepage-html" depends="prepare,changelog"
+	    description="generate homepage html">
 	<style style="src/homepage-html.xsl" in="src/homepage.xml" out="${build.dir}/index.html"/>
     </target>
 
-    <target name="homepage-build">
+    <target name="homepage-build"
+	    description="generate release zips">
 	<style style="src/homepage-build.xsl" in="src/homepage.xml" out="${homepage.build}"/>
 	<ant antfile="${homepage.build}"/>
     </target>
@@ -30,7 +32,8 @@
     </target>
 
 
-    <target name="clean">
+    <target name="clean"
+	    description="delete generated files">
 	<delete dir="${build.dir}"/>
 	<delete file="${homepage.build}"/>
 	<delete file="${tar.file}"/>
@@ -45,7 +48,8 @@
         <cvs cvsRoot="${cvsroot}" dest="${build.dir}" package="${scilla.project}"/>
     </target>
 
-    <target name="snapshot" depends="checkout,timestamp">
+    <target name="snapshot" depends="checkout,timestamp"
+	    description="create cvs snapshot">
         <zip zipfile="${build.dir}/${snapshot.zip}"
 		basedir="${build.dir}/${cvsprefix}" excludes="**/CVS"/>
     </target>

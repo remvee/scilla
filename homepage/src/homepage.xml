@@ -1,6 +1,7 @@
 <homepage>
     <title>Scilla - media server</title>
     <location>http://www.xs4all.nl/~rwvtveer/scilla</location>
+    <date>$Date: 2002/11/22 17:24:39 $</date>
     <description>
 	Scilla answers media file requests and takes conversion
 	parameters for various media converters.  Manipulated media
@@ -63,6 +64,24 @@
 	<para>
 	    The following releases are considered to be stable.
 	</para>
+	<release tag="RELEASE_0_9_4" filebase="scilla-0_9_4"><![CDATA[
+	    22.XI.2002
+	    <UL>
+		<LI>
+		    servlet handles ranges, for audio/video stream seeking
+		</LI>
+		<LI>
+		    id3v2 support for mp3 audio
+		</LI>
+		<LI>
+		    simple installer, using executable jar file
+		    which generates a war file
+		</LI>
+		<LI>
+		    some example enhancements
+		</LI>
+	    </UL>
+	]]></release>
 	<release tag="RELEASE_0_9_3" filebase="scilla-0_9_3"><![CDATA[
 	    23.II.2002
 	    <UL>
