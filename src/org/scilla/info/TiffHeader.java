@@ -21,13 +21,12 @@
 
 package org.scilla.info;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
  * Tiff header/ Image File Directory (IFD) reader.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @author R.W. van 't Veer
  */
 public class TiffHeader {
@@ -41,7 +40,8 @@ public class TiffHeader {
      * @param pos position at which directory starts
      * @param littleEndian <tt>true</tt> when byte order is little endian otherwise big endian
      */
-    public TiffHeader (byte[] data, int pos, boolean littleEndian) {
+    public TiffHeader (byte[] data, int pos, boolean littleEndian)
+    throws TiffException {
         this.data = data;
         this.littleEndian = littleEndian;
         this.fields = new ArrayList();
@@ -55,7 +55,7 @@ public class TiffHeader {
      * @throws IOException when byte order can not be determined
      */    
     public TiffHeader (byte[] data)
-    throws IOException {
+    throws TiffException {
         this.data = data;
         fields = new ArrayList();
         
@@ -86,26 +86,29 @@ public class TiffHeader {
         private int count;
         private int voffset;
         private Object val;
-        
+
         /**
          * Construct new directory field.
          * @param data byte array to read from
          * @param pos position to start reading
          */
-        public Field (byte[] data, int pos) {
-            tag = read2ByteInt(data, pos);
-            pos += 2;
-            type = read2ByteInt(data, pos);
-            pos += 2;
-            count = read4ByteInt(data, pos);
-            pos += 4;
-            voffset = read4ByteInt(data, pos);
-    
-            // read value
-            val = null;
-            switch (type) {
-                case 1: // BYTE
-                case 6: // SIGNED BYTE
+        public Field(byte[] data, int pos) throws TiffException {
+            try {
+                tag = read2ByteInt(data, pos);
+                pos += 2;
+                type = read2ByteInt(data, pos);
+                pos += 2;
+                count = read4ByteInt(data, pos);
+                pos += 4;
+                voffset = read4ByteInt(data, pos);
+
+                // read value
+                val = null;
+                switch (type) {
+                case 1:
+                // BYTE
+                case 6:
+                    // SIGNED BYTE
                     if (count == 1) {
                         short v = (short) (voffset & 0xff);
                         val = new Short(isSigned(type) ? signedByte(v) : v);
@@ -118,7 +121,8 @@ public class TiffHeader {
                         val = d;
                     }
                     break;
-                case 2: // ASCII
+                case 2:
+                    // ASCII
                     {
                         int i = count > 4 ? voffset : pos;
                         StringBuffer sb = new StringBuffer();
@@ -128,8 +132,10 @@ public class TiffHeader {
                         val = sb.toString();
                     }
                     break;
-                case 3: // SHORT 16-bit unsigned
-                case 8: // SSHORT 16-bit signed
+                case 3:
+                // SHORT 16-bit unsigned
+                case 8:
+                    // SSHORT 16-bit signed
                     if (count == 1) {
                         int v = voffset & 0xffff;
                         val = new Integer(isSigned(type) ? signedShort(v) : v);
@@ -144,8 +150,10 @@ public class TiffHeader {
                         val = d;
                     }
                     break;
-                case 4: // LONG 32-bit unsigned
-                case 9: // SLONG 32-bit signed
+                case 4:
+                // LONG 32-bit unsigned
+                case 9:
+                    // SLONG 32-bit signed
                     if (count == 1) {
                         long v = voffset & 0xffffffff;
                         val = new Long(isSigned(type) ? signedLong(v) : v);
@@ -160,11 +168,14 @@ public class TiffHeader {
                         val = d;
                     }
                     break;
-                case 5: // RATIONAL
-                case 10: // SRATIONAL
+                case 5:
+                // RATIONAL
+                case 10:
+                    // SRATIONAL
                     if (count == 1) {
                         long numerator = (long) read4ByteInt(data, voffset);
-                        long denominator = (long) read4ByteInt(data, voffset + 4);
+                        long denominator = (long) read4ByteInt(data,
+                                voffset + 4);
                         if (isSigned(type)) {
                             numerator = signedLong(numerator);
                             denominator = signedLong(denominator);
@@ -172,15 +183,22 @@ public class TiffHeader {
                         val = new Rational(numerator, denominator);
                     }
                     break;
-                case 7: // UNDEF
+                case 7:
+                    // UNDEF
                     break;
-                case 11: // FLOAT
+                case 11:
+                    // FLOAT
                     // TODO IMPLEMENT FLOAT
                     break;
-                case 12: // DOUBLE
+                case 12:
+                    // DOUBLE
                     // TODO IMPLEMENT DOUBLE
                     break;
-                default: // UNKNOWN
+                default:
+                // UNKNOWN
+                }
+            } catch (ArrayIndexOutOfBoundsException ex) {
+                throw new TiffException("corrupt field", ex);
             }
         }
 
@@ -251,7 +269,7 @@ public class TiffHeader {
      * @throws IOException when byte order cannot be determined
      */
     private void processByteOrder ()
-    throws IOException {
+    throws TiffException {
         // determine byte order
         {
             int c1 = read1ByteInt(data, 0);
@@ -261,13 +279,13 @@ public class TiffHeader {
             } else if (c1 == 'M' && c2 == 'M') {
                 littleEndian = false;
             } else {
-                throw new IOException("not a tiff; missing II or MM");
+                throw new TiffException("not a tiff; missing II or MM");
             }
         }
         
         // verify endianess
         if (read2ByteInt(data, 2) != 42) {
-            throw new IOException("not a tiff; byte order broken");
+            throw new TiffException("not a tiff; byte order broken");
         }
     }
     
@@ -295,7 +313,8 @@ public class TiffHeader {
 		: ((n1 << 24) | (n2 << 16) | (n3 << 8) | n4);
     }
 
-    private void readIfds(int pos) {
+    private void readIfds(int pos)
+    throws TiffException {
         int p = pos;
 	while (p != 0) {
 	    int num = read2ByteInt(data, p);

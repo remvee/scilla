@@ -34,7 +34,7 @@ import org.scilla.util.MimeType;
 /**
  * Image info.
  *
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  * @author R.W. van 't Veer
  */
 public class ImageInfo extends Info {
@@ -428,8 +428,8 @@ public class ImageInfo extends Info {
 				System.arraycopy(d, 6, e, 0, e.length);
 				try {
 				    putAll(new Exif(e));
-				} catch (IOException ex) {
-				    // ignore
+				} catch (TiffException ex) {
+				    // TODO log problem
 				}
 			    }
 			}

@@ -21,7 +21,6 @@
 
 package org.scilla.info;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -31,7 +30,7 @@ import java.util.Map;
 /**
  * EXIF.
  *
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  * @author R.W. van 't Veer
  */
 public class Exif extends HashMap {
@@ -154,7 +153,7 @@ public class Exif extends HashMap {
     }
 
     public Exif (byte[] data)
-    throws IOException {
+    throws TiffException {
 	super();
         this.tiff = new TiffHeader(data);
 
@@ -194,7 +193,11 @@ public class Exif extends HashMap {
         if (make != null && makernote != null) {
             ExifMaker maker = (ExifMaker) makers.get(make.getValue());
             if (maker != null) {
-                putAll(maker.getTags(data, makernote, tiff.isLittleEndian()));
+                try {
+                    putAll(maker.getTags(data, makernote, tiff.isLittleEndian()));
+                } catch (Exception ex) {
+                    // TODO log failure
+                }
             }
         }
     }

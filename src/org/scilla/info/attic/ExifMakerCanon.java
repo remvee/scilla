@@ -9,10 +9,11 @@ import java.util.Map;
  * 
  * @see exiftags-0.98
  * @author R.W. van 't Veer
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ExifMakerCanon implements ExifMaker {   
-    public Map getTags(byte[] data, TiffHeader.Field makernote, boolean isLittleEndian) {
+    public Map getTags(byte[] data, TiffHeader.Field makernote, boolean isLittleEndian)
+    throws TiffException {
         Map result = new HashMap();
         TiffHeader note = new TiffHeader(data, makernote.getOffset(), isLittleEndian);
         for (Iterator it = note.getFields().iterator(); it.hasNext();) {
