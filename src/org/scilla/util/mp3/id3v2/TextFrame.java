@@ -30,7 +30,7 @@ import java.util.*;
  * language and identifier like <TT>COMM</TT> and <TT>USLT</TT>.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 class TextFrame extends Frame
 {
@@ -62,7 +62,7 @@ class TextFrame extends Frame
      * @param data buffer of tag data
      * @param offset offset in buffer
      * @param minor minor version of tag
-     * @param type {@link #PLAIN} or {@link @LANGUAGE}
+     * @param type {@link #PLAIN} or {@link #LANGUAGE}
      */
     public TextFrame (byte[] data, int offset, int minor, int type)
     throws Exception
