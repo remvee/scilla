@@ -112,6 +112,10 @@ get_title () {
     fi
 }
 
+escape_doublequote () {
+    sed -e 's,\",\\\",g' -e 's,\$,\\$,'
+}
+
 ARGS=`getopt b:B:c:q:f: "$@"`
 if [ $? != 0 ]
 then
@@ -158,9 +162,9 @@ then
 fi
 
 # get artist, album, title info
-ARTIST=`get_artist "$INPUT"`
-ALBUM=`get_album "$INPUT"`
-TITLE=`get_title "$INPUT"`
+ARTIST=`get_artist "$INPUT" | escape_doublequote`
+ALBUM=`get_album "$INPUT" | escape_doublequote`
+TITLE=`get_title "$INPUT" | escape_doublequote`
 
 if `echo "$INPUT" | grep -q '.mp3$'` && `echo "$OUTPUT" | grep -q '.mp3$'`
 then
