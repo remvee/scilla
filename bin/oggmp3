@@ -56,7 +56,7 @@ encode_command () {
 	&& ENC_ARGS="$ENC_ARGS -b $BITRATE"
 	[ -n "$QUALITY" ] \
 	&& ENC_ARGS="$ENC_ARGS -q $QUALITY"
-	[ "$CHANNELS" -eq 1 ] \
+	[ "$CHANNELS" = 1 ] \
 	&& ENC_ARGS="$ENC_ARGS --downmix"
 	if [ -n "$FREQ" ]
 	then
