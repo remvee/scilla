@@ -1,10 +1,12 @@
-- test with orion
+For version 1.0:
+- make work with orion
 - make synchronized part of CacheManager.get smaller
 - write INSTALL INSTALL.html (referenced by homepage)
 - JAIConverter
     - sync parameters with imagick so they will be interchangable.
       Maybe we want to define parameter sets as kind of interface?
 - JMFConverter
+    - implement it!
     - sync parameters with lame so they will be interchangable for mp3
       conversions.  Interface?
 - log4j
@@ -21,15 +23,15 @@ Future:
     - types
 	- mp3: format and id3
 	- image: type, format, size..
-- title streaming using icy-name and x-audiocast-name
-- gimp converter
+- title streaming using icy-name and x-audiocast-name (need request
+  info)
 - referer protection
 - crc url protection
 - LameConverter:
     - enherit ID3v1/ID3v2 info using nl.rveer.mp3.ID3
     - clips?
 - CacheManager
-    - cleaner deamon
+    - cleanup deamon
 	- max fs size, lowmark, himark
 	- age per type (keep some types longer than others)
 	- expire request parameter
@@ -39,6 +41,7 @@ Future:
     - uses a format string from config to construct command line
     - should be able to replace lame (apart from id3 enheritance) and
       imagick converters
+- gimp converter
 - pipes
 - netpbm converter (needs pipes)
 - sox converter (handy with lame and pipes)
