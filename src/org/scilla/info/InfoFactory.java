@@ -35,7 +35,7 @@ import org.scilla.util.MimeType;
 /**
  * The scilla media info factory.
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @author R.W. van 't Veer
  */
 public class InfoFactory {
@@ -69,8 +69,6 @@ public class InfoFactory {
 	    info = new AudioInfo(pname);
 	} else if (type.startsWith("image/")) {
 	    info = new ImageInfo(pname);
-	} else if (type.startsWith("video/")) {
-	    // info = new VideoInfo(pname);
 	}
 
 	// cache it

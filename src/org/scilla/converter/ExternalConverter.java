@@ -112,7 +112,7 @@ import org.scilla.*;
  * </DL>
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class ExternalConverter implements Converter {
     private static final Log log = LogFactory.getLog(ExternalConverter.class);
@@ -165,12 +165,14 @@ public class ExternalConverter implements Converter {
                     execMap.put(name, val);
 
                     // blacklist it if executable not available
+                    /*
                     try {
 			// TODO this trick does not work on NT!
-                        //Runtime.getRuntime().exec(new String[] { val }).waitFor();
+                        Runtime.getRuntime().exec(new String[] { val }).waitFor();
                     } catch (Throwable ex) {
                         blacklistSet.add(name);
                     }
+                    */
                 } else if (type.equals("format")) {
                     formatMap.put(name, val);
                 } else if (type.equals("ignore_exitstat")) {

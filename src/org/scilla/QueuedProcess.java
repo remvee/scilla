@@ -38,7 +38,7 @@ import org.scilla.util.Semaphore;
  * taken from the scilla configuration.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public class QueuedProcess {
     private static final Log log = LogFactory.getLog(QueuedProcess.class);
@@ -110,20 +110,20 @@ public class QueuedProcess {
                 sb.append(' ');
             }
             log.info("process: "+sb);
+        }
 
-            if (log.isDebugEnabled() && envp != null) {
-		if (envp != null) {
-		    sb = new StringBuffer();
-		    for (int i = 0; i < envp.length; i++) {
-			sb.append(envp[i]);
-			sb.append(' ');
-		    }
-		    log.debug("env: "+sb);
-		}
-		if (dir != null) {
-		    log.debug("dir: "+dir);
-		}
-	    }
+	if (log.isDebugEnabled() && envp != null) {
+            if (envp != null) {
+                StringBuffer sb = new StringBuffer();
+                for (int i = 0; i < envp.length; i++) {
+                    sb.append(envp[i]);
+                    sb.append(' ');
+    		}
+    		log.debug("env: " + sb);
+            }
+            if (dir != null) {
+                log.debug("dir: " + dir);
+            }
         }
 
         // execute process

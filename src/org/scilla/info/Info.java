@@ -26,7 +26,7 @@ import java.util.*;
 /**
  * The scilla media info base class.
  *
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @author R.W. van 't Veer
  */
 public class Info implements Map {
@@ -130,7 +130,7 @@ public class Info implements Map {
      * @param val property value
      */
     protected void setBoolean (String key, boolean val) {
-	infoMap.put(key, new Boolean(val));
+	infoMap.put(key, val ? Boolean.TRUE : Boolean.FALSE);
     }
 
 // other stuff

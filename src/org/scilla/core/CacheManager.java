@@ -38,7 +38,7 @@ import org.scilla.util.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.33 $
+ * @version $Revision: 1.34 $
  * @author R.W. van 't Veer
  */
 public class CacheManager implements RunnerChangeListener {
@@ -301,11 +301,11 @@ public class CacheManager implements RunnerChangeListener {
 	int suffixIdx = in.lastIndexOf('.');
 	String suffix = in.substring(suffixIdx);
 	int suffixLen = suffix.length();
-	in = in.substring(0, suffixIdx);
+        String t = in.substring(0, suffixIdx);
 
         // chopup, making directories using maxFilenameLen
 	StringBuffer out = new StringBuffer();
-        char[] data = in.toCharArray();
+        char[] data = t.toCharArray();
 	int i = 0;
         for (; i < data.length; i++) {
             if (i % maxFilenameLen == 0) {

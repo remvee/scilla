@@ -179,22 +179,6 @@ public class PlaylistServlet extends HttpServlet {
 	return length;
     }
 
-    private String stripParameter (String in, String param) {
-	int a = in.indexOf(param+"=");
-	if (a != -1) {
-	    int b = in.indexOf('&', a);
-	    in = b != -1
-		    ? in.substring(0, a) + in.substring(b+1)
-		    : in.substring(0, a);
-	    if (in.endsWith("&")) {
-		in = in.substring(0, in.length()-1);
-	    }
-	} else {
-	    log.error("could not strip '"+param+"' from query");
-	}
-	return in;
-    }
-
     private boolean isPlayable (String fn) {
 	return fn.toLowerCase().endsWith(".mp3")
 		|| fn.toLowerCase().endsWith(".ogg")
