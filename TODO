@@ -1,4 +1,5 @@
 For version 1.0:
+- use org.apache.commons.logging instead of home grown stuff
 - scilla taglib, load media via
 	config.getServletContext().getResourceAsStream("spam.jpg")
     image tag:
