@@ -114,7 +114,7 @@ import org.scilla.util.*;
  * </DL>
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class ExternalConverter implements Converter {
     private static final Log log = LogFactory.getLog(ExternalConverter.class);
@@ -390,6 +390,8 @@ public class ExternalConverter implements Converter {
             return false;
 	}
         conv.addAll(c);
+	// TODO remove all references to blacklisted converters at setup
+	conv.removeAll(blacklistSet);
         if (conv.size() == 0) {
             return false;
 	}
