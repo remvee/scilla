@@ -8,7 +8,7 @@
 <HEAD>
     <TITLE>scilla examples: Image Browser</TITLE>
 </HEAD>
-<FRAMESET cols="190,*">
+<FRAMESET cols="150px,*">
     <FRAME name="browser" src="imglist.jsp?<%= dirEnc %>">
     <FRAME name="viewer" src="imgview.jsp">
 </FRAMESET>

@@ -1,13 +1,13 @@
 <%@ page import="java.io.*" %>
 <%@ page import="java.net.*" %>
 <%@ page import="java.util.*" %>
+<%@ page import="org.scilla.info.*" %>
 <%
     String path = "";
     if (request.getParameter("d") != null) path = request.getParameter("d");
     String pathEncoded = "d="+URLEncoder.encode(path);
 
-    int scale = 100;
-    String imgScaleEncoded = "scale=" + scale + "x" + scale;
+    String imgScaleEncoded = "scale=66x100";
     if (! request.getRemoteHost().equals("localhost"))
     {
 	imgScaleEncoded += "&negate=1";
@@ -80,9 +80,16 @@
 	    {
 		String fn = (String) e.nextElement();
 		String filepath = path+"/"+fn;
+		String fname = sourceDir+File.separator+path+File.separator+fn;
+		String s = imgScaleEncoded;
+
+		Info info = InfoFactory.get(fname);
+		if (info != null && info.getInt(ImageInfo.WIDTH) > info.getInt(ImageInfo.HEIGHT)) {
+		    s = "rotate=270&"+s;
+		}
 %>
 	    <TR>
-		<TD><IMG src="images/film-left.gif"></TD><TD width=100 height=100 bgcolor=black align=center valign=center><A target="viewer" href="imgview.jsp?f=<%=filepath%>"><IMG src="servlet/scilla/<%=filepath%>?outputtype=jpg&<%=imgScaleEncoded%>" border=0></A></TD><TD><IMG src="images/film-right.gif"></TD>
+		<TD><IMG src="images/film-left.gif"></TD><TD width=68 height=100 bgcolor=black align=center valign=center><A target="viewer" href="imgview.jsp?f=<%=filepath%>"><IMG src="servlet/scilla/<%=filepath%>?outputtype=jpg&<%=s%>" border=0></A></TD><TD><IMG src="images/film-right.gif"></TD>
 	    </TR>
 <%
 	    }
