@@ -45,13 +45,15 @@ public class M3UServlet extends HttpServlet
 	    for (int i = 0; i < files.length; i++)
 	    {
 		String filename = files[i];
-		if (filename.toLowerCase().endsWith(".mp3"))
+		if (filename.toLowerCase().endsWith(".mp3")
+			|| filename.toLowerCase().endsWith(".wav"))
 		{
 		    println(out, urlPrefix, path+'/'+filename, preset);
 		}
 	    }
 	}
-	else if (f.exists() && fname.toLowerCase().endsWith(".mp3"))
+	else if (f.exists() && fname.toLowerCase().endsWith(".mp3")
+		|| fname.toLowerCase().endsWith(".wav"))
 	{
 	    response.setContentType("audio/mpegurl");
 	    println(out, urlPrefix, path, preset);
@@ -71,9 +73,9 @@ public class M3UServlet extends HttpServlet
     }
 
     final static String modemEncoding =
-	    "?mode=m&resample=16&vbr=1&vbrquality=6&maxbitrate=56";
+	    "?outputtype=mp3&mode=m&resample=16&vbr=1&vbrquality=6&maxbitrate=56";
     final static String isdnEncoding =
-	    "?preset=voice";
+	    "?outputtype=mp3&preset=voice";
 
     void println (PrintWriter out, String prefix, String path, String preset)
     throws IOException

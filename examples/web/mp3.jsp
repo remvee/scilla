@@ -1,4 +1,5 @@
 <%@ page import="java.io.*,java.net.*,java.util.*,javax.servlet.*" %>
+<%@ page import="org.scilla.*,org.scilla.util.mp3.*" %>
 <%!
 
 void streamLinks (ServletRequest request, JspWriter out, String path)
@@ -17,7 +18,7 @@ throws IOException
 
 %>
 <%
-    org.scilla.Config scillaConfig = org.scilla.Config.getInstance();
+    Config scillaConfig = Config.getInstance();
     String path = "";
     if (request.getParameter("d") != null) path = request.getParameter("d");
     String urlHead = "servlet/sservlet/" + path.replace(' ', '+') + "/";
@@ -37,25 +38,27 @@ throws IOException
 	Arrays.sort(files);
 	for (int i = 0; i < files.length; i++)
 	{
-	    if (files[i].endsWith(".mp3"))
+	    String fname = files[i];
+
+	    if (fname.endsWith(".mp3"))
 	    {
-		org.scilla.util.mp3.ID3v1 tag = null;
-		org.scilla.util.mp3.FrameHeader fh = null;
-		org.scilla.util.mp3.XingInfo xing = null;
-		String n = scillaConfig.getSourceDir()+"/"+path+"/"+files[i];
+		ID3v1 tag = null;
+		FrameHeader fh = null;
+		XingInfo xing = null;
+		String n = scillaConfig.getSourceDir()+"/"+path+"/"+fname;
 		File f = new File(n);
 
 		try
 		{
-		    tag = new org.scilla.util.mp3.ID3v1(f);
-		    fh = new org.scilla.util.mp3.FrameHeader(f);
+		    tag = new ID3v1(f);
+		    fh = new FrameHeader(f);
 		    fh.close();
 		    try
 		    {
-			xing = new org.scilla.util.mp3.XingInfo(f);
+			xing = new XingInfo(f);
 			xing.close();
 		    }
-		    catch (org.scilla.util.mp3.Mp3Exception e1) { }
+		    catch (Mp3Exception e1) { }
 
 		    if (tag != null) tagHash.put(f, tag);
 		    if (fh != null) fhHash.put(f, fh);
@@ -68,29 +71,33 @@ throws IOException
 		    // ignore this file..
 		}
 	    }
-	    else if (files[i].endsWith(".jpg") || files[i].endsWith(".gif") || files[i].endsWith(".png"))
+	    else if (fname.endsWith(".wav"))
 	    {
-		String s = files[i];
+		File f = new File(scillaConfig.getSourceDir()+"/"+path+"/"+fname);
+		vec.add(f);
+	    }
+	    else if (fname.endsWith(".jpg") || fname.endsWith(".gif") || fname.endsWith(".png"))
+	    {
+		String s = fname;
 		if (s.toLowerCase().indexOf("front") != -1
 		    || s.toLowerCase().indexOf("cover") != -1)
 		{
 		    s = s.replace(' ', '+');
 		    background = urlHead+s+"?scale=640x480&modulate=400x400x400";
 		}
-		imgVec.add(files[i]);
+		imgVec.add(fname);
 	    }
-	    else if (files[i].endsWith(".m3u"))
+	    else if (fname.endsWith(".m3u"))
 	    {
-		String s = files[i];
-		m3uVec.add(files[i]);
+		m3uVec.add(fname);
 	    }
 	    else
 	    {
-		String n = scillaConfig.getSourceDir()+"/"+path+"/"+files[i];
+		String n = scillaConfig.getSourceDir()+"/"+path+"/"+fname;
 		File f = new File(n);
 		if (f.isDirectory())
 		{
-		    dirVec.add(files[i]);
+		    dirVec.add(fname);
 		}
 	    }
 	}
@@ -105,8 +112,7 @@ throws IOException
 	while (e.hasMoreElements())
 	{
 	    File f = (File) e.nextElement();
-	    org.scilla.util.mp3.ID3v1 tag =
-		    (org.scilla.util.mp3.ID3v1) tagHash.get(f);
+	    ID3v1 tag = (ID3v1) tagHash.get(f);
 
 	    if (tag != null)
 	    {
@@ -211,29 +217,49 @@ throws IOException
 		File f = (File) e.nextElement();
 		String filepath = path+"/"+f.getName();
 
-		org.scilla.util.mp3.ID3v1 tag =
-			(org.scilla.util.mp3.ID3v1) tagHash.get(f);
-		org.scilla.util.mp3.FrameHeader fh =
-			(org.scilla.util.mp3.FrameHeader) fhHash.get(f);
-		org.scilla.util.mp3.XingInfo xing =
-			(org.scilla.util.mp3.XingInfo) xingHash.get(f);
+		ID3v1 tag = (ID3v1) tagHash.get(f);
+		FrameHeader fh = (FrameHeader) fhHash.get(f);
+		XingInfo xing = (XingInfo) xingHash.get(f);
 		if (xing != null) fh = xing;
-		int length = fh.getLength();
-		tlength += length;
+		int length = 0;
+		if (fh != null)
+		{
+		    length = fh.getLength();
+		    tlength += length;
+		}
+
+		String artistT = "";
+		String albumT = "";
+		String titleT = "";
+		String commentT = "";
+		String yearT = "";
+		if (tag != null)
+		{
+		    artistT = tag.getArtist();
+		    albumT = tag.getAlbum();
+		    titleT = tag.getTitle();
+		    commentT = tag.getComment();
+		    yearT = tag.getYear();
+		}
+		else
+		{
+		    titleT = f.getName();
+		}
+
 %>
 		<TR><TD><%=num%></TD>
 <%
-		if (artistHash.size() > 1) out.write("<TD> "+tag.getArtist()+"</TD>");
-		if (albumHash.size() > 1) out.write("<TD> "+tag.getAlbum()+"</TD>");
+		if (artistHash.size() > 1) out.write("<TD> "+artistT+"</TD>");
+		if (albumHash.size() > 1) out.write("<TD> "+albumT+"</TD>");
 %>
 		    <TD>
 			<STRONG>
-			    <%=tag!=null?tag.getTitle():"null"%>
+			    <%=titleT%>
 			</STRONG>
 		    </TD>
 <%
-		if (commentHash.size() > 1) out.write("<TD>"+tag.getComment()+"</TD>");
-		if (yearHash.size() > 1) out.write("<TD> "+tag.getYear()+"</TD>");
+		if (commentHash.size() > 1) out.write("<TD>"+commentT+"</TD>");
+		if (yearHash.size() > 1) out.write("<TD> "+yearT+"</TD>");
 %>
 		    <TD align=right>
 			<TT>
@@ -246,6 +272,10 @@ throws IOException
 %>
 		    </FONT>
 		    </TD>
+<%
+		if (fh != null)
+		{
+%>
 <!--
 		    <TD align=right> <FONT size=-5>
 			<%="MPEG"+fh.mpegVersionToString()%>
@@ -260,6 +290,9 @@ throws IOException
 		    </FONT>
 		    </TD>
 -->
+<%
+		}
+%>
 		</TR>
 <%
 	    }
