@@ -13,7 +13,7 @@
   </target>
 
 
-  <target name="dist" depends="prepare,changelog,snapshot,releases,doc">
+  <target name="dist" depends="prepare,changelog,snapshot,releases,apidoc">
     <filter token="today"        value="${TODAY}"/>
     <filter token="snapshot.zip" value="${snapshot.zip}"/>
     <filter token="snapshot.tgz" value="${snapshot.tgz}"/>
@@ -71,8 +71,8 @@
   </target>
 
 
-  <target name="doc" depends="checkout">
-    <ant dir="${build.dir}/${scilla.project}" target="doc"/>
+  <target name="apidoc" depends="checkout">
+    <ant dir="${build.dir}/${scilla.project}" target="apidoc"/>
   </target>
 
 
