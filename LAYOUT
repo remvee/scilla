@@ -1,9 +1,5 @@
 Request handling diagram
 ------------------------
-			    Publish  .  Servlet
-				    \|/
-			      RequestFactory
-				     |
 				  Request
 				     |
 			       CacheManager

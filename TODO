@@ -27,9 +27,6 @@ Future:
 - netpbm converters (needs pipes)
 - sox converter (handy with lame and pipes)
 - junit
-- RequestFactory:
-    - command line
-    - xml for a ant task
 - CacheManager
     - optional cache to database (blob) to allow keeping of last access time
 	- has it's own jdbc-url to allow separate cache database
