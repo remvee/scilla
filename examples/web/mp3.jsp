@@ -314,7 +314,7 @@ throws IOException
 %>
 			<TR>
 			    <TD>
-				<TABLE width="100%" bgcolor="#EEEEEE" cellspacing=5 cellpadding=5>
+				<TABLE width="100%" bgcolor="#EEEEEE" cellspacing=4 cellpadding=3>
 <%
 	    // loop through list
 	    int tlength = 0;
