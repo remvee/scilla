@@ -21,31 +21,22 @@
 
 package org.scilla;
 
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.Vector;
-import java.util.StringTokenizer;
 import java.io.InputStream;
 import java.io.IOException;
-
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Category;
-
-import org.scilla.converter.*;
 
 /**
  * The scilla configuration factory.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @author R.W. van 't Veer
  */
 public class ConfigFactory
 {
-    static Category log = Category.getInstance(ConfigFactory.class);
-    static { BasicConfigurator.configure(); }
+    static Logger log = LoggerFactory.getLogger(ConfigFactory.class);
 
     static Config config = null;
 
+    public static final String LOG4J_PROPERTY_FILE = "org/scilla/log4j.properties";
     public static final String PROPERTY_FILE = "org/scilla/Config.properties";
 
     private static ConfigFactory _instance = null;
@@ -68,19 +59,27 @@ public class ConfigFactory
      */
     public static synchronized Config get ()
     {
+	ClassLoader cl = ConfigFactory.getInstance().getClass().getClassLoader();
+
 	if (config == null)
 	{
 	    InputStream in = null;
+
+	    // configure scilla
 	    try
 	    {
-		ConfigFactory thiz = ConfigFactory.getInstance();
-		in = thiz.getClass().getClassLoader().getResourceAsStream(PROPERTY_FILE);
+		in = cl.getResourceAsStream(PROPERTY_FILE);
 		if (in != null)
 		{
 		    config = new ConfigPropertiesImpl(in);
-		    log.info("properties loaded");
+		    log.info("properties loaded: "+PROPERTY_FILE);
+		    in.close();
 		}
-		else log.warn("no properties loaded");
+		else
+		{
+		    log.warn("no properties loaded: "+PROPERTY_FILE);
+		}
+
 	    }
 	    catch (IOException e)
 	    {

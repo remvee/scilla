@@ -29,20 +29,15 @@ import java.util.StringTokenizer;
 import java.io.InputStream;
 import java.io.IOException;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Category;
-
-import org.scilla.converter.*;
-
 /**
  * The scilla configuration implemation using property files.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @author R.W. van 't Veer
  */
 public class ConfigPropertiesImpl implements Config
 {
-    static Category log = Category.getInstance(ConfigPropertiesImpl.class);
+    static Logger log = LoggerFactory.getLogger(ConfigPropertiesImpl.class);
 
     private Properties prop = new Properties();
 

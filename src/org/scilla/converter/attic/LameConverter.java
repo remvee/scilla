@@ -25,8 +25,6 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.apache.log4j.Category;
-
 import org.scilla.*;
 import org.scilla.core.*;
 
@@ -112,14 +110,14 @@ import org.scilla.core.*;
  * <BR>MPEG2 samplerates(kHz): 16 22.05 24 
  * <BR>bitrates(kbs): 8 16 24 32 40 48 56 64 80 96 112 128 144 160 
  *
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  * @see <A href="http://www.sulaco.org/mp3/">The LAME Project</A>
  * @author R.W. van 't Veer
  */
 
 public class LameConverter extends Converter
 {
-    static Category log = Category.getInstance(LameConverter.class);
+    static Logger log = LoggerFactory.getLogger(LameConverter.class);
 
     static Config config = ConfigFactory.get();
 

@@ -25,8 +25,6 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.apache.log4j.Category;
-
 import org.scilla.*;
 import org.scilla.core.*;
 
@@ -66,7 +64,7 @@ import org.scilla.core.*;
  *     </DL>
  * </DL>
  *
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @see <A href="http://ffmpeg.sourceforge.net/">FFMpeg Streaming
  * Multimedia System</A>
  * @author R.W. van 't Veer
@@ -74,7 +72,7 @@ import org.scilla.core.*;
 
 public class FFMpegConverter extends Converter
 {
-    static Category log = Category.getInstance(FFMpegConverter.class);
+    static Logger log = LoggerFactory.getLogger(FFMpegConverter.class);
 
     static Config config = ConfigFactory.get();
 

@@ -26,17 +26,18 @@ import java.io.RandomAccessFile;
 import java.io.IOException;
 import java.io.EOFException;
 
-import org.apache.log4j.Category;
+import org.scilla.Logger;
+import org.scilla.LoggerFactory;
 
 /**
  * Read only access to MP3 frame header information.
  * @see <a href="http://www.mp3-tech.org/programmer/frame_header.html">MP3'Tech - Frame header</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class FrameHeader
 {
-    static Category log = Category.getInstance(FrameHeader.class);
+    static Logger log = LoggerFactory.getLogger(FrameHeader.class);
 
 /// constants
 ///
@@ -526,4 +527,4 @@ public class FrameHeader
 }
 
 
-/* end of $Id: FrameHeader.java,v 1.6 2001/11/02 11:28:06 remco Exp $ */
+/* end of $Id: FrameHeader.java,v 1.7 2001/11/07 08:20:54 remco Exp $ */

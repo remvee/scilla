@@ -25,8 +25,6 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.apache.log4j.Category;
-
 import org.scilla.*;
 import org.scilla.core.*;
 import org.scilla.util.*;
@@ -120,11 +118,11 @@ import org.scilla.util.*;
  * </DL>
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class ImageMagickConverter extends Converter
 {
-    static Category log = Category.getInstance(ImageMagickConverter.class);
+    static Logger log = LoggerFactory.getLogger(ImageMagickConverter.class);
 
     static Config config = ConfigFactory.get();
 

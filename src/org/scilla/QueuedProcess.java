@@ -29,19 +29,17 @@ import java.io.File;
 import java.util.Vector;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Category;
-
 /**
  * Execute a OS process.  A semaphore is used to allow only a defined
  * amount of processes to run concurrently.  This process maximum is
  * taken from the scilla configuration.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class QueuedProcess
 {
-    static Category log = Category.getInstance(QueuedProcess.class);
+    static Logger log = LoggerFactory.getLogger(QueuedProcess.class);
 
     public static final String MAX_RUNNERS_KEY = "converters.osprocess.runners.sem";
     public static final String WRAPPER_KEY = "converters.osprocess.wrapper.exec";

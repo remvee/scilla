@@ -27,8 +27,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 
-import org.apache.log4j.Category;
-
 import org.scilla.*;
 
 /**
@@ -36,11 +34,11 @@ import org.scilla.*;
  * finished or not.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class CachedObject implements MediaObject
 {
-    static Category log = Category.getInstance(CachedObject.class);
+    static Logger log = LoggerFactory.getLogger(CachedObject.class);
 
     final static int BUFFER_SIZE = 4096;
     final static int WAIT_FOR_FILE_TIMEOUT = 100;
