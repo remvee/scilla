@@ -13,8 +13,6 @@
     - let thread test for successful exit
     - if not successful set flag which can be tested in RunnerObject
 	when no file appears and converter nolonger alive
-- Publish class for generation of static websites, include main for
-  scripting.
 
 Ideas:
 - type transformation by extension (shorter notation!)

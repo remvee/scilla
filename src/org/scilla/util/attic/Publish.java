@@ -26,10 +26,10 @@ import org.scilla.*;
 /**
  * Simple main class for debugging scilla.
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.1 $
  * @author R.W. van 't Veer
  */
-public class Main
+public class Publish
 {
     /**
      * Writes requested data to standart output.
