@@ -30,7 +30,7 @@ import org.scilla.util.mp3.id3v2.*;
  * MP3 tag commandline utillity.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class Tagger {
     static Map commandMap = new HashMap();
@@ -53,13 +53,13 @@ public class Tagger {
         optionMap = Collections.unmodifiableMap(optionMap);
     }
 
-    private List commands = new Vector();
+    private List commands = new ArrayList();
     private Set options = new HashSet();
     private String filename = null;
     private ID3v1 v1tag = null;
     private ID3v2 v2tag = null;
-    boolean v1tagModified = true;
-    boolean v2tagModified = true;
+    private boolean v1tagModified = false;
+    private boolean v2tagModified = false;
 
     public Tagger (String[] args)
     throws Exception {
@@ -78,6 +78,7 @@ public class Tagger {
                     throw new Exception("command unknown: "+arg);
 		}
                 Command cmd = (Command) clazz.newInstance();
+                cmd.setTagger(this);
 
                 // configure command
                 while (cmd.needMoreParameters()) {
@@ -179,6 +180,14 @@ public class Tagger {
     public boolean hasOption (String name) {
         return options.contains(name);
     }
+    
+    public void setV1TagModified (boolean v) {
+        v1tagModified = v;
+    }
+    
+    public void setV2TagModified (boolean v) {
+        v2tagModified = v;
+    }
 
     public static void main (String[] args)
     throws Exception {
@@ -231,122 +240,127 @@ public class Tagger {
 
         return out.toString();
     }
-}
 
+    private static abstract class Command {
+        public abstract String getDescription ();
+        public abstract void execute (ID3v1 v1tag, ID3v2 v2tag) throws Exception;
 
-abstract class Command {
-    public abstract String getDescription ();
-    public abstract void execute (ID3v1 v1tag, ID3v2 v2tag)
-    throws Exception;
+        protected String[] args = null;
+        protected int argN = 0;
+        public boolean needMoreParameters () {
+            return args != null && argN < args.length;
+        }
+        public void addParameter (String arg) {
+            args[argN++] = arg;
+        }
+        
+        protected Tagger tagger = null;
+        public void setTagger (Tagger tagger) {
+            this.tagger = tagger;
+        }
+    }
 
-    String[] args = null;
-    int argN = 0;
-    public boolean needMoreParameters () {
-        return args != null && argN < args.length;
+    private static class HelpCommand extends Command {
+        public String getDescription () {
+            return "Display help message.";
+        }
+        public void execute (ID3v1 v1tag, ID3v2 v2tag)
+        throws Exception {
+            System.out.println(Tagger.getUsage());
+        }
     }
-    public void addParameter (String arg) {
-        args[argN++] = arg;
-    }
-    Set options = null;
-    public void setOptions (Set set) {
-        options = set;
-    }
-}
 
-class HelpCommand extends Command {
-    public String getDescription () {
-        return "Display help message.";
+    private static class V1ToV2Command extends Command {
+        public String getDescription () {
+            return "Write ID3v2 tag from available ID3v1 tag.";
+        }
+        public void execute (ID3v1 v1tag, ID3v2 v2tag)
+        throws Exception {
+            v2tag.setFrame(new TextFrame("TALB", ID3v1.CHAR_ENCODING, v1tag.getAlbum()));
+            v2tag.setFrame(new TextFrame("TIT2", ID3v1.CHAR_ENCODING, v1tag.getTitle()));
+            v2tag.setFrame(new TextFrame("TPE1", ID3v1.CHAR_ENCODING, v1tag.getArtist()));
+            v2tag.setFrame(new TextFrame("TYER", ID3v1.CHAR_ENCODING, v1tag.getYear()));
+            v2tag.setFrame(new TextFrame("TRCK", ID3v1.CHAR_ENCODING, v1tag.getTrkNum()+""));
+            v2tag.setFrame(new TextFrame("TCON", ID3v1.CHAR_ENCODING, "("+v1tag.getGenre()+")"));
+            v2tag.setFrame(new TextFrame("TXXX", ID3v1.CHAR_ENCODING, "ID3v1Comment", v1tag.getComment()));
+            tagger.setV2TagModified(true);
+        }
     }
-    public void execute (ID3v1 v1tag, ID3v2 v2tag)
-    throws Exception {
-        System.out.println(Tagger.getUsage());
-    }
-}
 
-class V1ToV2Command extends Command {
-    public String getDescription () {
-        return "Write ID3v2 tag from available ID3v1 tag.";
-    }
-    public void execute (ID3v1 v1tag, ID3v2 v2tag)
-    throws Exception {
-        v2tag.setFrame(new TextFrame("TALB", ID3v1.CHAR_ENCODING, v1tag.getAlbum()));
-        v2tag.setFrame(new TextFrame("TIT2", ID3v1.CHAR_ENCODING, v1tag.getTitle()));
-        v2tag.setFrame(new TextFrame("TPE1", ID3v1.CHAR_ENCODING, v1tag.getArtist()));
-        v2tag.setFrame(new TextFrame("TYER", ID3v1.CHAR_ENCODING, v1tag.getYear()));
-        v2tag.setFrame(new TextFrame("TRCK", ID3v1.CHAR_ENCODING, v1tag.getTrkNum()+""));
-        v2tag.setFrame(new TextFrame("TCON", ID3v1.CHAR_ENCODING, "("+v1tag.getGenre()+")"));
-        v2tag.setFrame(new TextFrame("TXXX", ID3v1.CHAR_ENCODING, "ID3v1Comment", v1tag.getComment()));
-    }
-}
+    private static class V2ToV1Command extends Command {
+        public String getDescription () {
+            return "Write ID3v1 tag from available ID3v2 tag.";
+        }
+        public void execute(ID3v1 v1tag, ID3v2 v2tag) throws Exception {
+            TextFrame f;
+            f = (TextFrame) v2tag.getFrame("TALB");
+            if (f != null) {
+                v1tag.setAlbum(f.getText());
+            }
+            f = (TextFrame) v2tag.getFrame("TIT2");
+            if (f != null) {
+                v1tag.setTitle(f.getText());
+            }
+            f = (TextFrame) v2tag.getFrame("TPE1");
+            if (f != null) {
+                v1tag.setArtist(f.getText());
+            }
+            // TODO or TPE2, TPE3, TPE4
 
-class V2ToV1Command extends Command {
-    public String getDescription () {
-        return "Write ID3v1 tag from available ID3v2 tag.";
+            f = (TextFrame) v2tag.getFrame("TYER");
+            if (f != null) {
+                v1tag.setYear(f.getText());
+            }
+            // TODO TRCK
+            // TODO TCON
+            // TODO COMM/TXXX
+            
+            tagger.setV1TagModified(true);
+        }
     }
-    public void execute (ID3v1 v1tag, ID3v2 v2tag)
-    throws Exception {
-        TextFrame f;
-        f = (TextFrame) v2tag.getFrame("TALB");
-        if (f != null) {
-            v1tag.setAlbum(f.getText());
-	}
-        f = (TextFrame) v2tag.getFrame("TIT2");
-        if (f != null) {
-            v1tag.setTitle(f.getText());
-	}
-        f = (TextFrame) v2tag.getFrame("TPE1");
-        if (f != null) {
-            v1tag.setArtist(f.getText());
-	}
-        // TODO or TPE2, TPE3, TPE4
 
-        f = (TextFrame) v2tag.getFrame("TYER");
-        if (f != null) {
-            v1tag.setYear(f.getText());
-	}
-        // TODO TRCK
-        // TODO TCON
-        // TODO COMM/TXXX
+    private static class V2SetTextFrameCommand extends Command {
+        public V2SetTextFrameCommand () {
+            args = new String[2];
+        }
+        public String getDescription () {
+            return
+                "Create text frame with P1 as identifier and P2 as content.  All\n"+
+                "other frames with the given identifier will be deleted.";
+        }
+        public void execute (ID3v1 v1tag, ID3v2 v2tag)
+        throws Exception {
+            v2tag.setFrame(new TextFrame(args[0], null, args[1])); 
+            tagger.setV2TagModified(true);
+        }
     }
-}
 
-class V2SetTextFrameCommand extends Command {
-    public V2SetTextFrameCommand () {
-        args = new String[2];
+    private static class V2AddTextFrameCommand extends Command {
+        public V2AddTextFrameCommand () {
+            args = new String[2];
+        }
+        public String getDescription () {
+            return "Create text frame with P1 as identifier and P2 as content.";
+        }
+        public void execute (ID3v1 v1tag, ID3v2 v2tag)
+        throws Exception {
+            v2tag.addFrame(new TextFrame(args[0], null, args[1]));
+            tagger.setV2TagModified(true);
+        }
     }
-    public String getDescription () {
-        return
-            "Create text frame with P1 as identifier and P2 as content.  All\n"+
-            "other frames with the given identifier will be deleted.";
-    }
-    public void execute (ID3v1 v1tag, ID3v2 v2tag)
-    throws Exception {
-        v2tag.setFrame(new TextFrame(args[0], null, args[1]));
-    }
-}
 
-class V2AddTextFrameCommand extends Command {
-    public V2AddTextFrameCommand () {
-        args = new String[2];
+    private static class V2DelTextFrameCommand extends Command {
+        public V2DelTextFrameCommand () {
+            args = new String[1];
+        }
+        public String getDescription () {
+            return "Create text frame with P1 as identifier.";
+        }
+        public void execute (ID3v1 v1tag, ID3v2 v2tag)
+        throws Exception {
+            v2tag.removeFrames(args[0]);
+            tagger.setV2TagModified(true);
+        }
     }
-    public String getDescription () {
-        return "Create text frame with P1 as identifier and P2 as content.";
-    }
-    public void execute (ID3v1 v1tag, ID3v2 v2tag)
-    throws Exception {
-        v2tag.addFrame(new TextFrame(args[0], null, args[1]));
-    }
-}
 
-class V2DelTextFrameCommand extends Command {
-    public V2DelTextFrameCommand () {
-        args = new String[1];
-    }
-    public String getDescription () {
-        return "Create text frame with P1 as identifier.";
-    }
-    public void execute (ID3v1 v1tag, ID3v2 v2tag)
-    throws Exception {
-        v2tag.removeFrames(args[0]);
-    }
 }
