@@ -419,7 +419,7 @@
 	    if ("ogg".equals(request.getParameter("t"))) {
 		encoding = "&t=ogg&bitrate=50";
 	    } else {
-		encoding = "&outputtype=mp3&mode=j&resample=16&vbr=1&vbrquality=6&maxbitrate=56";
+		encoding = "&t=mp3&resample=16&maxbitrate=56";
 	    }
 	}
 	return "playlist.m3u?d="+URLEncoder.encode(path)+(recursive ? "&r=1" : "")+encoding;
