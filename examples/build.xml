@@ -6,6 +6,7 @@
   <!-- some defaults -->
   <property name="tomcat.home" value="/usr/local/tomcat"/>
   <property name="cvs2cl.exec" value="cvs2cl"/>
+  <property name="build.compiler" value="jikes"/>
 
   <!-- our own servlet -->
   <property name="src.dir"    value="src"/>
