@@ -1,3 +1,6 @@
+ExifMakerCanon seems to leak memory..
+
+
 For version 1.0:
 - examples: 
     - audio.jsp
