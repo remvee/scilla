@@ -11,4 +11,10 @@
     <zip>jakarta-tomcat-5.0.28.zip</zip>
     <jar>jakarta-tomcat-5.0.28/common/lib/servlet-api.jar</jar>
   </package>
+  <package name="jsp" packaged="true">
+    <class>javax.servlet.jsp.JspPage</class>
+    <baseurl>http://www.apache.org/dist/jakarta/tomcat-5/v5.0.28/bin</baseurl>
+    <zip>jakarta-tomcat-5.0.28.zip</zip>
+    <jar>jakarta-tomcat-5.0.28/common/lib/jsp-api.jar</jar>
+  </package>
 </dependencies>
