@@ -104,7 +104,7 @@ import org.scilla.util.*;
  * </DL>
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ExternalConverter implements Converter
 {
@@ -152,7 +152,7 @@ public class ExternalConverter implements Converter
 	    if (key.startsWith(CONVERTER_PREFIX))
 	    {
 		String tail = key.substring(CONVERTER_PREFIX.length()+1);
-		StringTokenizer keyst = new StringTokenizer(tail, ""+Config.keyDelimiter);
+		StringTokenizer keyst = new StringTokenizer(tail, ""+keyDelimiter);
 		String name = keyst.nextToken();
 		String type = keyst.nextToken();
 		if (type.equals("exec"))
@@ -212,7 +212,7 @@ public class ExternalConverter implements Converter
 		    if (keyst.hasMoreTokens())
 		    {
 			String mtype = keyst.nextToken();
-			inputSwitchMap.put(name+Config.keyDelimiter+mtype, config.getString(key));
+			inputSwitchMap.put(name+keyDelimiter+mtype, config.getString(key));
 		    }
 		    else
 		    {
@@ -224,7 +224,7 @@ public class ExternalConverter implements Converter
 		    if (keyst.hasMoreTokens())
 		    {
 			String mtype = keyst.nextToken();
-			outputSwitchMap.put(name+Config.keyDelimiter+mtype, config.getString(key));
+			outputSwitchMap.put(name+keyDelimiter+mtype, config.getString(key));
 		    }
 		    else
 		    {
@@ -316,8 +316,8 @@ public class ExternalConverter implements Converter
 		    {
 			String mtype = request.getInputType();
 			String btype = mtype.substring(0, mtype.indexOf('/'));
-			mtype = converterName+Config.keyDelimiter+mtype;
-			btype = converterName+Config.keyDelimiter+btype;
+			mtype = converterName+keyDelimiter+mtype;
+			btype = converterName+keyDelimiter+btype;
 			if (inputSwitchMap.containsKey(mtype))
 			{
 			    cmdline.add(inputSwitchMap.get(mtype));
@@ -339,8 +339,8 @@ public class ExternalConverter implements Converter
 		    {
 			String mtype = request.getOutputType();
 			String btype = mtype.substring(0, mtype.indexOf('/'));
-			mtype = converterName+Config.keyDelimiter+mtype;
-			btype = converterName+Config.keyDelimiter+btype;
+			mtype = converterName+keyDelimiter+mtype;
+			btype = converterName+keyDelimiter+btype;
 			if (outputSwitchMap.containsKey(mtype))
 			{
 			    cmdline.add(outputSwitchMap.get(mtype));
