@@ -14,7 +14,7 @@
 
     String copyrightEncoded = "";
     String copyrightFile =
-	    ConfigFactory.get().getString(Config.SOURCE_DIR_KEY)
+	    ConfigProvider.get().getString(Config.SOURCE_DIR_KEY)
 	    +'/'+file;
     copyrightFile = copyrightFile.substring(0, copyrightFile.lastIndexOf('/'));
     copyrightFile += "/copyright.txt";

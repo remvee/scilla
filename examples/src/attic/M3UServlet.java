@@ -10,11 +10,11 @@ import org.scilla.util.mp3.ID3v1;
 
 public class M3UServlet extends HttpServlet
 {
-    final static Config scillaConfig = ConfigFactory.get();
-    final static String PROPERTY_FILE = "M3UServlet.properties";
-    static Properties config = null;
+    private static final Config scillaConfig = ConfigProvider.get();
+    private static final String PROPERTY_FILE = "M3UServlet.properties";
+    private static Properties config = null;
 
-    Properties getConfig ()
+    private Properties getConfig ()
     throws IOException
     {
 	if (config == null)

@@ -27,7 +27,7 @@ throws IOException
 
 %>
 <%
-    Config scillaConfig = ConfigFactory.get();
+    Config scillaConfig = ConfigProvider.get();
     String source = scillaConfig.getString(Config.SOURCE_DIR_KEY);
 
     String path = "";

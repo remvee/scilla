@@ -26,8 +26,8 @@ import java.util.Enumeration;
 /**
  * The scilla configuration interface.
  *
- * @see org.scilla.ConfigFactory#get()
- * @version $Revision: 1.9 $
+ * @see org.scilla.ConfigProvider#get()
+ * @version $Revision: 1.10 $
  * @author R.W. van 't Veer
  */
 public interface Config

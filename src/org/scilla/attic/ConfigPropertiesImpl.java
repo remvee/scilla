@@ -30,27 +30,60 @@ import java.io.InputStream;
 import java.io.IOException;
 
 /**
- * The scilla configuration implemation using property files.
+ * The scilla configuration implementation using property files.
  *
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @author R.W. van 't Veer
  */
 public class ConfigPropertiesImpl implements Config
 {
-    static Logger log = LoggerFactory.getLogger(ConfigPropertiesImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(ConfigPropertiesImpl.class);
 
-    private Properties prop = new Properties();
+    /** name of configuration file */
+    public static final String PROPERTY_FILE = "org/scilla/Config.properties";
 
-    private Hashtable stringArrays = new Hashtable();
-    private Hashtable classArrays = new Hashtable();
-    private Hashtable[] cache = { stringArrays, classArrays };
+    private final Properties prop = new Properties();
 
-    public ConfigPropertiesImpl (InputStream in)
-    throws IOException
+    public ConfigPropertiesImpl ()
     {
-	prop.load(in);
+	InputStream in = null;
+
+	// read property file
+	try
+	{
+	    ClassLoader cl = this.getClass().getClassLoader();
+	    in = cl.getResourceAsStream(PROPERTY_FILE);
+	    if (in != null)
+	    {
+		prop.load(in);
+		log.debug("properties loaded: "+PROPERTY_FILE);
+	    }
+	    else
+	    {
+		log.fatal("properties not avialable: "+PROPERTY_FILE);
+	    }
+
+	}
+	catch (IOException ex)
+	{
+	    log.fatal("can't load properties: " + PROPERTY_FILE, ex);
+	}
+	finally
+	{
+	    if (in != null)
+	    {
+		try { in.close(); }
+		catch (IOException e) { log.warn(e); }
+	    }
+	}
     }
 
+// cache for expensive operations
+    private final Hashtable stringArrays = new Hashtable();
+    private final Hashtable classArrays = new Hashtable();
+    private final Hashtable[] cache = { stringArrays, classArrays };
+
+// accessors
     public Enumeration keys ()
     {
 	return prop.propertyNames();
@@ -61,7 +94,6 @@ public class ConfigPropertiesImpl implements Config
 	return prop.containsKey(key);
     }
 
-// accessors
     public boolean getBoolean (String key)
     {
 	return Boolean.valueOf(prop.getProperty(key)).booleanValue();

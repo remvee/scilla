@@ -30,14 +30,13 @@ import org.scilla.converter.*;
 /**
  * The MediaFactory creates a runner or file object.
  *
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  * @author R.W. van 't Veer
  */
 public class MediaFactory
 {
-    static Logger log = LoggerFactory.getLogger(MediaFactory.class);
-
-    static Config config = ConfigFactory.get();
+    private static final Logger log = LoggerFactory.getLogger(MediaFactory.class);
+    private static final Config config = ConfigProvider.get();
 
     /** config key to converter class list */
     public static final String CONVERTERS_KEY = "converters.classes";

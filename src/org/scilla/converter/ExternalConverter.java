@@ -110,46 +110,47 @@ import org.scilla.util.*;
  * </DL>
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ExternalConverter implements Converter
 {
-    static final Logger log = LoggerFactory.getLogger(ExternalConverter.class);
-    static final Config config = ConfigFactory.get();
+    private static final Logger log = LoggerFactory.getLogger(ExternalConverter.class);
+    private static final Config config = ConfigProvider.get();
 
     /** config key prefix for converter definitions */
     public static final String CONVERTER_PREFIX = "converters.external";
-    static final char keyDelimiter = '.';
+    /** config key delimiter */
+    public static final char keyDelimiter = '.';
 
-    Request request = null;
-    String outputFile = null;
-    String converterName = null;
+    private Request request = null;
+    private String outputFile = null;
+    private String converterName = null;
 
-    volatile String errorMessage = null;
-    volatile int exitValue = 0; // 0 means success
-    volatile boolean finished = false;
-    volatile boolean started = false;
+    private volatile String errorMessage = null;
+    private volatile int exitValue = 0; // 0 means success
+    private volatile boolean finished = false;
+    private volatile boolean started = false;
 
-    static Vector reservedParameters = new Vector();
+    private static Vector reservedParameters = new Vector();
     static
     {
-	reservedParameters.add("outputtype");
-	reservedParameters.add("cache");
+	reservedParameters.add(Request.OUTPUT_TYPE_PARAMETER);
+	reservedParameters.add(Request.NO_CACHE_PARAMETER);
     }
-    static Hashtable inputTypeMap = new Hashtable();
-    static Hashtable outputTypeMap = new Hashtable();
-    static Hashtable parameterMap = new Hashtable();
-    static Hashtable execMap = new Hashtable();
-    static Hashtable formatMap = new Hashtable();
-    static Hashtable inputSwitchMap = new Hashtable();
-    static Hashtable outputSwitchMap = new Hashtable();
-    static Hashtable silentSwitchMap = new Hashtable();
-    static Hashtable stringSwitchMap = new Hashtable();
-    static Hashtable numberSwitchMap = new Hashtable();
-    static Hashtable booleanSwitchMap = new Hashtable();
-    static HashSet ignoreExitstatSet = new HashSet();
-    static HashSet cd2outputDirSet = new HashSet();
-    static HashSet blacklistSet = new HashSet();
+    private static Hashtable inputTypeMap = new Hashtable();
+    private static Hashtable outputTypeMap = new Hashtable();
+    private static Hashtable parameterMap = new Hashtable();
+    private static Hashtable execMap = new Hashtable();
+    private static Hashtable formatMap = new Hashtable();
+    private static Hashtable inputSwitchMap = new Hashtable();
+    private static Hashtable outputSwitchMap = new Hashtable();
+    private static Hashtable silentSwitchMap = new Hashtable();
+    private static Hashtable stringSwitchMap = new Hashtable();
+    private static Hashtable numberSwitchMap = new Hashtable();
+    private static Hashtable booleanSwitchMap = new Hashtable();
+    private static HashSet ignoreExitstatSet = new HashSet();
+    private static HashSet cd2outputDirSet = new HashSet();
+    private static HashSet blacklistSet = new HashSet();
     static
     {
 	Enumeration keys = config.keys();

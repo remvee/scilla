@@ -33,22 +33,24 @@ import org.scilla.util.*;
  * The Request class holds a scilla media object request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class Request
 {
+    private final static Logger log = LoggerFactory.getLogger(Request.class);
+    private final static Config config = ConfigProvider.get();
+    private final static CacheManager cache = CacheManager.getInstance();
+
     public final static String NO_CACHE_PARAMETER = "nocache";
     public final static String OUTPUT_TYPE_PARAMETER = "outputtype";
 
-    String source = null;
-    String type = null;
-    Vector param = null;
+    private String source = null;
+    private String type = null;
+    private Vector param = null;
 
-    boolean nocache = false;
+    private boolean nocache = false;
 
-    MediaObject obj = null;
-    CacheManager cache = CacheManager.getInstance();
-    Config config = ConfigFactory.get();
+    private MediaObject obj = null;
 
     /**
      * Construct a new request object.

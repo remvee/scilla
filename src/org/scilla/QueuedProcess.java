@@ -35,23 +35,23 @@ import java.util.StringTokenizer;
  * taken from the scilla configuration.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class QueuedProcess
 {
-    static Logger log = LoggerFactory.getLogger(QueuedProcess.class);
+    private static final Logger log = LoggerFactory.getLogger(QueuedProcess.class);
+    private static final Config config = ConfigProvider.get();
 
     public static final String MAX_RUNNERS_KEY = "converters.osprocess.runners.sem";
     public static final String WRAPPER_KEY = "converters.osprocess.wrapper.exec";
 
-    int exitValue = -1;
-    Process proc;
-    OutputLogger stdout;
-    OutputLogger stderr;
+    private int exitValue = -1;
+    private Process proc;
+    private OutputLogger stdout;
+    private OutputLogger stderr;
 
-    static Semaphore sem = null;
-    static int maxRunners = 5;
-    static Config config = ConfigFactory.get();
+    private static Semaphore sem = null;
+    private static int maxRunners = 5;
     static
     {
 	// get maxRunners from scilla configuration
