@@ -466,7 +466,7 @@ throws IOException
 		    s = s.replace(' ', '+');
 %>
 			    <TD>
-				<A href="<%=urlHead+s%>"><IMG src="<%=urlHead+s%>?scale=75x75&outputtype=jpg" border=0></A>
+				<A href="<%=urlHead+s%>"><IMG src="<%=urlHead+s%>?scale=75x75" border=0></A>
 			    </TD>
 <%
 		}
