@@ -34,7 +34,7 @@ import org.scilla.util.vorbis.*;
 /**
  * Audio info.
  *
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @author R.W. van 't Veer
  */
 public class AudioInfo extends Info {
@@ -163,7 +163,8 @@ public class AudioInfo extends Info {
 	    FrameHeader fh = null;
 	    try {
 		fh = new FrameHeader(f);
-		fh.examineAll();
+		// fh.examineAll();
+
 		setInt(BITRATE, fh.getBitRate() * 1000);
 		setInt(SAMPLERATE, fh.getSampleRate());
 		setInt(CHANNELS, fh.isMono() ? 1 : 2);
