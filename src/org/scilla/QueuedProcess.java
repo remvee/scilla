@@ -39,7 +39,7 @@ import org.scilla.util.Semaphore;
  * taken from the scilla configuration.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class QueuedProcess {
     private static final Log log = LogFactory.getLog(QueuedProcess.class);
@@ -131,10 +131,14 @@ public class QueuedProcess {
 	    sem.decr();
 	    log.debug("process started");
             proc = Runtime.getRuntime().exec(args, envp, dir);
-        } finally {
-	    log.debug("process finished");
+	} catch (Throwable ex) {
+	    log.error("process execution failed", ex);
             sem.incr();
-	}
+
+	    if (ex instanceof IOException) {
+		throw (IOException) ex;
+	    }
+        }
 
         // redirect stdout and stderr
         stdout = new OutputLog(proc.getInputStream());
@@ -153,6 +157,7 @@ public class QueuedProcess {
             } catch (InterruptedException e) {
 		// will never happen
 	    }
+	    log.debug("process finished");
             sem.incr();
 
             exitValue = proc.exitValue();
