@@ -1,15 +1,10 @@
 For version 1.0:
-- examples:
-    - playlist.m3u
-	- leaks file descriptors?
 - taglib
     - put tld in META-INF
 - org.scilla.util.mp3.FrameHeader
     - try to read beyond big id3v2 tags
-- org.scilla.util.vorbis.VorbisInfo
-    - don't fail on determining length of incomplete file
 - org.scilla.info.AudioInfo
-    - handle wav and shn files
+    - handle shn files
 - JAIConverter
     - sync parameters with imagick so they will be interchangable.
       Maybe we want to define parameter sets as kind of interface?
