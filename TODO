@@ -1,10 +1,14 @@
 For version 1.0:
+- Servlet
+    - make PartialContent class reuseable
 - taglib
     - put tld in META-INF
 - org.scilla.util.mp3.FrameHeader
     - try to read beyond big id3v2 tags
 - org.scilla.info.AudioInfo
     - handle shn files
+- org.scilla.converter.ExternalConverter.java
+    - need new "can execute trick"
 - JAIConverter
     - sync parameters with imagick so they will be interchangable.
       Maybe we want to define parameter sets as kind of interface?
