@@ -30,7 +30,7 @@ import java.util.*;
  * language and identifier like <TT>COMM</TT> and <TT>USLT</TT>.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 class TextFrame extends Frame
 {
@@ -96,6 +96,7 @@ class TextFrame extends Frame
 	    while (frameData[i] != 0) sb.append((char) frameData[i++]);
 	    ident = sb.toString();
 
+	    // skip over zero
 	    i++;
 	}
 
