@@ -159,6 +159,16 @@
 	    </description>
 	</attribute>
 	<attribute>
+	    <name>scope</name>
+	    <required>false</required>
+	    <rtexprvalue>false</rtexprvalue>
+	    <description>
+		JSP scope of the attribute to write; "page",
+		"request", "session" or "application".  Defaults
+		to "page".
+	    </description>
+	</attribute>
+	<attribute>
 	    <name>recursive</name>
 	    <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
@@ -168,13 +178,19 @@
 	    </description>
 	</attribute>
 	<attribute>
-	    <name>scope</name>
+	    <name>listtype</name>
 	    <required>false</required>
-	    <rtexprvalue>false</rtexprvalue>
+	    <rtexprvalue>true</rtexprvalue>
 	    <description>
-		JSP scope of the attribute to write; "page",
-		"request", "session" or "application".  Defaults
-		to "page".
+		Type of playlist, i.e. "m3u" or "pls".
+	    </description>
+	</attribute>
+	<attribute>
+	    <name>streamtype</name>
+	    <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	    <description>
+		Type of streams, i.e. "ogg" or "mp3".
 	    </description>
 	</attribute>
     </tag>
