@@ -21,6 +21,9 @@
 
 package org.scilla;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.Vector;
 import java.util.StringTokenizer;
@@ -32,7 +35,7 @@ import java.util.StringTokenizer;
  *
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class QueuedProcess
 {
@@ -126,6 +129,14 @@ public class QueuedProcess
 	    sem.incr();
 	    throw e;
 	}
+
+	// redirect stdout and stderr
+	OutputLogger stdout = new OutputLogger(
+		args[0]+".stdout", proc.getInputStream());
+	stdout.run();
+	OutputLogger stderr = new OutputLogger(
+		args[0]+".stderr", proc.getErrorStream());
+	stderr.run();
     }
 
     /**
@@ -181,5 +192,38 @@ class Semaphore
 	    catch (InterruptedException e) { } // will never happen
 	}
 	counter--;
+    }
+}
+
+/**
+ * simple output logging thread
+ */
+class OutputLogger extends Thread
+{
+    InputStream in;
+    String prefix;
+
+    public OutputLogger (String prefix, InputStream in)
+    {
+	this.prefix = prefix;
+	this.in = in;
+    }
+
+    public void run ()
+    {
+	BufferedReader br = new BufferedReader(new InputStreamReader(in));
+	String s;
+	try
+	{
+	    while ((s = br.readLine()) != null)
+	    {
+		System.err.println(prefix+": "+s);
+	    }
+	}
+	catch (IOException e) { /* ignore */ }
+	finally
+	{
+	    try { br.close(); } catch (IOException e ) { /* ignore */ }
+	}
     }
 }
