@@ -1,27 +1,8 @@
 For version 1.0:
-- Servlet: implement range header stuff for seekable audio streams
-    org.scilla.util.Servlet: WARN: header: host=azrael.xs4all.nl
-    org.scilla.util.Servlet: WARN: header: user-agent=WinampMPEG/2.7
-    org.scilla.util.Servlet: WARN: header: accept=*/*
-    org.scilla.util.Servlet: WARN: header: icy-metadata=1
-    org.scilla.util.Servlet: WARN: header: range=bytes=179367-
-    org.scilla.util.Servlet: WARN: header: connection=close
-    $ rfc -l 2616
-    /14.35
-- Installer:
-    - executable jar
-	- META-INF/MANIFEST.MF: making it execute Configure.class
-	- Confugure.class
-	- scilla.war
-	- data/: from data/source
-    - Configure
-	- get all init-param's from web.xml
-	- confirm all values; descriptions, default values from
-	  param-value (except source.dir which is cwd), empty
-	  value illegal
-	- test/create source.dir
-	- copy data files to source.dir
-	- write war and replace web.xml
+- examples:
+    - mp3.jsp
+	- use ID3v2 tags
+	- stream mono originals as mono stream
 - RequestFactory:
     - command line
     - xml for a ant task
