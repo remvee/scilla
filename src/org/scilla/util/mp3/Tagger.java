@@ -30,7 +30,7 @@ import org.scilla.util.mp3.id3v2.*;
  * MP3 tag commandline utillity.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class Tagger {
     static Map commandMap = new HashMap();
@@ -41,6 +41,7 @@ public class Tagger {
         commandMap.put("-2to1", V2ToV1Command.class);
         commandMap.put("-v2settextframe", V2SetTextFrameCommand.class);
         commandMap.put("-v2addtextframe", V2AddTextFrameCommand.class);
+        commandMap.put("-v2deltextframe", V2DelTextFrameCommand.class);
         commandMap = Collections.unmodifiableMap(commandMap);
     }
 
@@ -330,5 +331,18 @@ class V2AddTextFrameCommand extends Command {
     public void execute (ID3v1 v1tag, ID3v2 v2tag)
     throws Exception {
         v2tag.addFrame(new TextFrame(args[0], null, args[1]));
+    }
+}
+
+class V2DelTextFrameCommand extends Command {
+    public V2DelTextFrameCommand () {
+        args = new String[1];
+    }
+    public String getDescription () {
+        return "Create text frame with P1 as identifier.";
+    }
+    public void execute (ID3v1 v1tag, ID3v2 v2tag)
+    throws Exception {
+        v2tag.removeFrames(args[0]);
     }
 }
