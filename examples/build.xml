@@ -3,7 +3,6 @@
     <!-- application identifier -->
     <property name="app.name" value="scilla"/>
     <property name="war.file" value="scilla.war"/>
-    <property name="scilla.project" value=".."/>
 
     <!-- build tool configuration -->
     <property name="cvs2cl.exec" value="cvs2cl"/>
@@ -12,47 +11,26 @@
     <!-- deployment hierarchy -->
     <property name="deploy.dir" value="${basedir}/deploy"/>
     <property name="webinf.dir" value="${deploy.dir}/WEB-INF"/>
+    <property name="webinf.lib.dir" value="${webinf.dir}/lib"/>
     <property name="classes.dir" value="${webinf.dir}/classes"/>
-    <property name="lib.dir" value="${webinf.dir}/lib"/>
-    <property name="apidoc.dir" value="${deploy.dir}/doc"/>
 
     <!-- example compilation -->
     <property name="src.dir" value="src"/>
-    <property name="scilla.jar" value="${lib.dir}/scilla.jar"/>
-
+    <property name="lib.dir" value="lib"/>
     <property name="cache.dir" value="/tmp"/>
 
+    <!-- build class path -->
+    <path id="build.classpath">
+	<pathelement location="${classes.dir}"/>
+	<pathelement path="${classpath}"/>
+	<fileset dir="${lib.dir}">
+	    <include name="*.jar"/>
+	</fileset>
+    </path>
+
 <!-- targets -->
-    <target name="deploy" depends="prepare,scilla,compile,apidoc,webxml1,webxml2">
+    <target name="deploy" depends="prepare,compile,webxml1,webxml2">
         <echo>FIN</echo>
-    </target>
-
-    <target name="webxml1" depends="prepare" if="source.dir">
-        <delete file="${webinf.dir}/web.xml"/>
-        <copy file="etc/web.xml" tofile="${webinf.dir}/web.xml"/>
-	<replace file="${webinf.dir}/web.xml" summary="yes">
-	    <replacefilter token="@source.dir@" value="${source.dir}"/>
-	    <replacefilter token="@cache.dir@" value="${cache.dir}"/>
-	</replace>
-    </target>
-    <target name="webxml2" depends="prepare" unless="source.dir">
-        <delete file="${webinf.dir}/web.xml"/>
-        <copy file="etc/web.xml" tofile="${webinf.dir}/web.xml"/>
-    </target>
-
-
-    <target name="war" depends="deploy"
-	    description="create war file for example jsps">
-        <jar jarfile="${war.file}" basedir="${deploy.dir}"/>
-    </target>
-
-
-    <target name="clean"
-	    description="delete generated files">
-        <delete dir="${deploy.dir}"/>
-        <delete dir="${build.dir}"/>
-	<delete file="${war.file}"/>
-	<delete file="${installer.jar}"/>
     </target>
 
 
@@ -68,9 +46,11 @@
         <mkdir dir="${webinf.dir}"/>
 
         <!-- copy the libraries we depend on -->
-        <mkdir  dir="${lib.dir}"/>
-        <copy todir="${lib.dir}">
-            <fileset dir="lib"/>
+        <mkdir dir="${webinf.lib.dir}"/>
+        <copy todir="${webinf.lib.dir}">
+            <fileset dir="${lib.dir}">
+		<include name="*.jar"/>
+	    </fileset>
         </copy>
 
         <!-- copy the tld's -->
@@ -84,15 +64,14 @@
 
         <!-- create installer build directory -->
         <mkdir dir="${build.dir}"/>
-
-	<!-- make sure apidoc only build one time -->
-        <available property="apidoc.done" file="${apidoc.dir}"/>
     </target>
 
 
-    <target name="compile" depends="prepare,scilla"
+    <target name="compile" depends="prepare"
 	    description="compile example specific java source files">
-        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpath="${scilla.jar}"/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}">
+	    <classpath refid="build.classpath"/>
+	</javac>
         <copy todir="${classes.dir}">
             <fileset dir="${src.dir}">
                 <include name="**/*.properties"/>
@@ -101,32 +80,33 @@
     </target>
 
 
-    <target name="apidoc" depends="prepare" unless="apidoc.done">
-        <ant dir="${scilla.project}" target="apidoc">
-            <property name="apidoc.dir" value="${apidoc.dir}"/>
-        </ant>
+    <target name="webxml1" depends="prepare" if="source.dir">
+        <delete file="${webinf.dir}/web.xml"/>
+        <copy file="etc/web.xml" tofile="${webinf.dir}/web.xml"/>
+	<replace file="${webinf.dir}/web.xml" summary="yes">
+	    <replacefilter token="@source.dir@" value="${source.dir}"/>
+	    <replacefilter token="@cache.dir@" value="${cache.dir}"/>
+	</replace>
     </target>
 
 
-    <target name="scilla" depends="prepare">
-        <ant dir="${scilla.project}" target="jar">
-	    <property name="jar.file" value="${scilla.jar}"/>
-        </ant>
+    <target name="webxml2" depends="prepare" unless="source.dir">
+	<fail message="set source.dir to an absolute directory location containing image and audio files"/>
     </target>
 
-    <property name="installer.class" value="Configure.class"/>
-    <property name="installer.jar" value="scilla-install.jar"/>
-    <property name="build.dir" value="build"/>
-    <property name="data.jar" value="${build.dir}/data.jar"/>
-    <property name="data.dir" value="data/source"/>
-    <target name="data" depends="prepare">
-        <jar jarfile="${data.jar}" basedir="${data.dir}"/>
+
+    <target name="war" depends="deploy"
+	    description="create war file for example jsps">
+        <jar jarfile="${war.file}" basedir="${deploy.dir}"/>
     </target>
-    <target name="installer" depends="compile,war,data"
-	    description="create installer (war file generator)">
-	<copy file="${classes.dir}/${installer.class}" todir="${build.dir}"/>
-	<copy file="${war.file}" todir="${build.dir}"/>
-	<jar jarfile="${installer.jar}" manifest="etc/manifest.txt" basedir="${build.dir}"/>
+
+
+    <target name="clean"
+	    description="delete generated files">
+        <delete dir="${deploy.dir}"/>
+        <delete dir="${build.dir}"/>
+	<delete file="${war.file}"/>
+	<delete file="${installer.jar}"/>
     </target>
 
 
