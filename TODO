@@ -1,4 +1,7 @@
 For version 1.0:
+- examples:
+    - admin.jsp: all classes depending on Config should listen
+      for changes
 - make work with orion
 - review threading mess
 - JAIConverter
