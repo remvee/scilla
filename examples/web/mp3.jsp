@@ -5,16 +5,21 @@
 void streamLinks (ServletRequest request, JspWriter out, String path)
 throws IOException
 {
+    streamLinks (request, out, path, false);
+}
+
+void streamLinks (ServletRequest request, JspWriter out, String path, boolean recursive)
+throws IOException
+{
     String pathEncoded = URLEncoder.encode(path);
-    if (request.getRemoteHost().equals("localhost")
+    String encoding = (request.getRemoteHost().equals("localhost")
 	    || request.getRemoteHost().equals("127.0.0.1"))
-    {
-	out.println("<A href=\"servlet/playlist.m3u?f=file&d="+pathEncoded+"\">Play</A>");
-    }
-    else
-    {
-	out.println("<A href=\"servlet/playlist.m3u?f=stream&d="+pathEncoded+"\">Play</A>");
-    }
+	    ? "file" : "stream";
+    out.println("<A href=\"servlet/playlist.m3u"+
+	    "?f="+encoding+
+	    "&d="+pathEncoded+
+	    (recursive ? "&r=1" : "")+
+	    "\">Play</A>");
 }
 
 %>
@@ -203,6 +208,7 @@ throws IOException
 %>
 		    <BR><A href="mp3.jsp?d=<%= sEncoded %>"><%= s %></A>/
 <%
+		streamLinks(request, out, path+"/"+s, true);
 	    }
 	    while (e2.hasMoreElements())
 	    {
