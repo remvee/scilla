@@ -1,11 +1,7 @@
 For version 1.0:
-- config:
-    - remove ConfigProvider and make Config interfase a class
-    - Config class should use values in Config.properties are
-      default and add values from env-entrys; scilla/cache.dir
-      etc.
 - taglib
     - put tld in META-INF
+    - image and playlist; use info objects instead of beans
 - ImageInfo
     - add support for GIF comments and maybe other types (JPEG
       already implemented)
