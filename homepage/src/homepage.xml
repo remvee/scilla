@@ -1,7 +1,7 @@
 <homepage>
     <title>Scilla - media server</title>
     <location>http://www.xs4all.nl/~rwvtveer/scilla</location>
-    <date>$Date: 2003/01/05 16:36:05 $</date>
+    <date>$Date: 2003/01/05 16:51:29 $</date>
     <description>
 	<html><![CDATA[
 	    <p>
@@ -37,7 +37,7 @@
 			<dd>
 			    Allows conversions between various video types. Including
 			    scaling of picture size, framerate, video/ audio bitrate
-			    etc.  Also the possiblity to create a MP3 audio stream.
+			    etc.  Also the possibility to create a MP3 audio stream.
 			</dd>
 			<dt> <a href="http://java.sun.com/products/java-media/jai/">JAI</a> </dt>
 			<dd>
@@ -94,7 +94,7 @@
 			no longer absolute and source/ cache directory
 			set with servlet init parameter</li>
 		    <li>new playlist servlet</li>
-		    <li>added schrofer font demo</li>
+		    <li>added schr&ouml;fer font demo</li>
 		    <li>bug fixes..</li>
 		</ul>
 	    ]]></html>
@@ -115,7 +115,7 @@
 	    <html><![CDATA[
 		12.X.2001
 		<ul>
-		    <li>convertsion error handling</li>
+		    <li>conversion error handling</li>
 		    <li>added ffmpeg converter</li>
 		    <li>bug fixes..</li>
 		</ul>
@@ -132,7 +132,7 @@
     </section>
 
     <section>
-	<title>Developement</title>
+	<title>Development</title>
 	<html><![CDATA[
 	    <p>
 		Source snapshots (@today@) available for downloading:
