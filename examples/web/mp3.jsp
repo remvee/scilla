@@ -117,6 +117,14 @@ throws IOException
 	    }
 	}
 
+	// skip to dir if current only contains 1 dir
+	if (vec.size() + imgVec.size() + m3uVec.size() == 0
+		    && dirVec.size() == 1)
+	{
+	    String s = (path + "/" + dirVec.firstElement()).replace(' ', '+');
+	    response.sendRedirect("mp3.jsp?d="+s);
+	}
+
 	// count artist, albums and comments
 	String artist = null, album = null, comment = null, year = null;
 	Hashtable artistHash = new Hashtable();
