@@ -10,6 +10,7 @@ For version 1.0:
     - sync parameters with lame so they will be interchangable for mp3
       conversions.  Interface?
 - log4j
+- junit
 - Converter: handle command failure
     - let thread test for successful exit
     - if not successful set flag which can be tested in RunnerObject
@@ -42,6 +43,7 @@ Future:
     - should be able to replace lame (apart from id3 enheritance) and
       imagick converters
 - gimp converter
+- mmbase (http://www.mmbase.org) interface to replace mmbase's servdb
 - pipes
 - netpbm converter (needs pipes)
 - sox converter (handy with lame and pipes)
