@@ -28,16 +28,13 @@ import java.awt.Toolkit;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 
-import org.scilla.info.exif.Exif;
-import org.scilla.info.exif.ExifReader;
 import org.scilla.util.MimeType;
 
 /**
  * Image info.
  *
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.15 $
  * @author R.W. van 't Veer
  */
 public class ImageInfo extends Info {
@@ -135,13 +132,6 @@ public class ImageInfo extends Info {
      */
     public String getComment () {
 	return getString(COMMENT);
-    }
-
-    /**
-     * @return date time embedded in this image or <tt>null</tt>
-     */
-    public Date getDate () {
-	return getDate(Exif.DATE_TIME);
     }
 
     /**
@@ -437,7 +427,7 @@ public class ImageInfo extends Info {
 				byte[] e = new byte[d.length - 6];
 				System.arraycopy(d, 6, e, 0, e.length);
 				try {
-				    ExifReader.readIntoMap(e, this);
+				    putAll(new Exif(e));
 				} catch (TiffException ex) {
 				    // TODO log problem
 				}

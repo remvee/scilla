@@ -26,7 +26,7 @@ import java.util.*;
 /**
  * The scilla media info base class.
  *
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.6 $
  * @author R.W. van 't Veer
  */
 public class Info implements Map {
@@ -88,37 +88,23 @@ public class Info implements Map {
 // read methods
     /**
      * @return string info value or <tt>null</tt> when property not available
-     * or not a string
      */
-    public String getString(String key) {
-        Object o = infoMap.get(key);
-        return o != null && o instanceof String ? (String) o : null;
+    public String getString (String key) {
+	return (String) infoMap.get(key);
     }
     /**
      * @return integer info value or <tt>-1</tt> when property not available
-     * or not an integer
      */
-    public int getInt(String key) {
-        Object o = infoMap.get(key);
-        return o != null && o instanceof Integer
-                ? ((Integer) o).intValue() : -1;
+    public int getInt (String key) {
+	Integer i = (Integer) infoMap.get(key);
+	return i == null ? -1 : i.intValue();
     }
     /**
      * @return boolean info value or <tt>false</tt> when property not available
-     * or not a boolean
      */
-    public boolean getBoolean(String key) {
-        Object o = infoMap.get(key);
-        return o != null && o instanceof Boolean
-                && ((Boolean) o).booleanValue();
-    }
-    /**
-     * @return date info value or <tt>null</tt> when property not available
-     * or not a date
-     */
-    public Date getDate(String key) {
-        Object o = infoMap.get(key);
-        return o != null && o instanceof Date ? (Date) o : null;
+    public boolean getBoolean (String key) {
+	Boolean b = (Boolean) infoMap.get(key);
+	return b == null ? false : b.booleanValue();
     }
 
 // set methods for extending classes
