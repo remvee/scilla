@@ -51,7 +51,11 @@ throws IOException
 	    String fname = files[i];
 	    String type = MimeTypeFactory.getTypeFromFilename(fname);
 
-	    if (fname.endsWith(".mp3"))
+	    if (fname.startsWith(".") || fname.equals("CVS"))
+	    {
+		continue;
+	    }
+	    else if (fname.endsWith(".mp3"))
 	    {
 		ID3v1 tag = null;
 		FrameHeader fh = null;
@@ -453,7 +457,7 @@ throws IOException
 		    s = s.replace(' ', '+');
 %>
 			    <TD>
-				<A href="<%=urlHead+s%>"><IMG SRC="<%=urlHead+s%>?scale=75x75"></A>
+				<A href="<%=urlHead+s%>"><IMG src="<%=urlHead+s%>?scale=75x75&outputtype=jpg"></A>
 			    </TD>
 <%
 		}
