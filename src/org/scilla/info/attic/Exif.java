@@ -27,7 +27,7 @@ import java.util.*;
 /**
  * EXIF.
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @author R.W. van 't Veer
  */
 public class Exif extends HashMap {
@@ -327,12 +327,12 @@ public class Exif extends HashMap {
 		case 10: // SRATIONAL
 		    if (len == 1) {
 			long numerator = (long) read4ByteInt(data, voffset);
-			long demoninator = (long) read4ByteInt(data, voffset + 4);
+			long denominator = (long) read4ByteInt(data, voffset + 4);
 			if (isSigned(type)) {
 			    numerator = signedLong(numerator);
-			    demoninator = signedLong(demoninator);
+			    denominator = signedLong(denominator);
 			}
-			val = new Double((double) numerator / (double) demoninator);
+			val = new Rational(numerator, denominator);
 		    }
 		    break;
 		case 7: // UNDEF
@@ -369,5 +369,31 @@ public class Exif extends HashMap {
 
     private static short signedByte (short v) {
 	return (v & 0x80) != 0 ? (short) (v | 0xff00) : v;
+    }
+
+    public static class Rational {
+	private long numerator;
+	private long denominator;
+
+	public Rational (long n, long d) {
+	    numerator = n;
+	    denominator = d;
+	}
+
+	public long getNumerator () {
+	    return numerator;
+	}
+
+	public long getDenominator () {
+	    return denominator;
+	}
+
+	public double getDouble () {
+	    return (double) numerator / (double) denominator;
+	}
+
+	public String toString () {
+	    return numerator + "/" + denominator;
+	}
     }
 }
