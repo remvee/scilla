@@ -1,15 +1,15 @@
 For version 1.0:
-- ImageTag
-    - content negotiation should not use setOutputType; tag
-      objects are reused so setting properties this way will set
-      them for other clients too..
-- ImageInfo
-    - add support for GIF comments and maybe other types (JPEG
-      already implemented)
+- ImageTag, PlaylistTag
+    - understand application and media scopes transparently
+	- application: media files inside the web application
+	- media: media files from scilla's source.dir
 - Servlet
     - make PartialContent class reuseable
 - taglib
     - put tld in META-INF
+- ImageInfo
+    - add support for GIF comments and maybe other types (JPEG
+      already implemented)
 - org.scilla.util.mp3.FrameHeader
     - try to read beyond big id3v2 tags
 - org.scilla.info.AudioInfo
