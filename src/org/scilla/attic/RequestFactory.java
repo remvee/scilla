@@ -22,10 +22,8 @@
 package org.scilla;
 
 import java.io.File;
-import java.net.URLDecoder;
 import java.util.List;
 import java.util.Vector;
-import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
@@ -38,7 +36,7 @@ import org.scilla.util.*;
  * kind of request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class RequestFactory {
     /** logger */

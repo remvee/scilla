@@ -22,13 +22,12 @@
 package org.scilla.util.mp3.id3v2;
 
 import java.io.*;
-import java.util.*;
 
 /**
  * Representation of link frames (<TT>W000</TT> - <TT>WZZZ</TT>).
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class LinkFrame extends Frame {
     String url;

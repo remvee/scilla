@@ -34,7 +34,7 @@ import org.scilla.*;
  * finished or not.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class CachedObject implements MediaObject {
     private static final Log log = LogFactory.getLog(CachedObject.class);
@@ -92,7 +92,7 @@ public class CachedObject implements MediaObject {
 	// wait till runner has finished
 	while (runner != null && !runner.hasFinished()) {
 	    try {
-		Thread.currentThread().sleep(WAIT_FOR_RUNNER_TIMEOUT);
+		Thread.sleep(WAIT_FOR_RUNNER_TIMEOUT);
 	    } catch (InterruptedException ex) {
 		// ignore
 	    }

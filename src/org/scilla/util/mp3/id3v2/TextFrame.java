@@ -22,7 +22,6 @@
 package org.scilla.util.mp3.id3v2;
 
 import java.io.*;
-import java.util.*;
 
 /**
  * Representation of two types of text frames.  The simple text
@@ -30,7 +29,7 @@ import java.util.*;
  * language and identifier like <TT>COMM</TT> and <TT>USLT</TT>.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class TextFrame extends Frame {
     String enc;

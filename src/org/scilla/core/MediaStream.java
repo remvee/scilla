@@ -34,7 +34,7 @@ import org.scilla.*;
  * has finished.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class MediaStream extends InputStream {
     private static final Log log = LogFactory.getLog(MediaStream.class);
@@ -61,7 +61,7 @@ public class MediaStream extends InputStream {
                 // wait for file to appear
                 while (! f.exists() && ! runner.hasFinished()) {
                     try {
-                        Thread.currentThread().sleep(WAIT_FOR_FILE_TIMEOUT);
+                        Thread.sleep(WAIT_FOR_FILE_TIMEOUT);
                     } catch (InterruptedException ex) {
 			// ignore
 		    }
@@ -93,7 +93,7 @@ public class MediaStream extends InputStream {
         // read without going beyond EOF when k
         while (runner != null && ! runner.hasFinished()) {
             try {
-                Thread.currentThread().sleep(WAIT_FOR_READ_TIMEOUT);
+                Thread.sleep(WAIT_FOR_READ_TIMEOUT);
             } catch (InterruptedException ex) {
 		// ignore
 	    }
@@ -110,7 +110,7 @@ public class MediaStream extends InputStream {
         // read without going beyond EOF when k
         while (runner != null && ! runner.hasFinished()) {
             try {
-                Thread.currentThread().sleep(WAIT_FOR_READ_TIMEOUT);
+                Thread.sleep(WAIT_FOR_READ_TIMEOUT);
             } catch (InterruptedException ex) {
 		// ignore
 	    }
@@ -127,7 +127,7 @@ public class MediaStream extends InputStream {
         // read without going beyond EOF when k
         while (runner != null && ! runner.hasFinished()) {
             try {
-                Thread.currentThread().sleep(WAIT_FOR_READ_TIMEOUT);
+                Thread.sleep(WAIT_FOR_READ_TIMEOUT);
             } catch (InterruptedException ex) {
 		// ignore
 	    }

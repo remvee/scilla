@@ -21,15 +21,12 @@
 
 package org.scilla.util.mp3.id3v2;
 
-import java.io.*;
-import java.util.*;
-
 /**
  * Representation of attachment frame (<TT>APIC</TT> and
  * <TT>GEOB</TT>).
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class AttachmentFrame extends Frame {
     String mimeType;

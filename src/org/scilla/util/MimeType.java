@@ -36,7 +36,7 @@ import org.apache.commons.logging.LogFactory;
  * order of the properties is important; from two types with the
  * same extensions the first will be returned by
  * <tt>getTypeFromFilename</tt>.
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  * @author R.W. van 't Veer
  */
 public class MimeType {
@@ -189,8 +189,8 @@ public class MimeType {
 	MimeType mt = new MimeType();
 	for (int i = 0; i < args.length; i++) {
 	    String t = args[i];
-	    System.out.println("e2t("+t+")="+mt.getTypeFromFileExtension(t));
-	    System.out.println("t2e("+t+")="+mt.getExtensionForType(t));
+	    System.out.println("e2t("+t+")=" + getTypeFromFileExtension(t));
+	    System.out.println("t2e("+t+")=" + getExtensionForType(t));
 	}
     }
 }

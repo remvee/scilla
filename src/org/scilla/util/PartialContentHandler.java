@@ -35,7 +35,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Handle (partial) content requests.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @author R.W. van 't Veer
  */
 public class PartialContentHandler {
@@ -92,7 +92,7 @@ public class PartialContentHandler {
 		    }
 
 		    // notify receiver this is partial content
-		    response.setStatus(response.SC_PARTIAL_CONTENT);
+		    response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
 		    String contentRange = offset+"-"+endpoint+"/"+len;
 		    response.setHeader(CONTENT_RANGE_HEADER, contentRange);
 		    response.setContentLength((int)(endpoint-offset+1));
