@@ -9,6 +9,8 @@ import org.scilla.info.*;
 
 public class DirectoryBean {
 
+    public final static String LOCATION_KEY = "directoryBeanLocation";
+
     public DirectoryBean () {
 	// empty
     }
@@ -71,6 +73,7 @@ public class DirectoryBean {
 		continue;
 	    }
 
+	    String lname = path + File.separator + files[i];
 	    String fname = pathname + File.separator + files[i];
 	    File f = new File(fname);
 
@@ -88,6 +91,7 @@ public class DirectoryBean {
 	    } else {
 		Info info = InfoFactory.get(fname);
 		if (info != null) {
+		    info.put(LOCATION_KEY, lname);
 
 		    String type = null;
 		    if (info instanceof AudioInfo) {

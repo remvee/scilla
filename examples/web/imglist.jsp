@@ -48,7 +48,7 @@
 			<scilla:par key="negate" value="1"/>
 		    </scilla:img>
 		    <c:url var="viewurl" value="imgview.jsp">
-			<c:param name="f" value="${image.pathName}"/>
+			<c:param name="f" value="${image.directoryBeanLocation}"/>
 		    </c:url>
 		    <tr>
 			<td><scilla:img src="images/film-left.gif"/></td>
