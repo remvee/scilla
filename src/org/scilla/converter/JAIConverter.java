@@ -41,13 +41,32 @@ import org.scilla.util.*;
  * parameter.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class JAIConverter implements Converter {
-    static Log log = LogFactory.getLog(JAIConverter.class);
+    private static Log log = LogFactory.getLog(JAIConverter.class);
+    private static final Config config = ConfigProvider.get();
 
     /** parameter name to force the use of this converter */
     public final static String THIS_CONVERTER_PARAMETER = "jai";
+
+    /** max runners configuration key */
+    public static final String MAX_RUNNERS_KEY = "converters.jai.runners.sem";
+    /** allow only X concurrent conversions */
+    private static Semaphore sem = null;
+    /** default maximum concurrent runners */
+    private static int maxRunners = 2;
+    static
+    {
+        // get maxRunners from scilla configuration
+        try {
+            maxRunners = Integer.parseInt(config.getString(MAX_RUNNERS_KEY));
+        } catch (Exception ex) {
+            log.warn(MAX_RUNNERS_KEY+" not available, defaulting to: "+maxRunners);
+        }
+        // initialized semaphore
+        sem = new Semaphore(maxRunners);
+    }
 
     Request request = null;
     String outputFile = null;
@@ -75,6 +94,9 @@ public class JAIConverter implements Converter {
     public void convert () {
         started = true;
         try {
+	    sem.decr();
+	    log.debug("converter started");
+
             // lets hope JAI will recognized the input type
             PlanarImage img = JAI.create("fileload", request.getInputFile());
 
@@ -96,10 +118,13 @@ public class JAIConverter implements Converter {
             FileOutputStream out = new FileOutputStream(outputFile);
             JAI.create("encode", img, out, type, null);
         } catch (Exception ex) {
-	    log.warn("JAI conversion failed", ex);
+	    log.warn("conversion failed", ex);
             exitValue = 1;
             errorMessage = ex.getMessage();
-        }
+        } finally {
+	    log.debug("converter finished");
+	    sem.incr();
+	}
         finished = true;
     }
 

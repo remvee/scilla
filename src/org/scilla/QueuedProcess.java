@@ -31,13 +31,15 @@ import java.util.StringTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.scilla.util.Semaphore;
+
 /**
  * Execute a OS process.  A semaphore is used to allow only a defined
  * amount of processes to run concurrently.  This process maximum is
  * taken from the scilla configuration.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class QueuedProcess {
     private static final Log log = LogFactory.getLog(QueuedProcess.class);
@@ -56,15 +58,11 @@ public class QueuedProcess {
     static
     {
         // get maxRunners from scilla configuration
-        String s = config.getString(MAX_RUNNERS_KEY);
         try {
-            maxRunners = Integer.parseInt(s);
-        } catch (NullPointerException npe) {
-            log.warn(MAX_RUNNERS_KEY+" not availble, defaulting to: "+maxRunners);
-        } catch (NumberFormatException nfe) {
-            log.warn(MAX_RUNNERS_KEY+" not a number, defaulting to: "+maxRunners, nfe);
+            maxRunners = Integer.parseInt(config.getString(MAX_RUNNERS_KEY));
+        } catch (Exception ex) {
+            log.warn(MAX_RUNNERS_KEY+" not available, defaulting to: "+maxRunners);
         }
-
         // initialized semaphore
         sem = new Semaphore(maxRunners);
     }
@@ -95,9 +93,6 @@ public class QueuedProcess {
      */
     public QueuedProcess (String[] args, String[] envp, File dir)
     throws IOException {
-        // make sure a space exists
-        sem.decr();
-
         // attache wrapper
         String[] wrapper = config.getStringArray(WRAPPER_KEY, " ");
         if (wrapper != null) {
@@ -116,26 +111,30 @@ public class QueuedProcess {
             }
             log.info("process: "+sb);
 
-            if (envp != null) {
-                sb = new StringBuffer();
-                for (int i = 0; i < envp.length; i++) {
-                    sb.append(envp[i]);
-                    sb.append(' ');
-                }
-                log.debug("env: "+sb);
-            }
-            if (dir != null) {
-                log.debug("dir: "+dir);
+            if (log.isDebugEnabled() && envp != null) {
+		if (envp != null) {
+		    sb = new StringBuffer();
+		    for (int i = 0; i < envp.length; i++) {
+			sb.append(envp[i]);
+			sb.append(' ');
+		    }
+		    log.debug("env: "+sb);
+		}
+		if (dir != null) {
+		    log.debug("dir: "+dir);
+		}
 	    }
         }
 
         // execute process
         try {
+	    sem.decr();
+	    log.debug("process started");
             proc = Runtime.getRuntime().exec(args, envp, dir);
-        } catch (IOException e) {
+        } finally {
+	    log.debug("process finished");
             sem.incr();
-            throw e;
-        }
+	}
 
         // redirect stdout and stderr
         stdout = new OutputLog(proc.getInputStream());
@@ -173,33 +172,6 @@ public class QueuedProcess {
     public String getErrorLog () {
         waitFor();
         return stderr.toString();
-    }
-}
-
-/**
- * simple semaphore class
- */
-class Semaphore {
-    int counter;
-
-    public Semaphore (int arg) {
-        counter = arg;
-    }
-
-    public synchronized void incr () {
-        counter++;
-        notify();
-    }
-
-    public synchronized void decr () {
-        while (counter == 0) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-		// will never happen
-	    }
-        }
-        counter--;
     }
 }
 
