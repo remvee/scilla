@@ -32,7 +32,7 @@ import org.scilla.converter.*;
 /**
  * The MediaFactory creates a runner or file object.
  *
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @author R.W. van 't Veer
  */
 public class MediaFactory
@@ -107,6 +107,12 @@ public class MediaFactory
 	conv.setInputType(req.getInputType());
 	conv.setOutputType(req.getOutputType());
 	conv.setParameters(req.getParameters());
+
+	// log creation of converter
+	if (log.isInfoEnabled())
+	{
+	    log.info("createObject: "+conv.getClass().getName());
+	}
 
 	// create runner object
 	return new RunnerObject(conv);
