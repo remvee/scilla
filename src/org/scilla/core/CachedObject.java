@@ -34,7 +34,7 @@ import org.scilla.*;
  * finished or not.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class CachedObject implements MediaObject
 {
@@ -139,5 +139,8 @@ public class CachedObject implements MediaObject
 	}
     }
 
+    /**
+     * @return always false, already cached
+     */
     public boolean allowCaching () { return false; }
 }

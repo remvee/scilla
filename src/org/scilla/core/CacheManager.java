@@ -31,7 +31,7 @@ import org.scilla.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @author R.W. van 't Veer
  */
 public class CacheManager
@@ -104,30 +104,36 @@ public class CacheManager
 	File infile = new File(infilename);
 	File outfile = new File(outfilename);
 
-	if (infilename != null && outfilename != null
-	    // runner?
-	    && getRunner(outfilename) != null
-	    // source exists, output in cache and source not newer than cache
-	    || infile.exists() && outfile.exists()
+	// don't cache this object
+	if (! req.allowCaching())
+	{
+	    return MediaFactory.createObject(req);
+	}
+	// already have runner
+	if (getRunner(outfilename) != null)
+	{
+	    return new CachedObject(outfilename);
+	}
+	// source exists, output in cache and source not newer than cache
+	if (infile.exists() && outfile.exists()
 		&& infile.lastModified() < outfile.lastModified())
 	{
-	    // create cached object
-	    obj = new CachedObject(outfilename);
+	    return new CachedObject(outfilename);
+	}
+
+	// create new MediaObject
+	obj = MediaFactory.createObject(req);
+	if (obj.allowCaching())
+	{
+	    // ensure existence of output directory
+	    ensureCacheDirectoryFor(outfilename);
+	    // create CachingObject
+	    return new CachingObject((RunnerObject) obj, outfilename);
 	}
 	else
 	{
-	    // create MediaObject
-	    obj = MediaFactory.createObject(req);
-	    if (req.allowCaching() && obj.allowCaching())
-	    {
-		// ensure existence of output directory
-		ensureCacheDirectoryFor(outfilename);
-		// create CachingObject
-		obj = new CachingObject((RunnerObject) obj, outfilename);
-	    }
+	    return obj;
 	}
-
-	return obj;
     }
 
     final static String MAX_FN_LEN_PROPERTY = "CacheManager.maxFileNameLen";

@@ -30,7 +30,7 @@ import org.scilla.*;
  * cache.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class CachingObject implements MediaObject
 {
@@ -65,5 +65,8 @@ public class CachingObject implements MediaObject
 	cache.removeRunner(filename);
     }
 
+    /**
+     * @return always false, already being cached
+     */
     public boolean allowCaching () { return false; }
 }

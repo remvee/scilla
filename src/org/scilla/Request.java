@@ -33,15 +33,18 @@ import org.scilla.util.*;
  * The Request class holds a scilla media object request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class Request
 {
-    public final static String OUTPUT_TYPE_PROPERTY = "outputtype";
+    public final static String NO_CACHE_PARAMETER = "nocache";
+    public final static String OUTPUT_TYPE_PARAMETER = "outputtype";
 
     String source = null;
     String type = null;
     Vector param = null;
+
+    boolean nocache = false;
 
     MediaObject obj = null;
     CacheManager cache = CacheManager.getInstance();
@@ -57,6 +60,17 @@ public class Request
         this.source = source;
         this.type = type;
         this.param = param;
+
+	// remove parameters not relavant to conversion
+	for (Iterator it = param.iterator(); it.hasNext(); )
+	{
+	    RequestParameter rp = (RequestParameter) it.next();
+	    if (NO_CACHE_PARAMETER.equals(rp.key))
+	    {
+		nocache = true;
+		it.remove();
+	    }
+	}
     }
 
     /**
@@ -96,24 +110,13 @@ public class Request
 
     /**
      * @return output mime type
-     * @see #OUTPUT_TYPE_PROPERTY
+     * @see #OUTPUT_TYPE_PARAMETER
      */
     public String getOutputType ()
     {
-	String typePar = null;
-
-	for (Iterator it = param.iterator(); it.hasNext(); )
-	{
-	    RequestParameter rp = (RequestParameter) it.next();
-	    if (OUTPUT_TYPE_PROPERTY.equals(rp.key))
-	    {
-		typePar = rp.val;
-		break;
-	    }
-	}
-
-	return (typePar != null)
-		?  MimeTypeFactory.getTypeFromFileExtension(typePar)
+	String typeP = getParameter(OUTPUT_TYPE_PARAMETER);
+	return typeP != null
+		? MimeTypeFactory.getTypeFromFileExtension(typeP)
 	    	: type;
     }
 
@@ -131,14 +134,34 @@ public class Request
     public Vector getParameters () { return param; }
 
     /**
+     * @param key parameter identifier
+     * @return value or null if parameter not set
+     */
+     public String  getParameter(String key)
+     {
+	RequestParameter rp;
+	Iterator it = param.iterator();
+	while (it.hasNext())
+	{
+	    rp = (RequestParameter) it.next();
+	    if (key.equals(rp.key)) return rp.val;
+	}
+	return null;
+     }
+
+    /**
      * @return true if this request needs a converter
      */
     public boolean needConverter () { return ! param.isEmpty(); }
 
     /**
      * @return true if this request can be cached
+     * @see #NO_CACHE_PARAMETER
      */
-    public boolean allowCaching () { return true; }
+    public boolean allowCaching ()
+    {
+	return ! nocache;
+    }
 
     /**
      * @return request description
