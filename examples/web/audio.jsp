@@ -32,6 +32,7 @@
 		<div class="directories">
 		    <table>
 			<c:forEach var="d" items="${dir.directories}">
+			    <scilla:playlist id="d" var="playlist" recursive="true"/>
 			    <c:url var="url" value="audio.jsp">
 				<c:param name="d" value="${d.path}"/>
 			    </c:url>

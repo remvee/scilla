@@ -80,5 +80,10 @@
 	    <required>true</required>
 	    <rtexprvalue>false</rtexprvalue>
 	</attribute>
+	<attribute>
+	    <name>recursive</name>
+	    <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>
     </tag>
 </taglib>
