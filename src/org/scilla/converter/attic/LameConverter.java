@@ -121,7 +121,8 @@ public class LameConverter extends Converter
     public LameConverter ()
     {
 	super();
-	inputTypeList = new String[] { "audio/mp3", "audio/mpeg" };
+	inputTypeList = new String[] {
+		"audio/mp3", "audio/mpeg", "audio/wav", "audio/x-wav" };
 	outputTypeList = new String[] { "audio/mp3", "audio/mpeg" };
 	parameterList = new String[] {
 		THIS_CONVERTER_PARAMETER, Request.OUTPUT_TYPE_PROPERTY,
@@ -323,7 +324,10 @@ public class LameConverter extends Converter
 	}
 
 	// input file
-	v.add("--mp3input");
+	if (!inputType.equals("audio/x-wav") && !inputType.equals("audio/wav"))
+	{
+	    v.add("--mp3input");
+	}
 	v.add(inputFile);
 
 	// handle original flag
