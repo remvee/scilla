@@ -1,5 +1,7 @@
 For version 1.0:
-- property log4j configuration
+- add LoggerDummyImpl
+    - provides empty methods and isEnable false stuff
+- could Config provide all access to classloader resources?
 - examples:
     - admin.jsp
 	- only from localhost
