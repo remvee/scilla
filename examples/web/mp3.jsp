@@ -206,9 +206,9 @@
 				    <TR>
 					<TD valign=top align=left>
 <%
-		if (audioList.count(AudioInfo.COMPOSER) == 1) {
+		if (audioList.count(AudioInfo.ARTIST) == 1) {
 %>
-					    <BIG><EM><%= toHTML(audioList.getProp(AudioInfo.COMPOSER)) %></EM></BIG>
+					    <BIG><EM><%= toHTML(audioList.getProp(AudioInfo.ARTIST)) %></EM></BIG>
 <%
 		}
 		o = albumCount == 1 && ! album.equals(artist) ? album : "";
@@ -252,7 +252,7 @@
 		List columnList = new Vector();
 		if (audioList.count(AudioInfo.PERFORMER) > 1) columnList.add(AudioInfo.PERFORMER);
 		if (audioList.count(AudioInfo.ALBUM) > 1) columnList.add(AudioInfo.ALBUM);
-		if (audioList.count(AudioInfo.COMPOSER) > 1) columnList.add(AudioInfo.COMPOSER);
+		if (audioList.count(AudioInfo.ARTIST) > 1) columnList.add(AudioInfo.ARTIST);
 		if (audioList.count(AudioInfo.SECTION) > 1) columnList.add(AudioInfo.SECTION);
 		columnList.add(AudioInfo.TITLE);
 		if (audioList.count(AudioInfo.SUBTITLE) > 1) columnList.add(AudioInfo.SUBTITLE);
@@ -465,13 +465,6 @@
 	}
 
 	Object getProp (String key) {
-	    // HACK to plex artist and preformer
-	    if (key.equals(AudioInfo.PERFORMER)) {
-		Object o = getProp(AudioInfo.ARTIST);
-		if (o != null) {
-		    return o;
-		}
-	    }
 	    // HACK to pass multi value id3v2 values
 	    String t = info.getString(key);
 	    if (t != null && t.indexOf('/') != -1) {

@@ -34,7 +34,7 @@ import org.scilla.util.vorbis.*;
 /**
  * Audio info.
  *
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  * @author R.W. van 't Veer
  */
 public class AudioInfo extends Info {
@@ -47,7 +47,6 @@ public class AudioInfo extends Info {
     public final static String ARTIST = "artist";
     public final static String BAND = "band";
     public final static String COMMENT = "comment";
-    public final static String COMPOSER = "composer";
     public final static String CONDUCTOR = "conductor";
     public final static String GENRE = "genre";
     public final static String KEY = "key";
@@ -104,10 +103,6 @@ public class AudioInfo extends Info {
     /** @return general comment or <tt>null</tt> when unkwown */
     public String getComment () {
 	return getString(COMMENT);
-    }
-    /** @return composer name or <tt>null</tt> when unkwown */
-    public String getComposer () {
-	return getString(COMPOSER);
     }
     /** @return conductor name or <tt>null</tt> when unkwown */
     public String getConductor () {
@@ -243,7 +238,7 @@ public class AudioInfo extends Info {
 		    { "TIME", RECORDING_DATE },
 		    { "TDAT", RECORDING_DATE },
 		    { "TYER", RECORDING_DATE },
-		    { "TCOM", COMPOSER },
+		    { "TCOM", ARTIST },
 		    { "TEXT", LYRICS },
 		    { "TCON", GENRE },
 		    { "TKEY", KEY },
