@@ -22,7 +22,7 @@
 package org.scilla.converter;
 
 import java.io.FileOutputStream;
-import java.util.Iterator;
+import java.util.*;
 
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
@@ -40,7 +40,7 @@ import org.scilla.util.*;
  * parameter.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class JAIConverter implements Converter {
     private static Log log = LogFactory.getLog(JAIConverter.class);
@@ -89,7 +89,18 @@ public class JAIConverter implements Converter {
 	THIS_CONVERTER_PARAMETER, Request.OUTPUT_TYPE_PARAMETER,
 	"scale", "crop", "rotate", "negate"
     };
-
+    static Map typeMap = new HashMap();
+    static {
+        typeMap.put("image/gif", "gif");
+        typeMap.put("image/jpeg", "jpeg");
+        typeMap.put("image/pjpeg", "jpeg");
+        typeMap.put("image/png", "png");
+        typeMap.put("image/tiff", "tiff");
+        typeMap.put("image/x-ms-bmp", "bmp");
+        typeMap.put("image/x-portable-anymap", "pnm");
+        typeMap.put("image/x-portable-graymap", "pgm");
+    }
+    
     public void convert () {
         started = true;
         try {
@@ -113,7 +124,7 @@ public class JAIConverter implements Converter {
             }
 
             // recode to output format
-            String type = MimeType.getExtensionForType(request.getOutputType());
+            String type = (String) typeMap.get(request.getOutputType());
             FileOutputStream out = new FileOutputStream(outputFile);
             JAI.create("encode", img, out, type, null);
         } catch (Exception ex) {
