@@ -33,7 +33,7 @@ import org.scilla.util.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  * @author R.W. van 't Veer
  */
 public class CacheManager implements RunnerChangeListener {
@@ -66,16 +66,22 @@ public class CacheManager implements RunnerChangeListener {
      */
     public MediaObject get (Request req)
     throws ScillaException {
-	MediaObject obj = null;
-
-	String ofn = getCacheFilename(req);
 	File ifile = new File(req.getInputFile());
-	File ofile = new File(ofn);
 
 	// does source really exist
 	if (!ifile.exists()) {
 	    throw new ScillaNoInputException();
 	}
+	// does request need any conversion?
+	if (!req.needConverter()) {
+	    log.debug("get: original data");
+	    return new FileObject(req.getInputFile());
+	}
+
+	MediaObject obj = null;
+	String ofn = getCacheFilename(req);
+	File ofile = new File(ofn);
+
 	// conversion still running?
 	obj = (RunnerObject) runners.get(ofn);
 	if (obj != null) {
