@@ -35,7 +35,7 @@ import org.scilla.util.MimeType;
 /**
  * Image info.
  *
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @author R.W. van 't Veer
  */
 public class ImageInfo extends Info {
@@ -159,7 +159,7 @@ public class ImageInfo extends Info {
     }
 
     /**
-     * Determine dimensions from a PNG file.
+     * Determine meta data from a PNG file.
      * @param fname filename
      */
     private void setupPNG (String fname) {
@@ -245,7 +245,7 @@ public class ImageInfo extends Info {
     }
 
     /**
-     * Determine dimensions from a GIF file.
+     * Determine meta data from a GIF file.
      * @param fname filename
      */
     private void setupGIF (String fname) {
@@ -295,7 +295,7 @@ public class ImageInfo extends Info {
     }
 
     /**
-     * Determine dimensions from a BMP file.
+     * Determine meta data from a BMP file.
      * @param fname filename
      */
     private void setupBMP (String fname) {
@@ -359,7 +359,7 @@ public class ImageInfo extends Info {
     }
 
     /**
-     * Determine dimensions from a JPEG
+     * Determine meta data from a JPEG file.  Algorithm from <tt>rdjpgcom.c</tt>.
      * @param fname filename
      */
     private void setupJPEG (String fname) {
@@ -471,7 +471,7 @@ public class ImageInfo extends Info {
     }
 
     /**
-     * Use <tt>java.awt.Toolkit</tt> to determine image dimensions.
+     * Use <tt>java.awt.Toolkit</tt> to get meta data.
      * @param fname filename
      */
     private void setupOther (String fname) {
