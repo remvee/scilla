@@ -28,6 +28,9 @@ import java.util.Vector;
 import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.scilla.util.*;
 
 /**
@@ -35,9 +38,12 @@ import org.scilla.util.*;
  * kind of request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class RequestFactory {
+    /** logger */
+    private static final Log log = LogFactory.getLog(RequestFactory.class);
+
     /** scilla configuration object */
     private final static Config config = ConfigProvider.get();
 
@@ -56,6 +62,25 @@ public class RequestFactory {
         if (source.indexOf("/../") != -1) {
             throw new ScillaIllegalRequestException();
         }
+	String sourceType = null;
+
+	// does source file carry output suffix?
+        List pars = new Vector();
+	if (! (new File(source)).exists()) {
+
+	    // result mime type
+	    String outType = MimeType.getExtensionFromFilename(source);
+	    pars.add(new RequestParameter("outputtype", outType));
+	    log.debug("outputtype from source filename: "+outType);
+
+	    // make sure source exists
+	    source = stripSuffix(source);
+	    log.debug("source filename: "+source);
+	    if (! (new File(source)).exists()) {
+		throw new ScillaException("can't find source");
+	    }
+	}
+
 
         // source mime type
         String type = MimeType.getTypeFromFilename(source);
@@ -64,7 +89,6 @@ public class RequestFactory {
         }
 
         // conversion parameters from QUERY_STRING
-        List pars = new Vector();
         String qs = req.getQueryString();
         if (qs != null) {
             StringTokenizer st = new StringTokenizer(qs, "&");
@@ -78,6 +102,12 @@ public class RequestFactory {
         }
 
         return new Request(source, type, pars);
+    }
+
+    private static String stripSuffix (String fname) {
+	int i = fname.lastIndexOf('.');
+	int j = fname.lastIndexOf(File.separator);
+	return (i != -1 && i > j) ? fname.substring(0, i) : fname;
     }
 
     /**
