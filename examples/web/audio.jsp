@@ -126,7 +126,8 @@
 						</td>
 					    </c:if>
 					    <td align="right">
-						<c:out value="${track.length}"/>
+						<c:set var="len" value="${track.length}"/>
+						<scilla:time var="len"/>
 					    </td>
 					    <td>
 						<a href='<c:out value="${playlist}"/>'>
@@ -144,7 +145,10 @@
 					<c:if test="${dir.count.audio.album > 1}"><td></td></c:if>
 					<td></td>
 					<c:if test="${dir.count.audio.recdate > 1}"><td></td></c:if>
-					<td align="right"><c:out value="${dir.sum.audio.length}"/></td>
+					<td align="right">
+					    <c:set var="len" value="${dir.sum.audio.length}"/>
+					    <scilla:time var="len"/>
+					</td>
 					<td>
 					    <scilla:playlist name="dir" var="playlist"/>
 					    <a href='<c:out value="${playlist}"/>'>

@@ -194,4 +194,24 @@
 	    </description>
 	</attribute>
     </tag>
+
+    <tag>
+	<name>time</name>
+
+	<tag-class>test.TimeTag</tag-class>
+	<body-content>empty</body-content>
+
+	<description>
+	    Format time from seconds to HH:MM:SS.
+	</description>
+
+	<attribute>
+	    <name>var</name>
+	    <required>true</required>
+	    <rtexprvalue>false</rtexprvalue>
+	    <description>
+		Attribute holding number of seconds.
+	    </description>
+	</attribute>
+    </tag>
 </taglib>
