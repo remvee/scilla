@@ -11,6 +11,7 @@ import javax.servlet.jsp.tagext.*;
 
 import org.scilla.*;
 import org.scilla.util.*;
+import org.scilla.info.*;
 
 public class ImageTag extends TagSupport {
 
@@ -28,15 +29,20 @@ public class ImageTag extends TagSupport {
 	out.append('"');
 
 	try {
-	    String fn = getRequest().getOutputFile();
-	    ImageDim dim = ImageDim.measure(fn);
-	    out.append(" width=\"");
-	    out.append(dim.getWidth()+"");
-	    out.append("\" height=\"");
-	    out.append(dim.getHeight()+"");
-	    out.append('"');
-	} catch (Throwable ex) {
-	    // ignore..
+	    Info info = InfoFactory.get(getRequest().getOutputFile());
+	    if (info != null) {
+		int width = info.getInt(ImageInfo.WIDTH);
+		int height = info.getInt(ImageInfo.HEIGHT);
+		if (width != -1 && height != -1) {
+		    out.append(" width=\"");
+		    out.append(width+"");
+		    out.append("\" height=\"");
+		    out.append(height+"");
+		    out.append('"');
+		}
+	    }
+	} catch (Exception ex) {
+	    // ignore
 	}
 
 	if (getAlt() != null) {
