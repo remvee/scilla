@@ -110,7 +110,7 @@ import org.scilla.core.*;
  * <BR>MPEG2 samplerates(kHz): 16 22.05 24 
  * <BR>bitrates(kbs): 8 16 24 32 40 48 56 64 80 96 112 128 144 160 
  *
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  * @see <A href="http://www.sulaco.org/mp3/">The LAME Project</A>
  * @author R.W. van 't Veer
  */
@@ -123,7 +123,11 @@ public class LameConverter extends Converter
 
     /** parameter name to force the use of this converter */
     public final static String THIS_CONVERTER_PARAMETER = "lame";
+
+    /** executable configuration key */
     public final static String LAME_EXEC_KEY = "converters.lame.exec";
+    /** ignore exit status configuration key */
+    public final static String LAME_IGNORE_EXITSTAT_KEY = "converters.lame.ignore_exitstat";
 
     QueuedProcess proc = null;
     int exitValue = -1; // 0 means success
@@ -192,11 +196,13 @@ public class LameConverter extends Converter
 
     /**
      * @return true if exit successfull
+     * @see #LAME_IGNORE_EXITSTAT_KEY
      */
     public boolean exitSuccess ()
     {
 	if (proc == null || isAlive()) throw new IllegalStateException();
-	return exitValue == 0;
+	return config.getBoolean(LAME_IGNORE_EXITSTAT_KEY)
+		|| exitValue == 0;
     }
 
     /**
