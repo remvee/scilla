@@ -23,12 +23,13 @@ package org.scilla.converter;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.List;
 import java.util.Vector;
 
 import org.scilla.*;
@@ -110,7 +111,7 @@ import org.scilla.util.*;
  * </DL>
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class ExternalConverter implements Converter {
     private static final Logger log = LoggerFactory.get(ExternalConverter.class);
@@ -130,30 +131,29 @@ public class ExternalConverter implements Converter {
     private volatile boolean finished = false;
     private volatile boolean started = false;
 
-    private static Vector reservedParameters = new Vector();
+    private static List reservedParameters = new Vector();
     static
     {
         reservedParameters.add(Request.OUTPUT_TYPE_PARAMETER);
     }
-    private static Hashtable inputTypeMap = new Hashtable();
-    private static Hashtable outputTypeMap = new Hashtable();
-    private static Hashtable parameterMap = new Hashtable();
-    private static Hashtable execMap = new Hashtable();
-    private static Hashtable formatMap = new Hashtable();
-    private static Hashtable inputSwitchMap = new Hashtable();
-    private static Hashtable outputSwitchMap = new Hashtable();
-    private static Hashtable silentSwitchMap = new Hashtable();
-    private static Hashtable stringSwitchMap = new Hashtable();
-    private static Hashtable numberSwitchMap = new Hashtable();
-    private static Hashtable booleanSwitchMap = new Hashtable();
-    private static HashSet ignoreExitstatSet = new HashSet();
-    private static HashSet cd2outputDirSet = new HashSet();
-    private static HashSet blacklistSet = new HashSet();
+    private static Map inputTypeMap = new HashMap();
+    private static Map outputTypeMap = new HashMap();
+    private static Map parameterMap = new HashMap();
+    private static Map execMap = new HashMap();
+    private static Map formatMap = new HashMap();
+    private static Map inputSwitchMap = new HashMap();
+    private static Map outputSwitchMap = new HashMap();
+    private static Map silentSwitchMap = new HashMap();
+    private static Map stringSwitchMap = new HashMap();
+    private static Map numberSwitchMap = new HashMap();
+    private static Map booleanSwitchMap = new HashMap();
+    private static Set ignoreExitstatSet = new HashSet();
+    private static Set cd2outputDirSet = new HashSet();
+    private static Set blacklistSet = new HashSet();
     static
     {
-        Enumeration keys = config.keys();
-        while (keys.hasMoreElements()) {
-            String key = (String) keys.nextElement();
+	for (Iterator it = config.keys().iterator(); it.hasNext();) {
+            String key = (String) it.next();
             if (key.startsWith(CONVERTER_PREFIX)) {
                 String tail = key.substring(CONVERTER_PREFIX.length()+1);
                 StringTokenizer keyst = new StringTokenizer(tail, ""+keyDelimiter);
@@ -229,23 +229,23 @@ public class ExternalConverter implements Converter {
 
                     // for commandline building
                     if (stype.equals("string")) {
-                        Hashtable h = (Hashtable) stringSwitchMap.get(name);
+                        Map h = (Map) stringSwitchMap.get(name);
                         if (h == null) {
-                            h = new Hashtable();
+                            h = new HashMap();
                             stringSwitchMap.put(name, h);
                         }
                         h.put(sname, val);
                     } else if (stype.equals("number")) {
-                        Hashtable h = (Hashtable) numberSwitchMap.get(name);
+                        Map h = (Map) numberSwitchMap.get(name);
                         if (h == null) {
-                            h = new Hashtable();
+                            h = new HashMap();
                             numberSwitchMap.put(name, h);
                         }
                         h.put(sname, val);
                     } else if (stype.equals("boolean")) {
-                        Hashtable h = (Hashtable) booleanSwitchMap.get(name);
+                        Map h = (Map) booleanSwitchMap.get(name);
                         if (h == null) {
-                            h = new Hashtable();
+                            h = new HashMap();
                             booleanSwitchMap.put(name, h);
                         }
                         h.put(sname, val);
@@ -267,7 +267,7 @@ public class ExternalConverter implements Converter {
 
     private void _convert () {
         // build commandline
-        Vector cmdline = new Vector();
+        List cmdline = new Vector();
         cmdline.add(execMap.get(converterName));
 
         // handle commandline format
@@ -321,9 +321,9 @@ public class ExternalConverter implements Converter {
                 }
 
                 // add switches to commandline
-                Hashtable sm = (Hashtable) stringSwitchMap.get(converterName);
-                Hashtable nm = (Hashtable) numberSwitchMap.get(converterName);
-                Hashtable bm = (Hashtable) booleanSwitchMap.get(converterName);
+                Map sm = (Map) stringSwitchMap.get(converterName);
+                Map nm = (Map) numberSwitchMap.get(converterName);
+                Map bm = (Map) booleanSwitchMap.get(converterName);
                 Iterator it = request.getParameters().iterator();
                 while (it.hasNext()) {
                     RequestParameter rp = (RequestParameter) it.next();

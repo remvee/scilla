@@ -21,18 +21,13 @@
 
 package org.scilla.converter;
 
-import java.io.File;
-import java.util.Enumeration;
-import java.util.Vector;
-
-import org.scilla.*;
-import org.scilla.core.*;
+import org.scilla.Request;
 
 /**
  * Converter interface.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public interface Converter {
     /**

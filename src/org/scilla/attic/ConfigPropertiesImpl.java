@@ -21,9 +21,11 @@
 
 package org.scilla;
 
-import java.util.Enumeration;
+import java.util.Set;
+import java.util.Map;
 import java.util.Hashtable;
 import java.util.Properties;
+import java.util.List;
 import java.util.Vector;
 import java.util.StringTokenizer;
 import java.io.InputStream;
@@ -32,7 +34,7 @@ import java.io.IOException;
 /**
  * The scilla configuration implementation using property files.
  *
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  * @author R.W. van 't Veer
  */
 public class ConfigPropertiesImpl implements Config {
@@ -71,13 +73,13 @@ public class ConfigPropertiesImpl implements Config {
     }
 
     // cache for expensive operations
-    private final Hashtable stringArrays = new Hashtable();
-    private final Hashtable classArrays = new Hashtable();
-    private final Hashtable[] cache = { stringArrays, classArrays };
+    private final Map stringArrays = new Hashtable();
+    private final Map classArrays = new Hashtable();
+    private final Map[] cache = { stringArrays, classArrays };
 
     // accessors
-    public Enumeration keys () {
-        return prop.propertyNames();
+    public Set keys () {
+        return prop.keySet();
     }
 
     public boolean exists (String key) {
@@ -107,11 +109,11 @@ public class ConfigPropertiesImpl implements Config {
             return null;
 
         StringTokenizer st = new StringTokenizer(s, delim);
-        Vector v = new Vector();
+        List l = new Vector();
         while (st.hasMoreTokens()) {
-            v.add(st.nextToken());
+            l.add(st.nextToken());
         }
-        String[] val = (String[]) v.toArray(new String[0]);
+        String[] val = (String[]) l.toArray(new String[0]);
 
         stringArrays.put(key, val);
         return val;
@@ -127,18 +129,18 @@ public class ConfigPropertiesImpl implements Config {
             return null;
 
         StringTokenizer st = new StringTokenizer(s, ",:; \t\r\n");
-        Vector v = new Vector();
+        List l = new Vector();
         while (st.hasMoreTokens()) {
             String cn = null;
             try {
                 cn = st.nextToken();
-                v.add(Class.forName(cn));
+                l.add(Class.forName(cn));
             } catch (Throwable ex) {
                 log.warn("getClasses("+key+"): "+cn+": "+ex);
                 log.debug("", ex);
             }
         }
-        Class[] val = (Class[]) v.toArray(new Class[0]);
+        Class[] val = (Class[]) l.toArray(new Class[0]);
 
         classArrays.put(key, val);
         return val;
@@ -150,7 +152,7 @@ public class ConfigPropertiesImpl implements Config {
 
         // see if we cache some array
         for (int i = 0; i < cache.length; i++) {
-            Hashtable ht = cache[i];
+            Map ht = cache[i];
             if (ht.containsKey(key))
                 ht.remove(key);
         }

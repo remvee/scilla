@@ -30,7 +30,7 @@ import org.scilla.util.mp3.id3v2.*;
  * MP3 tag commandline utillity.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class Tagger {
     static Map commandMap = new HashMap();
@@ -192,15 +192,13 @@ public class Tagger {
 
     public static String getUsage ()
     throws Exception {
-        Vector v;
-        Iterator it;
+        List l;
         StringBuffer out = new StringBuffer();
 
         out.append("Available commands:\n");
-        v = new Vector(commandMap.keySet());
-        Collections.sort(v);
-        it = v.iterator();
-        while (it.hasNext()) {
+        l = new Vector(commandMap.keySet());
+        Collections.sort(l);
+	for (Iterator it = l.iterator(); it.hasNext();) {
             String name = (String) it.next();
             Class clazz = (Class) commandMap.get(name);
             Command cmd = (Command) clazz.newInstance();
@@ -213,10 +211,9 @@ public class Tagger {
         }
 
         out.append("Available options:\n");
-        v = new Vector(optionMap.keySet());
-        Collections.sort(v);
-        it = v.iterator();
-        while (it.hasNext()) {
+        l = new Vector(optionMap.keySet());
+        Collections.sort(l);
+	for (Iterator it = l.iterator(); it.hasNext();) {
             String name = (String) it.next();
             String descr = (String) optionMap.get(name);
             out.append("  ");

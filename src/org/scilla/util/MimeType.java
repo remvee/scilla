@@ -21,7 +21,7 @@
 
 package org.scilla.util;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Properties;
 import java.io.InputStream;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import org.scilla.LoggerFactory;
 /**
  * Class for mapping filenames to mime types and visa versa.
  * TODO ugly handling of <tt>param</tt> element..
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @author R.W. van 't Veer
  */
 public class MimeType {
@@ -107,9 +107,8 @@ public class MimeType {
 	}
 
         // find first match
-        Enumeration e = param.propertyNames();
-        while (e.hasMoreElements()) {
-            String key = (String) e.nextElement();
+	for (Iterator it = param.keySet().iterator(); it.hasNext();) {
+            String key = (String) it.next();
             if (type.equals(param.getProperty(key))) {
                 return getExtensionFromFilename(key);
             }

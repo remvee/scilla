@@ -21,13 +21,13 @@
 
 package org.scilla;
 
-import java.util.Enumeration;
+import java.util.Set;
 
 /**
  * The scilla configuration interface.
  *
  * @see org.scilla.ConfigProvider#get()
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  * @author R.W. van 't Veer
  */
 public interface Config {
@@ -37,10 +37,9 @@ public interface Config {
     public static final String SOURCE_DIR_KEY = "source.dir";
 
     /**
-     * Enumerate all configuration keys.
-     * @return key enumeration
+     * @return set of all configuration keys
      */
-    public Enumeration keys ();
+    public Set keys ();
 
     /**
      * Test if key exists in configuration.

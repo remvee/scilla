@@ -21,6 +21,7 @@
 
 package org.scilla;
 
+import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
 import java.io.InputStream;
@@ -34,7 +35,7 @@ import org.scilla.util.*;
  * The Request class holds a scilla media object request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class Request {
     private final static Logger log = LoggerFactory.get(Request.class);
@@ -46,7 +47,7 @@ public class Request {
     private String source = null;
     private URL url = null;
     private String type = null;
-    private Vector param = null;
+    private List param = null;
 
     private MediaObject obj = null;
 
@@ -57,7 +58,7 @@ public class Request {
      * @param param	conversion parameters
      * @throws ScillaException when object not retrievable
      */
-    public Request (String source, String type, Vector param)
+    public Request (String source, String type, List param)
     throws ScillaException {
         this.source = source;
         this.type = type;
@@ -71,7 +72,7 @@ public class Request {
      * @param param	conversion parameters
      * @throws ScillaException when object not retrievable
      */
-    public Request (URL url, String type, Vector param)
+    public Request (URL url, String type, List param)
     throws ScillaException {
         this.url = url;
         this.type = type;
@@ -156,21 +157,21 @@ public class Request {
     /**
      * @return request paramaters
      */
-    public Vector getParameters () {
+    public List getParameters () {
         return param;
     }
 
     /**
      * @return request paramaters keys
      */
-    public Vector getParameterKeys () {
-        Vector v = new Vector();
+    public List getParameterKeys () {
+        List l = new Vector();
         Iterator it = param.iterator();
         while (it.hasNext()) {
             RequestParameter rp = (RequestParameter) it.next();
-            v.add(rp.key);
+            l.add(rp.key);
         }
-        return v;
+        return l;
     }
 
     /**

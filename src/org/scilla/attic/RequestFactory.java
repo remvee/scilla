@@ -22,8 +22,9 @@
 package org.scilla;
 
 import java.net.URLDecoder;
-import java.util.StringTokenizer;
+import java.util.List;
 import java.util.Vector;
+import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 
 import org.scilla.util.*;
@@ -33,7 +34,7 @@ import org.scilla.util.*;
  * kind of request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class RequestFactory {
     /**
@@ -58,7 +59,7 @@ public class RequestFactory {
         }
 
         // conversion parameters from QUERY_STRING
-        Vector pars = new Vector();
+        List pars = new Vector();
         String qs = req.getQueryString();
         if (qs != null) {
             StringTokenizer st = new StringTokenizer(qs, "&");
@@ -91,7 +92,7 @@ public class RequestFactory {
         String type = MimeType.getTypeFromFilename(source);
 
         // conversion parameters
-        Vector pars = new Vector();
+        List pars = new Vector();
         for (int i = 1; i < args.length; i++) {
             String s = args[i];
             int j = s.indexOf("=");

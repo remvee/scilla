@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.File;
-import java.util.Vector;
 import java.util.StringTokenizer;
 
 /**
@@ -35,7 +34,7 @@ import java.util.StringTokenizer;
  * taken from the scilla configuration.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class QueuedProcess {
     private static final Logger log = LoggerFactory.get(QueuedProcess.class);
