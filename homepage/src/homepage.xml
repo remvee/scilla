@@ -1,7 +1,7 @@
 <homepage>
     <title>Scilla - media server</title>
     <location>http://www.xs4all.nl/~rwvtveer/scilla</location>
-    <date>$Date: 2003/02/27 23:23:19 $</date>
+    <date>$Date: 2003/04/21 14:19:04 $</date>
     <description>
 	<html><![CDATA[
 	    <p>
@@ -72,6 +72,27 @@
 	<html>
 	    The following releases are considered to be stable.
 	</html>
+	<release tag="RELEASE_0_9_6" filebase="scilla-0_9_6">
+	    <html><![CDATA[
+		21.IV.2003
+		<ul>
+		    <li>
+			examples ported to use <a href="http://java.sun.com/products/jsp/jstl/">JSTL</a>
+		    </li>
+		    <li>
+			added playlist and time tags
+		    </li>
+		    <li>
+			simplified configuration by using env-entries
+		    </li>
+		    <li>
+			bugfixes; fd leaks, handling jpeg comments, image content negotiation
+		    <li>
+			cleanups..
+		    </li>
+		</ul>
+	    ]]></html>
+	</release>
 	<release tag="RELEASE_0_9_5" filebase="scilla-0_9_5">
 	    <html><![CDATA[
 		28.II.2003
