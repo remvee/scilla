@@ -38,7 +38,9 @@
         <mkdir dir="${lib.dir}"/>
         <mkdir dir="${depend.dir}"/>
 
-        <available property="jai.inclasspath" classname="javax.media.jai.JAI"/>
+        <available property="jai.inclasspath" classname="javax.media.jai.JAI">
+            <classpath refid="build.classpath"/>
+	</available>
         <delete file="${excludes.file}"/>
         <touch file="${excludes.file}"/>
     </target>
