@@ -65,7 +65,10 @@
 
 
     <target name="changelog" depends="checkout">
-        <ant dir="${build.dir}/${scilla.project}" target="changelog"/>
+	<cvschangelog dir="${build.dir}/${scilla.project}" destfile="changelog.xml"/>
+	<style style="src/changelog-html.xsl" in="changelog.xml" out="${build.dir}/changelog.html">
+	    <param name="basedir" expression="${scilla.project}"/>
+	</style>
     </target>
 
 </project>

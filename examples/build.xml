@@ -4,10 +4,6 @@
     <property name="app.name" value="scilla"/>
     <property name="war.file" value="scilla.war"/>
 
-    <!-- build tool configuration -->
-    <property name="cvs2cl.exec" value="cvs2cl"/>
-    <property name="build.compiler" value="jikes"/>
-
     <!-- deployment hierarchy -->
     <property name="deploy.dir" value="${basedir}/deploy"/>
     <property name="webinf.dir" value="${deploy.dir}/WEB-INF"/>

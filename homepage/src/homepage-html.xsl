@@ -43,6 +43,8 @@
 	</p>
 	<ul class="logitems">
 	    <xsl:for-each select="document($file)/changelog/entry">
+		<xsl:sort select="date" data-type="text" order="descending"/>
+		<xsl:sort select="time" data-type="text" order="descending"/>
 		<xsl:if test="position() &lt;= $max">
 		    <xsl:apply-templates select="."/>
 		</xsl:if>

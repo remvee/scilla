@@ -4,6 +4,7 @@
     <xsl:output method="xml" indent="yes" 
 	    doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
 	    doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" />
+    <xsl:param name="basedir"/>
 
     <xsl:template match="entry">
 	<li class="logitem">
@@ -15,7 +16,7 @@
 	    <ul class="logfiles">
 		<xsl:for-each select="./file/name">
 		    <xsl:variable name="file" select="."/>
-		    <li class="logfile"><a href="{$file}"><xsl:value-of select="."/></a></li>
+		    <li class="logfile"><a href="{$basedir}/{$file}"><xsl:value-of select="."/></a></li>
 		</xsl:for-each>
 	    </ul>
 	</li>
@@ -32,9 +33,10 @@
 		<h2>Scilla Changelog</h2>
 		<hr/>
 		<ul>
-		    <xsl:for-each select="/changelog/entry">
-		    <xsl:apply-templates select="."/>
-		    </xsl:for-each>
+		    <xsl:apply-templates select="/changelog/entry">
+			<xsl:sort select="date" data-type="text" order="descending"/>
+			<xsl:sort select="time" data-type="text" order="descending"/>
+		    </xsl:apply-templates>
 		</ul>
 
 	    </body>
