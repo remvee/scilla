@@ -41,7 +41,7 @@ import org.scilla.util.*;
  * parameter.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class JAIConverter implements Converter {
     private static Log log = LogFactory.getLog(JAIConverter.class);
@@ -188,9 +188,9 @@ public class JAIConverter implements Converter {
 
         // supports all parameters?
         Iterator it = req.getParameterKeys().iterator();
-        flag = false;
         while (it.hasNext()) {
             String key = (String) it.next();
+	    flag = false;
             for (int i = 0; i < parameterList.length; i++) {
                 if (key.equals(parameterList[i])) {
                     flag = true;
@@ -225,6 +225,7 @@ public class JAIConverter implements Converter {
 	    return negate(img);
 	}
 
+	// TODO should throw exception here!
         log.warn("handleConversion: param '"+rp.key+"' NOT YET IMPLEMENTED");
         return null;
     }
