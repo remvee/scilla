@@ -34,7 +34,7 @@ import org.scilla.util.mp3.*;
 /**
  * This servlet handles media requests.
  *
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  * @author R.W. van 't Veer
  */
 public class Servlet extends HttpServlet
@@ -43,9 +43,9 @@ public class Servlet extends HttpServlet
 
     private static final int BUFFER_SIZE = 4096;
 
-    private static String RANGE_HEADER = "range";
-    private static String BYTE_RANGE = "bytes=";
-    private static String CONTENT_RANGE_HEADER = "Content-Range";
+    private static final String RANGE_HEADER = "range";
+    private static final String BYTE_RANGE = "bytes=";
+    private static final String CONTENT_RANGE_HEADER = "Content-Range";
 
     /**
      * Initialize scilla.
