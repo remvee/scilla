@@ -30,7 +30,7 @@ import org.scilla.util.mp3.id3v2.*;
  * MP3 tag commandline utillity.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class Tagger {
     static Map commandMap = new HashMap();
@@ -265,13 +265,13 @@ class V1ToV2Command extends Command {
     }
     public void execute (ID3v1 v1tag, ID3v2 v2tag)
     throws Exception {
-        v2tag.setFrame(new TextFrame("TALB", null, v1tag.getAlbum()));
-        v2tag.setFrame(new TextFrame("TIT2", null, v1tag.getTitle()));
-        v2tag.setFrame(new TextFrame("TPE1", null, v1tag.getArtist()));
-        v2tag.setFrame(new TextFrame("TYER", null, v1tag.getYear()));
-        v2tag.setFrame(new TextFrame("TRCK", null, v1tag.getTrkNum()+""));
-        v2tag.setFrame(new TextFrame("TCON", null, "("+v1tag.getGenre()+")"));
-        v2tag.setFrame(new TextFrame("TXXX", null, "ID3v1Comment", v1tag.getComment()));
+        v2tag.setFrame(new TextFrame("TALB", ID3v1.CHAR_ENCODING, v1tag.getAlbum()));
+        v2tag.setFrame(new TextFrame("TIT2", ID3v1.CHAR_ENCODING, v1tag.getTitle()));
+        v2tag.setFrame(new TextFrame("TPE1", ID3v1.CHAR_ENCODING, v1tag.getArtist()));
+        v2tag.setFrame(new TextFrame("TYER", ID3v1.CHAR_ENCODING, v1tag.getYear()));
+        v2tag.setFrame(new TextFrame("TRCK", ID3v1.CHAR_ENCODING, v1tag.getTrkNum()+""));
+        v2tag.setFrame(new TextFrame("TCON", ID3v1.CHAR_ENCODING, "("+v1tag.getGenre()+")"));
+        v2tag.setFrame(new TextFrame("TXXX", ID3v1.CHAR_ENCODING, "ID3v1Comment", v1tag.getComment()));
     }
 }
 
