@@ -1,7 +1,7 @@
 <homepage>
     <title>Scilla - media server</title>
     <location>http://www.xs4all.nl/~rwvtveer/scilla</location>
-    <date>$Date: 2003/04/21 14:19:04 $</date>
+    <date>$Date: 2003/10/09 09:50:21 $</date>
     <description>
 	<html><![CDATA[
 	    <p>
@@ -72,6 +72,22 @@
 	<html>
 	    The following releases are considered to be stable.
 	</html>
+	<release tag="RELEASE_0_9_7" filebase="scilla-0_9_7">
+	    <html><![CDATA[
+		9.X.2003
+		<ul>
+		    <li>
+			fix possible semaphore leak causing deadlock
+		    </li>
+		    <li>
+			added read timeouts
+		    </li>
+		    <li>
+			fix endless loop for corrupt jpeg
+		    </li>
+		</ul>
+	    ]]></html>
+	</release>
 	<release tag="RELEASE_0_9_6" filebase="scilla-0_9_6">
 	    <html><![CDATA[
 		21.IV.2003
