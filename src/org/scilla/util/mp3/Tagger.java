@@ -21,16 +21,29 @@
 
 package org.scilla.util.mp3;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
-import org.scilla.util.mp3.id3v2.*;
+import org.scilla.util.mp3.id3v2.TextFrame;
 
 /**
  * MP3 tag commandline utillity.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class Tagger {
     static Map commandMap = new HashMap();
@@ -41,7 +54,7 @@ public class Tagger {
         commandMap.put("-2to1", V2ToV1Command.class);
         commandMap.put("-v2settextframe", V2SetTextFrameCommand.class);
         commandMap.put("-v2addtextframe", V2AddTextFrameCommand.class);
-        commandMap.put("-v2deltextframe", V2DelTextFrameCommand.class);
+        commandMap.put("-v2delframe", V2DelFrameCommand.class);
         commandMap = Collections.unmodifiableMap(commandMap);
     }
 
@@ -345,8 +358,8 @@ public class Tagger {
         }
     }
 
-    private static class V2DelTextFrameCommand extends Command {
-        public V2DelTextFrameCommand () {
+    private static class V2DelFrameCommand extends Command {
+        public V2DelFrameCommand () {
             args = new String[1];
         }
         public String getDescription () {
