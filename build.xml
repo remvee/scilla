@@ -96,8 +96,12 @@
   </target>
 
   <target name="clean">
-    <delete dir="${build.dir}"/>
-    <delete dir="${doc.dir}"/>
+    <delete quiet="true">
+      <fileset dir="${build.dir}"/>
+      <fileset dir="${doc.dir}"/>
+      <fileset dir="." includes="ChangeLog*"/>
+      <fileset dir="." includes="**/*.bak"/>
+    </delete>
     <delete file="${jar.file}"/>
     <delete file="tags"/>
   </target>
