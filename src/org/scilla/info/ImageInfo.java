@@ -34,7 +34,7 @@ import org.scilla.util.MimeType;
 /**
  * Image info.
  *
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * @author R.W. van 't Veer
  */
 public class ImageInfo extends Info {
@@ -409,7 +409,8 @@ public class ImageInfo extends Info {
 			return;
 		    case JPEG_COM:	// comment
 		    case JPEG_APP12:	// some digital camera use app12 for textual information
-			break;
+		    default:
+			jpegSkipVariable(in);
 		}
 	    }
 	} catch (Throwable ex) {
@@ -461,6 +462,16 @@ public class ImageInfo extends Info {
 	    c = in.read();
 	} while (c == 0xff);
 	return c;
+    }
+    private void jpegSkipVariable (InputStream in)
+    throws IOException {
+	int l = jpegRead2Bytes(in);
+	if (l < 2) {
+	    throw new IOException("Erroneous JPEG marker length");
+	}
+	for (int i = 2; i < l; i++) {
+	    /* discard */ in.read();
+	}
     }
     private int jpegRead2Bytes (InputStream in)
     throws IOException {
