@@ -29,7 +29,7 @@ import org.scilla.*;
  * A file object is a media object somewhere on disk.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class FileObject implements MediaObject
 {
@@ -68,13 +68,5 @@ public class FileObject implements MediaObject
     public long getLength ()
     {
 	return (new File(filename)).length();
-    }
-
-    /**
-     * @return always false, don't cache originals
-     */
-    public boolean allowCaching ()
-    {
-        return false; // since this is most likely a direct hit
     }
 }

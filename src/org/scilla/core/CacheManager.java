@@ -32,7 +32,7 @@ import org.scilla.util.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  * @author R.W. van 't Veer
  */
 public class CacheManager
@@ -127,7 +127,7 @@ public class CacheManager
 	    {
 		// create new MediaObject
 		obj = MediaFactory.createObject(req);
-		if (obj.allowCaching())
+		if (obj instanceof RunnerObject)
 		{
 		    RunnerObject runner = (RunnerObject) obj;
 
