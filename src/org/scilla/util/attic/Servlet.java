@@ -37,7 +37,7 @@ import org.scilla.info.*;
 /**
  * This servlet handles media requests.
  *
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  * @author R.W. van 't Veer
  */
 public class Servlet extends HttpServlet {
@@ -71,14 +71,20 @@ public class Servlet extends HttpServlet {
             req = RequestFactory.createFromHttpServletRequest(request);
             log.info("doGet ["+request.getRemoteAddr()+"]: request="+req);
 
-            long len = req.getLength();
-            response.setContentType(req.getOutputType());
+	    // TODO hack around ugly ogg vorbis mime-type
+	    String outputType = req.getOutputType();
+	    if (outputType.equals("audio/ogg-vorbis")) {
+		outputType = "application/x-ogg";
+	    }
 
-            if (req.getOutputType().startsWith("audio/")) {
+	    // headers
+            response.setContentType(outputType);
+            if (outputType.startsWith("audio/")) {
                 addStreamHeaders(req, response);
             }
 
             // get streams
+            long len = req.getLength();
             InputStream in = req.getStream();
             OutputStream out = response.getOutputStream();
 
