@@ -26,7 +26,7 @@ import java.util.*;
 /**
  * The scilla media info base class.
  *
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * @author R.W. van 't Veer
  */
 public class Info implements Map {
@@ -88,33 +88,37 @@ public class Info implements Map {
 // read methods
     /**
      * @return string info value or <tt>null</tt> when property not available
-     * @throws ClassCastException when property is not a string
+     * or not a string
      */
-    public String getString (String key) {
-	return (String) infoMap.get(key);
+    public String getString(String key) {
+        Object o = infoMap.get(key);
+        return o != null && o instanceof String ? (String) o : null;
     }
     /**
      * @return integer info value or <tt>-1</tt> when property not available
-     * @throws ClassCastException when property is not an integer
+     * or not an integer
      */
-    public int getInt (String key) {
-	Integer i = (Integer) infoMap.get(key);
-	return i == null ? -1 : i.intValue();
+    public int getInt(String key) {
+        Object o = infoMap.get(key);
+        return o != null && o instanceof Integer
+                ? ((Integer) o).intValue() : -1;
     }
     /**
      * @return boolean info value or <tt>false</tt> when property not available
-     * @throws ClassCastException when property is not a boolean
+     * or not a boolean
      */
-    public boolean getBoolean (String key) {
-	Boolean b = (Boolean) infoMap.get(key);
-	return b == null ? false : b.booleanValue();
+    public boolean getBoolean(String key) {
+        Object o = infoMap.get(key);
+        return o != null && o instanceof Boolean
+                && ((Boolean) o).booleanValue();
     }
     /**
      * @return date info value or <tt>null</tt> when property not available
-     * @throws ClassCastException when property is not a date
+     * or not a date
      */
-    public Date getDate (String key) {
-	return (Date) infoMap.get(key);
+    public Date getDate(String key) {
+        Object o = infoMap.get(key);
+        return o != null && o instanceof Date ? (Date) o : null;
     }
 
 // set methods for extending classes
