@@ -9,11 +9,24 @@ import javax.servlet.http.*;
 import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.scilla.*;
 import org.scilla.util.*;
 import org.scilla.info.*;
 
+/**
+ * This image tag creates an <tt>img</tt> HTML tag to an
+ * optionally transformed image with the proper <tt>width</tt>
+ * and <tt>height</tt> attributes set.
+ */
 public class ImageTag extends TagSupport {
+    /** logger */
+    private static final Log log = LogFactory.getLog(ImageTag.class);
+
+    /** image mapping */
+    public final static String SERVLET_MAPPING = "/img";
 
     public ImageTag () {
 	super();
@@ -28,6 +41,7 @@ public class ImageTag extends TagSupport {
 	out.append(HTMLUtil.escape(getImageUrl()));
 	out.append('"');
 
+	// try to get and pass height and width
 	try {
 	    Info info = InfoFactory.get(getRequest().getOutputFile());
 	    if (info != null) {
@@ -45,6 +59,7 @@ public class ImageTag extends TagSupport {
 	    // ignore
 	}
 
+	// typical image properties
 	if (getAlt() != null) {
 	    out.append(" alt=\""+HTMLUtil.escape(getAlt())+"\"");
 	}
@@ -58,13 +73,16 @@ public class ImageTag extends TagSupport {
 	    out.append(" class=\""+HTMLUtil.escape(getStyleClass())+"\"");
 	}
 
-	out.append("/>");
+	// close tag
+	out.append(" />");
 
+	// write it!
 	try {
             pageContext.getOut().print(out.toString());
         } catch (Exception ex) {
             throw new JspException("IO problems");
         }
+
         return SKIP_BODY;
     }
 
@@ -108,16 +126,17 @@ public class ImageTag extends TagSupport {
     private String src = null;
     private String absSrc = null;
 
-    public void setScale (String v) {
-	this.scale = v;
+    public void setTransform (String v) {
+	transform = v;
     }
-    public String getScale () {
-	return scale;
+    public String getTransform () {
+	return transform;
     }
-    private String scale = null;
+    private String transform = null;
 
+// image attributes
     public void setAlt (String v) {
-	this.alt = v;
+	alt = v;
     }
     public String getAlt () {
 	return alt;
@@ -125,7 +144,7 @@ public class ImageTag extends TagSupport {
     private String alt = "";
 
     public void setBorder (String v) {
-	this.border = v;
+	border = v;
     }
     public String getBorder () {
 	return border;
@@ -133,7 +152,7 @@ public class ImageTag extends TagSupport {
     private String border = null;
 
     public void setStyle (String v) {
-	this.style = v;
+	style = v;
     }
     public String getStyle () {
 	return style;
@@ -141,13 +160,18 @@ public class ImageTag extends TagSupport {
     private String style = null;
 
     public void setStyleClass (String v) {
-	this.styleClass = v;
+	styleClass = v;
     }
     public String getStyleClass () {
 	return styleClass;
     }
     private String styleClass = null;
 
+// private stuff
+    /**
+     * Create a request object from the current source and
+     * transformations properties.
+     */
     private Request getRequest ()
     throws Exception {
         // source mime type
@@ -157,28 +181,74 @@ public class ImageTag extends TagSupport {
         }
 
         // conversion parameters from bean properties
-        List pars = new Vector();
+        List pars = new ArrayList();
 
-	if (scale != null) {
-	    pars.add(new RequestParameter("scale", scale));
+	if (transform != null) {
+	    // translate property to request parameters
+	    pars.addAll(getRequestParameters());
 	}
 
 	URL url = pageContext.getServletContext().getResource(getSrc());
         return new Request(url, type, pars);
     }
 
+    /**
+     * Create an URL to the scilla servlet from the current
+     * source and transformations properties.
+     */
     private String getImageUrl ()
     throws JspException {
 	StringBuffer out = new StringBuffer();
 
 	HttpServletRequest pageRequest = (HttpServletRequest) pageContext.getRequest();
 	out.append(pageRequest.getContextPath());
-	out.append("/img");
+	out.append(SERVLET_MAPPING);
 	out.append(getSrc());
-	if (scale != null) {
-	    out.append("?scale=");
-	    out.append(URLEncoder.encode(scale));
+	if (transform != null) {
+	    // translate property to query string
+	    Iterator it = getRequestParameters().iterator();
+	    for (int i = 0; it.hasNext(); i++) {
+		RequestParameter rp = (RequestParameter) it.next();
+		out.append(i > 0 ? '&' : '?');
+		out.append(URLEncoder.encode(rp.key));
+		out.append('=');
+		out.append(URLEncoder.encode(rp.val));
+	    }
 	}
 	return out.toString();
+    }
+
+    /**
+     * Translate transform property to request parameters.
+     */
+    private List getRequestParameters () {
+	List result = new ArrayList();
+
+	if (transform == null) {
+	    return result;
+	}
+
+	StringTokenizer st = new StringTokenizer(transform, ";");
+	while (st.hasMoreTokens()) {
+	    String t = st.nextToken();
+	    int paren = t.indexOf('(');
+	    if (paren == -1) {
+		result.add(new RequestParameter(t, null));
+
+		if (log.isDebugEnabled()) {
+		    log.debug(t);
+		}
+	    } else {
+		String key = t.substring(0, paren);
+		String val = t.substring(paren+1, t.length() - 1);
+		result.add(new RequestParameter(key, val));
+
+		if (log.isDebugEnabled()) {
+		    log.debug(key+"="+val);
+		}
+	    }
+	}
+
+	return result;
     }
 }

@@ -92,15 +92,15 @@
 	    } else {
 %>
 	    <tr>
-		<td colspan="3"><scilla:img src="images/diaframe-n.png" scale="50%"/></td>
+		<td colspan="3"><scilla:img src="images/diaframe-n.png" transform="scale(50%)"/></td>
 	    </tr>
 	    <tr>
-		<td><scilla:img src="images/diaframe-w.png" scale="50%"/></td>
+		<td><scilla:img src="images/diaframe-w.png" transform="scale(50%)"/></td>
 		<td><a href="<%= viewUrl %>" target="viewer"><img src="<%= imgUrl %>" width="83" height="54" border="0"/></a></td>
-		<td><scilla:img src="images/diaframe-e.png" scale="50%"/></td>
+		<td><scilla:img src="images/diaframe-e.png" transform="scale(50%)"/></td>
 	    </tr>
 	    <tr>
-		<td colspan="3"><scilla:img src="images/diaframe-s.png" scale="50%"/></td>
+		<td colspan="3"><scilla:img src="images/diaframe-s.png" transform="scale(50%)"/></td>
 	    </tr>
 	    <tr>
 		<td colspan="3" height="3px"></td>

@@ -1,3 +1,4 @@
+<%@ taglib uri="/WEB-INF/scilla.tld" prefix="scilla" %>
 <%
     String textData = request.getParameter("text");
     if (textData == null || textData.trim().length() == 0) {
@@ -39,11 +40,10 @@
 	if (data[i] == '\n') {
 %><br /><%
 	} else if (y != -1) {
-	    String crop = java.net.URLEncoder.encode("6x6+0+"+y);
-	    String scale = java.net.URLEncoder.encode(s+"%x"+s+"%");
 	    // use jpeg output because mozilla doesn't handle imagick cropped gif
-	    String imgUrl = "scilla/schrofer.gif?crop="+crop+"&scale="+scale+"&outputtype=jpg";
-%><img src="<%= imgUrl %>" alt="<%= data[i] %>"><%
+	    String trans = "crop(6x6+0+"+y+");scale("+s+"%x"+s+"%);outputtype(jpg)";
+	    String alt = data[i]+"";
+%><scilla:img src="images/schrofer.gif" transform="<%= trans %>" alt="<%= alt %>"/><%
 	} else {
 %><%= escapeHtml(data[i]+"") %><%
 	}

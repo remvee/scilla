@@ -17,7 +17,7 @@
 	    <rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
-	    <name>scale</name>
+	    <name>transform</name>
 	    <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
 	</attribute>

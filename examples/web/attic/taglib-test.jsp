@@ -4,6 +4,6 @@
         <title>test scilla taglibs</title>
     </head>
     <body>
-        <scilla:img src="images/spam.jpg" scale="100x100"/>
+	<scilla:img src="images/spam.jpg" transform="scale(100x100);rotate(270)"/>
     </body>
 </html>
