@@ -15,7 +15,6 @@ For version 1.0:
 - junit
 - examples:
     - error page
-    - mp3 coding configuration (properties file?)
     - add smarttag (mp3 info from filename)
 
 Future:
