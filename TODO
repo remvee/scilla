@@ -9,6 +9,8 @@ For version 1.0:
     - implement it!
     - sync parameters with lame so they will be interchangable for mp3
       conversions.  Interface?
+- FFMPEGConverter
+    - implement it!
 - log4j
 - junit
 - Converter: handle command failure
