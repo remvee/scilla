@@ -20,6 +20,8 @@ import org.scilla.info.*;
  * This image tag creates an <tt>img</tt> HTML tag to an
  * optionally transformed image with the proper <tt>width</tt>
  * and <tt>height</tt> attributes set.
+ * @version $Id: ImageTag.java,v 1.10 2003/03/07 11:22:14 remco Exp $
+ * @author R.W. van 't Veer
  */
 public class ImageTag extends TagSupport {
     /** logger */
@@ -37,6 +39,7 @@ public class ImageTag extends TagSupport {
 	HttpServletRequest pageRequest = (HttpServletRequest) pageContext.getRequest();
 
 	// content negotiation..  sort of.. TODO
+	preferredOutputType = null;
 	if (getOutputType() == null) {
 	    try {
 		ImageInfo inputInfo = (ImageInfo) InfoFactory.get(getRequest().getOutputFile());
@@ -49,7 +52,9 @@ public class ImageTag extends TagSupport {
 		    boolean acceptPNG = acceptHeader != null && acceptHeader.indexOf("image/png") != -1;
 		    if (! acceptPNG && inputInfo.isPNG()) {
 			// indexed or transparent images become gifs others jpegs
-			setOutputType(inputInfo.isIndexed() || inputInfo.hasAlphaChannel() ? "gif" : "jpg");
+			preferredOutputType =
+				inputInfo.isIndexed() || inputInfo.hasAlphaChannel()
+				? "gif" : "jpg";
 		    }
 		}
 	    } catch (Exception ex) {
@@ -165,6 +170,7 @@ public class ImageTag extends TagSupport {
 	return outputType;
     }
     private String outputType = null;
+    private String preferredOutputType = null;
 
 // image attributes
     public void setAlt (String v) {
@@ -258,6 +264,8 @@ public class ImageTag extends TagSupport {
 
 	if (outputType != null) {
 	    result.add(new RequestParameter(Request.OUTPUT_TYPE_PARAMETER, outputType));
+	} else if (preferredOutputType != null) {
+	    result.add(new RequestParameter(Request.OUTPUT_TYPE_PARAMETER, preferredOutputType));
 	}
 
 	if (transform == null) {
