@@ -34,6 +34,7 @@
     <available property="jai.inclasspath" classname="javax.media.jai.JAI"/>
     <available property="log4j.inclasspath" classname="org.apache.log4j.Category"/>
     <delete file="${excludes.file}"/>
+    <touch file="${excludes.file}"/>
   </target>
 
   <target name="prepare.compile" depends="prepare,prepare.jai,prepare.log4j"/>
