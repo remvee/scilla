@@ -3,6 +3,9 @@ For version 1.0:
     - content negotiation should not use setOutputType; tag
       objects are reused so setting properties this way will set
       them for other clients too..
+- ImageInfo
+    - add support for GIF comments and maybe other types (JPEG
+      already implemented)
 - Servlet
     - make PartialContent class reuseable
 - taglib

@@ -34,7 +34,7 @@ import org.scilla.util.MimeType;
 /**
  * Image info.
  *
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * @author R.W. van 't Veer
  */
 public class ImageInfo extends Info {
@@ -54,6 +54,7 @@ public class ImageInfo extends Info {
     public final static String CM_UNKNOWN = "unknown";
     public final static String ALPHACHANNEL = "alpha channel";
     public final static String BITS = "bits";
+    public final static String COMMENT = "comment";
 
     public ImageInfo (String fname) {
 	String type = MimeType.getTypeFromFilename(fname);
@@ -123,6 +124,13 @@ public class ImageInfo extends Info {
      */
     public int getBits () {
 	return getInt(BITS);
+    }
+
+    /**
+     * @return comment embedded in this image or <tt>null</tt>
+     */
+    public String getComment () {
+	return getString(COMMENT);
     }
 
     /**
@@ -402,15 +410,20 @@ public class ImageInfo extends Info {
 			    setInt(WIDTH, imageWidth);
 			    setInt(HEIGHT, imageHeight);
 			    setInt(BITS, dataPrecision);
-			    return;
 			}
+                        break;
 		    case JPEG_EOI:	// in case it's a tables-only JPEG stream
 		    case JPEG_SOS:	// stop before hitting compressed data
 			return;
 		    case JPEG_COM:	// comment
+                        setString(COMMENT, jpegVariable(in));
+                        break;
 		    case JPEG_APP12:	// some digital camera use app12 for textual information
+                        jpegVariable(in);
+                        break;
 		    default:
-			jpegSkipVariable(in);
+			jpegVariable(in);
+                        break;
 		}
 	    }
 	} catch (Throwable ex) {
@@ -463,15 +476,28 @@ public class ImageInfo extends Info {
 	} while (c == 0xff);
 	return c;
     }
-    private void jpegSkipVariable (InputStream in)
+    private String jpegVariable (InputStream in)
     throws IOException {
 	int l = jpegRead2Bytes(in);
 	if (l < 2) {
 	    throw new IOException("Erroneous JPEG marker length");
 	}
-	for (int i = 2; i < l; i++) {
-	    /* discard */ in.read();
-	}
+        l -= 2;
+
+        StringBuffer out = new StringBuffer();
+        int i = 0;
+        for (; i < l; i++) {
+            int c = in.read();
+            if (c == 0 || c == -1) {
+                break;
+            }
+            out.append((char) c);
+        }
+        for (i++; i < l; i++) {
+            /* discard */ in.read();
+        }
+
+        return out.toString();
     }
     private int jpegRead2Bytes (InputStream in)
     throws IOException {
