@@ -28,13 +28,14 @@ import java.util.*;
  * Representation of link frames (<TT>W000</TT> - <TT>WZZZ</TT>).
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class LinkFrame extends Frame
 {
     String url;
     /** for <TT>WXXX</TT> frames */
     String descr = null;
+    String enc;
 
     /**
      * Constructor for a link frame.
@@ -51,20 +52,19 @@ public class LinkFrame extends Frame
 	int i = 0;
 	if (frameId.equals("WXXX"))
 	{
-	    String encoding;
 	    switch (frameData[i++])
 	    {
-		case 0: encoding = "ISO-8859-1"; break;
+		case 0: enc = "ISO-8859-1"; break;
 		case 1:
-		case 2: encoding = "UTF-16"; break;
-		case 3: encoding = "UTF-8"; break;
+		case 2: enc = "UTF-16"; break;
+		case 3: enc = "UTF-8"; break;
 		default: throw new RuntimeException("text encoding not supported");
 	    }
 
 	    // get description
 	    ByteArrayOutputStream out = new ByteArrayOutputStream();
 	    while (i < frameData.length && frameData[i] != 0) out.write(frameData[i++]);
-	    descr = out.toString(encoding);
+	    descr = out.toString(enc);
 
 	    // skip over zero
 	    i++;
@@ -76,10 +76,68 @@ public class LinkFrame extends Frame
 	url = sb.toString();
     }
 
+    /**
+     * Constructor for creating a link frame.
+     * @param id frame identifier
+     * @param url URL for this frame
+     */
+    public LinkFrame (String id, String url)
+    {
+	frameId = id;
+	this.descr = null;
+	this.url = url;
+    }
+
+    /**
+     * Contructor for <TT>WXXX</TT> links.
+     * @param id typically <TT>WXXX</TT>
+     * @param descr link description
+     * @param enc description encoding
+     * @param url URL for this frame
+     */
+    public LinkFrame (String id, String descr, String enc, String url)
+    {
+	frameId = id;
+	this.descr = descr;
+	this.enc = enc;
+	this.url = url;
+    }
+
     /** @return URL of this frame */
     public String getUrl () { return url; }
     /** @return description for this link or <TT>null</TT> */
     public String getDescription () { return descr; }
+
+    public byte[] getBytes ()
+    throws UnsupportedEncodingException
+    {
+	int i = 0;
+	byte[] result;
+	byte[] urlData = url.getBytes();
+
+	if (descr != null)
+	{
+	    int encId = 0;
+	    if (enc.equals("ISO-8859-1")) encId = 0;
+	    else if (enc.equals("UTF-16")) encId = 1;
+	    else if (enc.equals("UTF-8")) encId = 3;
+	    else enc = "ISO-8859-1";
+
+	    byte[] descrData = descr.getBytes(enc);
+	    result = new byte[1+descrData.length+1+urlData.length];
+	    result[i++] = (byte) encId;
+	    System.arraycopy(descrData, 0, result, i, descrData.length);
+	    i += descrData.length;
+	    result[i++] = 0;
+	}
+	else
+	{
+	    result = new byte[urlData.length];
+	}
+	System.arraycopy(urlData, 0, result, i, urlData.length);
+
+	return result;
+    }
 
     public String toString ()
     {

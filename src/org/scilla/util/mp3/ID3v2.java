@@ -34,7 +34,7 @@ import org.scilla.util.mp3.id3v2.*;
  *
  * @see <a href="http://www.id3.org/id3v2.3.0.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class ID3v2
 {
@@ -148,7 +148,7 @@ public class ID3v2
 	tagAvailable = true;
     }
 
-    final static int padding = 1024;
+    final static int padding = 0;
     private void writeTag (OutputStream out)
     throws IOException, Exception
     {
@@ -343,8 +343,8 @@ public class ID3v2
 
 System.err.println("reading tag");
 		tag.readTag(in);
-		Frame f = new TextFrame("COMM", null, "eng", "gotya!", "bla die bla");
-		tag.getFrames().add(f);
+		tag.getFrames().add(new TextFrame("COMM", null, "eng", "gotya!", "bla die bla"));
+		tag.getFrames().add(new LinkFrame("WPUB", "http://www.xs4all.nl"));
 
 System.err.println("writing tag");
 		tag.writeTag(out);

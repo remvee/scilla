@@ -30,7 +30,7 @@ import java.util.*;
  * language and identifier like <TT>COMM</TT> and <TT>USLT</TT>.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class TextFrame extends Frame
 {
@@ -137,7 +137,6 @@ public class TextFrame extends Frame
 	this.ident = ident;
 	this.text = text;
     }
-
 
     public byte[] getBytes ()
     throws UnsupportedEncodingException
