@@ -35,7 +35,7 @@ import org.scilla.util.*;
  * The Request class holds a scilla media object request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class Request {
     private final static Logger log = LoggerFactory.get(Request.class);
@@ -127,6 +127,16 @@ public class Request {
 	    return config.getString(Config.SOURCE_DIR_KEY) + File.separator + source;
 	}
 	return source;
+    }
+
+    /**
+     * Get filename of object after transformations.  Wait for
+     * transformations to finish if still running.
+     * @return filename of transformed object
+     */
+    public String getOutputFile ()
+    throws ScillaException {
+	return getObject().getFilename();
     }
 
     /**

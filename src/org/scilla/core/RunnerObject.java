@@ -35,7 +35,7 @@ import org.scilla.converter.*;
  * A runner object is a media object currently being converted.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class RunnerObject implements MediaObject {
     private static final Logger log = LoggerFactory.get(RunnerObject.class);
@@ -136,4 +136,23 @@ public class RunnerObject implements MediaObject {
             listener.runnerChange(this, code);
         }
     }
+
+    /**
+     * Wait for output and return output filename.
+     * @return name of output filename
+     */
+    public String getFilename () {
+	// wait till runner has finished
+	while (!hasFinished()) {
+	    try {
+		Thread.currentThread().sleep(WAIT_FOR_RUNNER_TIMEOUT);
+	    } catch (InterruptedException ex) {
+		// ignore
+	    }
+	}
+
+	// return filename
+	return conv.getOutputFile();
+    }
+    public static final int WAIT_FOR_RUNNER_TIMEOUT = 100;
 }

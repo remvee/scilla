@@ -29,7 +29,7 @@ import org.scilla.*;
  * Interface to a media object.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public interface MediaObject {
     /**
@@ -42,4 +42,9 @@ public interface MediaObject {
      * @return file size or -1 of unknown
      */
     public long getLength ();
+
+    /**
+     * @return object filename
+     */
+    public String getFilename ();
 }

@@ -34,7 +34,7 @@ import org.scilla.*;
  * finished or not.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class CachedObject implements MediaObject {
     private static final Logger log = LoggerFactory.get(CachedObject.class);
@@ -83,4 +83,23 @@ public class CachedObject implements MediaObject {
 	}
         return f.length();
     }
+
+    /**
+     * Wait for output and return output filename.
+     * @return name of output filename
+     */
+    public String getFilename () {
+	// wait till runner has finished
+	while (runner != null && !runner.hasFinished()) {
+	    try {
+		Thread.currentThread().sleep(WAIT_FOR_RUNNER_TIMEOUT);
+	    } catch (InterruptedException ex) {
+		// ignore
+	    }
+	}
+
+	// return filename
+	return filename;
+    }
+    public static final int WAIT_FOR_RUNNER_TIMEOUT = 100;
 }
