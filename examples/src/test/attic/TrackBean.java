@@ -14,7 +14,7 @@ public class TrackBean {
     throws Exception {
 	this.fname = fname;
 
-	String source = ConfigProvider.get().getString(Config.SOURCE_DIR_KEY);
+	String source = AppConfig.getSourceDir();
 	info = (AudioInfo) InfoFactory.get(source + File.separator + fname);
     }
 

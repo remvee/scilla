@@ -65,7 +65,12 @@ public class PlaylistServlet extends HttpServlet {
 	}
 
 	// collect files to list
-	final String source = scillaConfig.getString(Config.SOURCE_DIR_KEY);
+	String source;
+	try {
+	    source = AppConfig.getSourceDir();
+	} catch (Exception ex) {
+	    throw new ServletException("application not properly configured", ex);
+	}
 	Vector files = new Vector();
 	File f = new File(source+File.separator+path);
 	if (f.isDirectory() && recursive) {

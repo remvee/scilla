@@ -21,7 +21,7 @@ import org.scilla.info.*;
  * This image tag creates an <tt>img</tt> HTML tag to an
  * optionally transformed image with the proper <tt>width</tt>
  * and <tt>height</tt> attributes set.
- * @version $Id: ImageTag.java,v 1.15 2003/03/20 10:48:19 remco Exp $
+ * @version $Id: ImageTag.java,v 1.16 2003/03/21 16:09:47 remco Exp $
  * @author R.W. van 't Veer
  */
 public class ImageTag extends BodyTagSupport {
@@ -49,7 +49,7 @@ public class ImageTag extends BodyTagSupport {
 	preferredOutputtype = null;
 	if (getOutputtype() == null) {
 	    try {
-		ImageInfo inputInfo = (ImageInfo) InfoFactory.get(getRequest().getOutputFile());
+		ImageInfo inputInfo = (ImageInfo) InfoFactory.get(getRequest().getInputFile());
 
 		// images not jpeg or gif need special care
 		if (! inputInfo.isJPEG() && ! inputInfo.isGIF()) {
@@ -279,9 +279,16 @@ public class ImageTag extends BodyTagSupport {
 	Request req = null;
 	if (name != null) {
 	    ImageBean img = (ImageBean) pageContext.findAttribute(name);
-	    Config config = ConfigProvider.get();
-	    String source = config.getString(Config.SOURCE_DIR_KEY);
-	    source += File.separator + img.getFileName();
+
+	    String source = AppConfig.getSourceDir();
+	    String fname = img.getFileName();
+	    if (fname.startsWith(File.separator)) {
+		fname = fname.substring(1);
+	    } else if (source.endsWith(File.separator)) {
+		source = source.substring(0, source.length() - 1);
+	    }
+	    source += File.separator + fname;
+
 	    req = new Request(source, type, getRequestParameters());
 	} else {
 	    URL url = pageContext.getServletContext().getResource(getSrc());

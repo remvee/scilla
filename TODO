@@ -3,7 +3,6 @@ For version 1.0:
     - understand application and media scopes transparently
 	- application: media files inside the web application
 	- media: media files from scilla's source.dir
-- Config.SOURCE_DIR_KEY get rid of it!
 - Servlet
     - make PartialContent class reuseable
 - taglib

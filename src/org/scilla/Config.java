@@ -27,14 +27,12 @@ import java.util.Set;
  * The scilla configuration interface.
  *
  * @see org.scilla.ConfigProvider#get()
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  * @author R.W. van 't Veer
  */
 public interface Config {
     /** key to cache directory */
     public static final String CACHE_DIR_KEY = "cache.dir";
-    /** key to source directory */
-    public static final String SOURCE_DIR_KEY = "source.dir";
 
     /**
      * @return set of all configuration keys

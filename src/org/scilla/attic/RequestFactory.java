@@ -38,7 +38,7 @@ import org.scilla.util.*;
  * kind of request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class RequestFactory {
     /** logger */
@@ -50,55 +50,13 @@ public class RequestFactory {
     /**
      * Interpret HTTP request to create a scilla request.
      * @param req HTTP request
-     * @throws ScillaIllegalRequestException when request can not be
-     * created
+     * @deprecated configuration nolonger holds source directory
+     * @throws ScillaIllegalRequestException when request can not be created
      * @return scilla request
      */
     public static Request createFromHttpServletRequest (HttpServletRequest req)
     throws ScillaException {
-        // source file
-        String source = config.getString(Config.SOURCE_DIR_KEY) + File.separator + req.getPathInfo();
-        if (source.indexOf("/../") != -1) {
-            throw new ScillaIllegalRequestException();
-        }
-
-	// does source file carry output suffix?
-        List pars = new Vector();
-	if (! (new File(source)).exists()) {
-
-	    // result mime type
-	    String outType = MimeType.getExtensionFromFilename(source);
-	    pars.add(new RequestParameter("outputtype", outType));
-	    log.debug("outputtype from source filename: "+outType);
-
-	    // make sure source exists
-	    source = stripSuffix(source);
-	    log.debug("source filename: "+source);
-	    if (! (new File(source)).exists()) {
-		throw new ScillaException("can't find source");
-	    }
-	}
-
-        // source mime type
-        String type = MimeType.getTypeFromFilename(source);
-        if (type == null) {
-            throw new ScillaException("unknow input type");
-        }
-
-        // conversion parameters from QUERY_STRING
-        String qs = req.getQueryString();
-        if (qs != null) {
-            StringTokenizer st = new StringTokenizer(qs, "&");
-            while (st.hasMoreTokens()) {
-                String t = st.nextToken();
-                int i = t.indexOf('=');
-                String k = URLDecoder.decode(i > 0 ? t.substring(0, i) : t);
-                String v = i > 0 ? URLDecoder.decode(t.substring(i+1)) : null;
-                pars.add(new RequestParameter(k, v));
-            }
-        }
-
-        return new Request(source, type, pars);
+	throw new ScillaException("DEPRECATED!");
     }
 
     private static String stripSuffix (String fname) {

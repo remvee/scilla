@@ -38,7 +38,7 @@ import org.scilla.util.*;
  * The Request class holds a scilla media object request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public class Request {
     private final static Log log = LogFactory.getLog(Request.class);
@@ -115,7 +115,6 @@ public class Request {
     /**
      * convenience method
      * @return full path to source file
-     * @see org.scilla.Config#SOURCE_DIR_KEY
      */
     public String getInputFile () {
 	return source;

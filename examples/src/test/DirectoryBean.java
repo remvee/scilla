@@ -7,6 +7,7 @@ import org.scilla.*;
 import org.scilla.util.*;
 
 public class DirectoryBean {
+
     public DirectoryBean () {
 	// empty
     }
@@ -26,6 +27,15 @@ public class DirectoryBean {
 	return name;
     }
     private String name = null;
+
+    public DirectoryBean getParent ()
+    throws Exception {
+	int i = path.lastIndexOf(File.separator);
+	if (i == -1) {
+	    return null;
+	}
+	return new DirectoryBean(path.substring(0, i));
+    }
 
     public void setPath (String path)
     throws Exception {
@@ -134,7 +144,7 @@ public class DirectoryBean {
 
     private void scan (boolean includeDirectories)
     throws Exception {
-	String source = ConfigProvider.get().getString(Config.SOURCE_DIR_KEY);
+	String source = AppConfig.getSourceDir();
 
 	String[] files = (new File(source + File.separator + path)).list();
 	Arrays.sort(files);

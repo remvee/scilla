@@ -38,7 +38,7 @@ import org.scilla.util.*;
 /**
  * This servlet stream requests.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @author R.W. van 't Veer
  */
 public class StreamServlet extends HttpServlet {
@@ -183,6 +183,9 @@ public class StreamServlet extends HttpServlet {
         } catch (ScillaException ex) {
             log.warn("doGet! ", ex);
             throw new ServletException("Scilla FAILED!", ex);
+        } catch (Exception ex) {
+            log.warn("doGet! ", ex);
+            throw new ServletException(ex);
         }
     }
 
@@ -201,7 +204,7 @@ public class StreamServlet extends HttpServlet {
                 log.debug("getLastModified="+(new Date(t)));
 	    }
             return req.lastModified();
-        } catch (ScillaException ex) {
+        } catch (Exception ex) {
             // ignore
         }
 
@@ -314,10 +317,9 @@ public class StreamServlet extends HttpServlet {
     }
 
     private Request createFromHttpServletRequest (HttpServletRequest req)
-    throws ScillaException {
+    throws Exception {
         // source file
-        Config config = ConfigProvider.get();
-        String source = config.getString(Config.SOURCE_DIR_KEY) + File.separator + req.getPathInfo();
+        String source = AppConfig.getSourceDir() + File.separator + req.getPathInfo();
         if (source.indexOf("/../") != -1) {
             throw new ScillaIllegalRequestException();
         }

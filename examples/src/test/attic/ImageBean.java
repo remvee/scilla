@@ -10,15 +10,30 @@ public class ImageBean {
     private String fname = null;
     private ImageInfo info = null;
 
+    public ImageBean () {
+	// empty
+    }
+
     public ImageBean (String fname)
     throws Exception {
-	this.fname = fname;
-
-	String source = ConfigProvider.get().getString(Config.SOURCE_DIR_KEY);
-	info = (ImageInfo) InfoFactory.get(source + File.separator + fname);
+	setFileName(fname);
     }
 
     public String getFileName () {
 	return fname;
+    }
+    public void setFileName (String fname)
+    throws Exception {
+	this.fname = fname;
+	String f = AppConfig.getSourceDir() + File.separator + fname;
+	info = (ImageInfo) InfoFactory.get(f);
+    }
+
+    public int getWidth () {
+	return info.getWidth();
+    }
+
+    public int getHeight () {
+	return info.getHeight();
     }
 }
