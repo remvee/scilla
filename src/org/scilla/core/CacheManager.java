@@ -34,7 +34,7 @@ import org.scilla.util.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  * @author R.W. van 't Veer
  */
 public class CacheManager
@@ -233,8 +233,11 @@ public class CacheManager
 	result.append(suffix);
 
 	// prepend cache path
-	return config.getString(Config.CACHE_DIR_KEY)
+	fn = config.getString(Config.CACHE_DIR_KEY)
 		+ File.separator + result;
+
+	if (log.isDebugEnabled()) log.debug("getCacheFilename="+fn);
+	return fn;
     }
 
     void ensureCacheDirectoryFor (String fn)
