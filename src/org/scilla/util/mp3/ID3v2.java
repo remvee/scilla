@@ -34,7 +34,7 @@ import org.scilla.util.mp3.id3v2.*;
  *
  * @see <a href="http://www.id3.org/id3v2.3.0.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class ID3v2
 {
@@ -132,9 +132,9 @@ public class ID3v2
 	    {
 		frame = new LinkFrame(tagData, bytesRead, minor);
 	    }
-	    else if (id.startsWith("APIC"))
+	    else if (id.equals("APIC") || id.equals("GEOB"))
 	    {
-		frame = new PictureFrame(tagData, bytesRead, minor);
+		frame = new AttachmentFrame(tagData, bytesRead, minor);
 	    }
 	    else
 	    {

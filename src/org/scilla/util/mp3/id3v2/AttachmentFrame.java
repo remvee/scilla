@@ -25,33 +25,38 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Representation of picture frame (<TT>APIC</TT>).
+ * Representation of attachment frame (<TT>APIC</TT> and
+ * <TT>GEOB</TT>).
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.1 $
  */
-public class PictureFrame extends Frame
+public class AttachmentFrame extends Frame
 {
     String mimeType;
-    int picType;
+    String filename;
+    int picType = -1;
     String descr;
-    byte[] picData;
+    byte[] attachedData;
+    String enc;
 
     /**
-     * Constructor for a picture frame.
+     * Constructor for a attachment frame.
      * @param data buffer of tag data
      * @param offset offset in buffer
      * @param minor minor version of tag
      */
-    public PictureFrame (byte[] data, int offset, int minor)
+    public AttachmentFrame (byte[] data, int offset, int minor)
     throws Exception
     {
 	super(data, offset, minor);
 
+	// determine frame type
+	boolean isGEOB = frameId.equals("GEOB");
+
 	// encoding for description
 	int i = 0, j = 0;
 	ByteArrayOutputStream out;
-	String enc;
 	boolean isUnicode = false;
 	switch (frameData[i++])
 	{
@@ -67,23 +72,47 @@ public class PictureFrame extends Frame
 	mimeType = new String(frameData, i, j - i);
 	i = j + 1;
 
-	// picture type
-	picType = (int) frameData[i++] & 0xff;
+	if (isGEOB)
+	{
+	    // filename
+	    j = TextFrame.nextStringTerminator(frameData, i, isUnicode);
+	    filename = new String(frameData, i, j - i, enc);
+	    i = j + 1;
+	}
+	else
+	{
+	    // picture type
+	    picType = (int) frameData[i++] & 0xff;
+	}
 
 	// get description
 	j = TextFrame.nextStringTerminator(frameData, i, isUnicode);
 	descr = new String(frameData, i, j - i, enc);
 	i = j + 1;
 
-	// copy picture data
-	int picSize = frameData.length - i;
-	picData = new byte[picSize];
-	System.arraycopy(frameData, i, picData, 0, picSize);
+	// copy attachment data
+	int size = frameData.length - i;
+	attachedData = new byte[size];
+	System.arraycopy(frameData, i, attachedData, 0, size);
     }
+
+    /** @return mime type of attached data */
+    public String getMimeType () { return mimeType; }
+    /** @return filename for attached data (<TT>GEOB</TT>) or <TT>null</TT> */
+    public String getFilename () { return filename; }
+    /** @return type of picture (<TT>APIC</TT>) or <TT>-1</TT> */
+    public int getPictureType () { return picType; }
+    /** @return description of attached data */
+    public String getDescription () { return descr; }
+    /** @return attached data */
+    public byte[] getData () { return attachedData; }
 
     public String toString ()
     {
-	return super.toString() + ": \"" + mimeType + "\" (" + picType + ") \""
-		+ descr + "\" " + picData.length + " bytes";
+	return frameId.equals("GEOB")
+		? super.toString() + ": ("+enc+")\"" + mimeType + "\" \"" + filename + "\" \""
+			+ descr + "\" " + attachedData.length + " bytes"
+		: super.toString() + ": ("+enc+")\"" + mimeType + "\" (" + picType + ") \""
+			+ descr + "\" " + attachedData.length + " bytes";
     }
 }
