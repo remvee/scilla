@@ -373,58 +373,62 @@
 <%
 		// subdirectories
 		{
-		    Iterator it = dirVec.iterator();
-		    for (int i = 0; it.hasNext(); i++)
+		    int cols = 5;
+		    int rows = (dirVec.size() + cols - 1) / cols;
+		    int len = dirVec.size();
+		    for (int y = 0; y < rows; y++)
 		    {
-			if (i % 5 == 0)
-			{
-			    if (i > 0)
-			    {
-%>
-			</TR>
-<%
-			    }
 %>
 			<TR>
 <%
-			}
-			String s = (String) it.next();
-			String sEncoded = (path + "/" + s).replace(' ', '+');
+			for (int x = 0; x < cols; x++)
+			{
+			    int i = (x * rows) + y;
+			    if (i >= len) continue;
+
+			    String s = (String) dirVec.get(i);
+			    String sEnc = (path + "/" + s).replace(' ', '+');
 %>
                            <TD>
-				<A href="mp3.jsp?d=<%= sEncoded %>"><%= s %></A>/
+				<A href="mp3.jsp?d=<%= sEnc %>"><%= s %></A>/
 <%
-			streamLinks(request, out, path+"/"+s, true);
+			    streamLinks(request, out, path+"/"+s, true);
 %>
 				&nbsp;&nbsp;&nbsp;
                            </TD>
+<%
+			}
+%>
+			</TR>
 <%
 		    }
 		}
 		// html files
 		{
-		    Iterator it = htmVec.iterator();
-		    for (int i = 0; it.hasNext(); i++)
+		    int cols = 5;
+		    int rows = (htmVec.size() + cols - 1) / cols;
+		    int len = htmVec.size();
+		    for (int y = 0; y < rows; y++)
 		    {
-			if (i % 5 == 0)
-			{
-			    if (i > 0)
-			    {
-%>
-			</TR>
-<%
-			    }
 %>
 			<TR>
 <%
-			}
-			String s = (String) it.next();
-			String sEnc = s.replace(' ', '+');
+			for (int x = 0; x < cols; x++)
+			{
+			    int i = (x * rows) + y;
+			    if (i >= len) continue;
+
+			    String s = (String) htmVec.get(i);
+			    String sEnc = s.replace(' ', '+');
 %>
-			    <TD>
-				<A href="<%=urlHead+sEnc%>"><%= s %></A>
+                           <TD>
+				<A href="<%= urlHead+sEnc %>"><%= s %></A>
 				&nbsp;&nbsp;&nbsp;
-			    </TD>
+                           </TD>
+<%
+			}
+%>
+			</TR>
 <%
 		    }
 		}
