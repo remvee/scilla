@@ -1,0 +1,127 @@
+#!/bin/sh
+#
+# This script recodes a mp3/ogg file to mp3/ogg.
+#
+# Dependencies: mpg123, lame, ogg123 and oggenc
+#
+# R.W. van 't Veer, Amsterdam, 2.II.2003
+#
+
+usage () {
+    echo "$0 [ -b N ] [ -B N ] [ -c N ] [ -q N ] INFILE OUTFILE"
+    exit 1
+}
+
+decode_command () {
+    if `echo "$1" | grep -q '.mp3$'`
+    then
+	echo mpg123 -q -w - "$1" >&2
+	mpg123 -q -w - "$1"
+    elif `echo "$1" | grep -q '.ogg$'`
+    then
+	echo ogg123 -q -d wav -f - "$1" >&2
+	ogg123 -q -d wav -f - "$1"
+    fi
+}
+
+encode_command () {
+    if `echo "$2" | grep -q '.mp3$'`
+    then
+	ENC_ARGS=""
+	[ -n "$BITRATE" ] \
+	&& ENC_ARGS="$ENC_ARGS -b $BITRATE"
+	[ -n "$MAXBITRATE" ] \
+	&& ENC_ARGS="$ENC_ARGS -v -B $MAXBITRATE"
+	[ -n "$QUALITY" ] \
+	&& ENC_ARGS="$ENC_ARGS -q $QUALITY"
+	[ "$CHANNELS" -eq 1 ] \
+	&& ENC_ARGS="$ENC_ARGS -a"
+	[ -n "$FREQ" ] \
+	&& ENC_ARGS="$ENC_ARGS --resample $FREQ"
+
+	echo lame $ENC_ARGS -S "$1" "$2" >&2
+	lame $ENC_ARGS -S "$1" "$2"
+    elif `echo "$2" | grep -q '.ogg$'`
+    then
+	ENC_ARGS=""
+	[ -n "$BITRATE" -a -n "$MAXBITRATE" ] \
+	&& ENC_ARGS="$ENC_ARGS -m $BITRATE -M $MAXBITRATE"
+	[ -n "$BITRATE" -a -z "$MAXBITRATE" ] \
+	&& ENC_ARGS="$ENC_ARGS -b $BITRATE"
+	[ -n "$QUALITY" ] \
+	&& ENC_ARGS="$ENC_ARGS -q $QUALITY"
+	[ "$CHANNELS" -eq 1 ] \
+	&& ENC_ARGS="$ENC_ARGS --downmix"
+	if [ -n "$FREQ" ]
+	then
+	    case "$FREQ" in
+		32) FREQ=32000; ;;
+		48) FREQ=48000; ;;
+		44.1) FREQ=44100; ;;
+		16) FREQ=16000; ;;
+		24) FREQ=24000; ;;
+		22.05) FREQ=22050; ;;
+		8) FREQ=8000; ;;
+		12) FREQ=12000; ;;
+		11.025) FREQ=11025; ;;
+	    esac
+	    ENC_ARGS="$ENC_ARGS --resample $FREQ"
+	fi
+
+	echo oggenc $ENC_ARGS -Q -o "$2" "$1" >&2
+	oggenc $ENC_ARGS -Q -o "$2" "$1"
+    fi
+}
+
+
+ARGS=`getopt b:B:c:q:f: $*`
+if [ $? != 0 ]
+then
+    usage
+fi
+
+set -- $ARGS
+for I do
+    case "$I" in
+    -b)
+	BITRATE="$2"
+	shift
+	shift
+	;;
+    -B)
+	MAXBITRATE="$2"
+	shift
+	shift
+	;;
+    -c)
+	CHANNELS="$2"
+	shift
+	shift
+	;;
+    -q)
+	QUALITY="$2"
+	shift
+	shift
+	;;
+    -f)
+	FREQ="$2"
+	shift
+	shift
+	;;
+    --)
+	INPUT="$2"
+	OUTPUT="$3"
+    esac
+done
+
+if [ -z "$INPUT" -o -z "$OUTPUT" ]
+then
+    usage
+fi
+
+if `echo "$INPUT" | grep -q '.mp3$'` && `echo "$OUTPUT" | grep -q '.mp3$'`
+then
+    encode_command "$INPUT" "$OUTPUT"
+else
+    decode_command "$INPUT" | encode_command - "$OUTPUT"
+fi

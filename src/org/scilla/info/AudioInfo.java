@@ -34,7 +34,7 @@ import org.scilla.util.vorbis.*;
 /**
  * Audio info.
  *
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * @author R.W. van 't Veer
  */
 public class AudioInfo extends Info {
@@ -84,6 +84,10 @@ public class AudioInfo extends Info {
     /** @return number of second this track takes or <tt>-1</tt> when unknown */
     public int getLength () {
 	return getInt(LENGTH);
+    }
+    /** @return artist name or <tt>null</tt> when unkwown */
+    public String getArtist () {
+	return getString(ARTIST);
     }
     /** @return album title or <tt>null</tt> when unkwown */
     public String getAlbum () {

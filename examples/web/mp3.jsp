@@ -1,7 +1,7 @@
 <%@ taglib uri="/WEB-INF/scilla.tld" prefix="scilla" %>
 <%@ page import="java.io.*,java.net.*,java.util.*,javax.servlet.*" %>
 <%@ page import="org.scilla.*,org.scilla.util.*" %>
-<%@ page import="org.scilla.util.mp3.*,org.scilla.util.mp3.id3v2.*" %>
+<%@ page import="org.scilla.info.*" %>
 <%
     Config scillaConfig = ConfigProvider.get();
     String source = scillaConfig.getString(Config.SOURCE_DIR_KEY);
@@ -13,7 +13,6 @@
     String urlHead = "scilla/" + path.replace(' ', '+') + "/";
 
     String background = null;
-    List vec = new Vector();
     AudioList audioList = new AudioList();
     List imgVec = new Vector();
     List m3uVec = new Vector();
@@ -29,13 +28,8 @@
 
 	    if (fname.startsWith(".") || fname.equals("CVS")) {
 		continue;
-	    } else if (fname.endsWith(".mp3")) {
-		File f = new File(source+"/"+path+"/"+fname);
-		audioList.add(new AudioFile(f));
-		vec.add(f);
-	    } else if (fname.endsWith(".wav")) {
-		File f = new File(source+"/"+path+"/"+fname);
-		vec.add(f);
+	    } else if (type != null && type.startsWith("audio/")) {
+		audioList.add(new AudioFile(fname, source+"/"+path+"/"+fname));
 	    } else if (type != null && type.startsWith("image/")) {
 		String s = fname;
 		if (s.toLowerCase().indexOf("front") != -1
@@ -63,14 +57,14 @@
 	}
 
 	// skip to dir if current only contains 1 dir
-	if (vec.size() + imgVec.size() + m3uVec.size() + htmVec.size() == 0
+	if (audioList.size() + imgVec.size() + m3uVec.size() + htmVec.size() == 0
 		    && dirVec.size() == 1) {
 	    String s = (path + "/"+dirVec.get(0)).replace(' ', '+');
 	    response.sendRedirect("mp3.jsp?d="+s);
 	}
 
 	// redirect to index page if only html files here
-	if (htmVec.size() > 0 && vec.size() == 0 && dirVec.size() == 0) {
+	if (htmVec.size() > 0 && audioList.size() == 0 && dirVec.size() == 0) {
 	    String url = "scilla/"+path+"/";
 	    Iterator it = indexHtmls.iterator();
 	    while (it.hasNext()) {
@@ -87,9 +81,9 @@
     <HEAD>
 	<TITLE>
 <%
-	if (audioList.count("TPE1") != 0 && audioList.count("TALB") != 0) {
+	if (audioList.count(AudioInfo.PERFORMER) != 0 && audioList.count(AudioInfo.ALBUM) != 0) {
 %>
-	    mp3: <%= audioList.getProp("TPE1") %> - <%= audioList.getProp("TALB") %>
+	    mp3: <%= audioList.getProp(AudioInfo.PERFORMER) %> - <%= audioList.getProp(AudioInfo.ALBUM) %>
 <%
 	} else {
 %>
@@ -186,22 +180,22 @@
 	}
 
 	// audio tracks in this directory
-	if (vec.size() > 0) {
+	if (audioList.size() > 0) {
 %>
 	    <TR>
 		<TD align="left" valign="top">
 		    <TABLE>
 <%
-	    Object artist = audioList.getProp("TPE1");
-	    Object album = audioList.getProp("TALB");
-	    Object year = audioList.getProp("TYER");
-	    Object comment = audioList.getProp("TPE3") != null
-		    ?  audioList.getProp("TPE3") : audioList.getProp("XCOM");
+	    Object artist = audioList.getProp(AudioInfo.PERFORMER);
+	    Object album = audioList.getProp(AudioInfo.ALBUM);
+	    Object year = audioList.getProp(AudioInfo.RECORDING_DATE);
+	    Object comment = audioList.getProp(AudioInfo.CONDUCTOR) != null
+		    ?  audioList.getProp(AudioInfo.CONDUCTOR) : audioList.getProp(AudioInfo.COMMENT);
 
-	    int artistCount = audioList.count("TPE1");
-	    int albumCount = audioList.count("TALB");
-	    int yearCount = audioList.count("TYER");
-	    int commentCount = audioList.count("XCOM");
+	    int artistCount = audioList.count(AudioInfo.PERFORMER);
+	    int albumCount = audioList.count(AudioInfo.ALBUM);
+	    int yearCount = audioList.count(AudioInfo.RECORDING_DATE);
+	    int commentCount = audioList.count(AudioInfo.COMMENT);
 	    if (artistCount > 0 || albumCount == 1 || yearCount == 1 || commentCount == 1) {
 		Object o = null;
 		String txt = null;
@@ -212,9 +206,9 @@
 				    <TR>
 					<TD valign=top align=left>
 <%
-		if (audioList.count("TCOM") == 1) {
+		if (audioList.count(AudioInfo.COMPOSER) == 1) {
 %>
-					    <BIG><EM> <%= toHTML(audioList.getProp("TCOM")) %> </EM></BIG>
+					    <BIG><EM><%= toHTML(audioList.getProp(AudioInfo.COMPOSER)) %></EM></BIG>
 <%
 		}
 		o = albumCount == 1 && ! album.equals(artist) ? album : "";
@@ -256,13 +250,13 @@
 	    // loop through list
 	    {
 		List columnList = new Vector();
-		if (audioList.count("TPE1") > 1) columnList.add("TPE1");
-		if (audioList.count("TALB") > 1) columnList.add("TALB");
-		if (audioList.count("TCOM") > 1) columnList.add("TCOM");
-		if (audioList.count("TIT1") > 1) columnList.add("TIT1");
-		columnList.add("TIT2");
-		if (audioList.count("TIT3") > 1) columnList.add("TIT3");
-		if (audioList.count("TYER") > 1) columnList.add("TYER");
+		if (audioList.count(AudioInfo.PERFORMER) > 1) columnList.add(AudioInfo.PERFORMER);
+		if (audioList.count(AudioInfo.ALBUM) > 1) columnList.add(AudioInfo.ALBUM);
+		if (audioList.count(AudioInfo.COMPOSER) > 1) columnList.add(AudioInfo.COMPOSER);
+		if (audioList.count(AudioInfo.SECTION) > 1) columnList.add(AudioInfo.SECTION);
+		columnList.add(AudioInfo.TITLE);
+		if (audioList.count(AudioInfo.SUBTITLE) > 1) columnList.add(AudioInfo.SUBTITLE);
+		if (audioList.count(AudioInfo.RECORDING_DATE) > 1) columnList.add(AudioInfo.RECORDING_DATE);
 
 		int tlength = 0;
 		Iterator it = audioList.iterator();
@@ -297,7 +291,7 @@
 			}
 		    }
 
-		    int length = ((Integer)f.getProp("playlength")).intValue();
+		    int length = f.getLength();
 		    tlength += length;
 %>
 					<TD valign="top" align="right" class="playlength">
@@ -415,8 +409,14 @@
 
     String streamLink (ServletRequest request, String path, boolean recursive) {
 	String remote = request.getRemoteHost();
-	String encoding = (remote.equals("localhost") || remote.equals("127.0.0.1"))
-		? "" : "&outputtype=mp3&mode=j&resample=16&vbr=1&vbrquality=6&maxbitrate=56";
+	String encoding = "";
+	if (! (remote.equals("localhost") || remote.equals("127.0.0.1"))) {
+	    if (request.getParameter("ogg") != null) {
+		encoding = "&t=ogg&bitrate=24&maxbitrate=56";
+	    } else {
+		encoding = "&t=mp3&resample=16&bitrate=24&maxbitrate=56";
+	    }
+	}
 	return "playlist.m3u?d="+URLEncoder.encode(path)+(recursive ? "&r=1" : "")+encoding;
     }
 
@@ -449,109 +449,61 @@
 	indexHtmls.add("main.htm");
     }
 
-    class AudioFile
-    {
-	ID3v1 tag1;
-	ID3v2 tag2;
-	FrameHeader fh;
-	XingInfo xing;
-	Map props = new HashMap();
-	String name;
+    class AudioFile {
+	String name, fname;
+	AudioInfo info;
 
-	AudioFile (File f)
+	AudioFile (String name, String fname)
 	throws Exception {
-	    name = f.getName();
+	    this.name = name;
+	    this.fname = (new File(fname)).getCanonicalPath();
+	    info = (AudioInfo) InfoFactory.get(this.fname);
+	}
 
-	    // get MP3 frameheader
-	    try { fh = new FrameHeader(f); }
-	    catch (Exception ex) { throw new Exception("NOT A MP3 FILE!"); }
-	    finally { if (fh != null) fh.close(); }
+	String getName() {
+	    return name;
+	}
 
-	    // "XING" frameheader
-	    try { xing = new XingInfo(f); }
-	    catch (Exception ex) { /* ignore */ }
-	    finally { if (xing != null) xing.close(); }
-	    if (xing != null) fh = xing;
-
-	    // get ID3 tags
-	    tag1 = new ID3v1(f);
-	    tag2 = new ID3v2(f);
-
-	    // add length property
-	    props.put("playlength", new Integer(fh.getLength()));
-
-	    // get properties from ID3v1 tag
-	    props.put("TPE1", tag1.getArtist());
-	    props.put("TALB", tag1.getAlbum());
-	    props.put("XCOM", tag1.getComment());
-	    props.put("TIT2", tag1.getTitle());
-	    props.put("TYER", tag1.getYear());
-	    if (tag2.hasTag()) {
-		// get properties from ID3v2 tag
-		Object o = null;
-		o = getTextFrame("TPE1"); if (o != null) props.put("TPE1", o);
-		o = getTextFrame("TPE2"); if (o != null) props.put("TPE2", o);
-		o = getTextFrame("TPE3"); if (o != null) props.put("TPE3", o);
-		o = getTextFrame("TALB"); if (o != null) props.put("TALB", o);
-		o = getTextFrame("TIT1"); if (o != null) props.put("TIT1", o);
-		o = getTextFrame("TIT2"); if (o != null) props.put("TIT2", o);
-		o = getTextFrame("TIT3"); if (o != null) props.put("TIT3", o);
-		o = getTextFrame("TYER"); if (o != null) props.put("TYER", o);
-		o = getTextFrame("TCOM"); if (o != null) props.put("TCOM", o);
+	Object getProp (String key) {
+	    // HACK to plex artist and preformer
+	    if (key.equals(AudioInfo.PERFORMER)) {
+		Object o = getProp(AudioInfo.ARTIST);
+		if (o != null) {
+		    return o;
+		}
 	    }
+	    // HACK to pass multi value id3v2 values
+	    String t = info.getString(key);
+	    if (t != null && t.indexOf('/') != -1) {
+		List l = new Vector();
+		for (StringTokenizer st = new StringTokenizer(t, "/"); st.hasMoreTokens();) {
+		    l.add(st.nextToken());
+		}
+		return l;
+	    }
+
+	    return info.getString(key);
 	}
 
-	String getName() { return name; }
-
-	Object getTextFrame (String id) {
-	    TextFrame f = (TextFrame) tag2.getFrame(id);
-	    if (f == null) return null;
-
-	    String t = f.getText();
-	    if (t.indexOf('/') == -1) return t;
-
-	    List v = new Vector();
-	    StringTokenizer st = new StringTokenizer(t, "/");
-	    while (st.hasMoreTokens()) v.add(st.nextToken().trim());
-	    return v;
+	int getLength () {
+	    return info.getLength();
 	}
-
-	Object getProp (String key) { return props.get(key); }
-	Set getKeySet () { return props.keySet(); }
     }
 
     class AudioList extends Vector {
-	AudioList () { super(); }
-
-	Set keySet = null;
-	Set getKeySet () {
-	    if (keySet == null)
-	    {
-		keySet = new HashSet();
-
-		Iterator it = iterator();
-		while (it.hasNext())
-		{
-		    AudioFile f = (AudioFile) it.next();
-		    keySet.addAll(f.getKeySet());
-		}
-	    }
-	    return keySet;
-	}
-
 	Map countMap = new HashMap();
 	int count (String key) {
-	    if (! getKeySet().contains(key)) return 0;
-
 	    Integer cached = (Integer) countMap.get(key);
 	    if (cached != null) return cached.intValue();
 
 	    Set set = new HashSet();
 	    Iterator it = iterator();
-	    while (it.hasNext())
-	    {
+	    while (it.hasNext()) {
 		AudioFile f = (AudioFile) it.next();
-		set.add(f.getProp(key));
+		Object o = f.getProp(key);
+		if (o != null) {
+		    set.add(o);
+		}
 	    }
 
 	    countMap.put(key, new Integer(set.size()));
@@ -560,18 +512,17 @@
 
 	Map propMap = new HashMap();
 	Object getProp (String key) {
-	    if (! getKeySet().contains(key)) return null;
-
 	    Object cached = (Object) propMap.get(key);
-	    if (cached != null) return cached;
+	    if (cached != null) {
+		return cached;
+	    }
 
 	    Object last = null;
 	    Set set = new HashSet();
 	    Iterator it = iterator();
-	    while (it.hasNext())
-	    {
+	    while (it.hasNext()) {
 		AudioFile f = (AudioFile) it.next();
-		last = (Object) f.getProp(key);
+		last = f.getProp(key);
 		set.add(last);
 	    }
 
