@@ -116,6 +116,11 @@
     </target>
 
 
+    <target name="homepage" description="build homepage">
+        <ant dir="homepage"/>
+    </target>
+
+
     <target name="changelog"
 	    description="generate changelog from cvs messages">
         <exec executable="${cvs2cl.exec}">
