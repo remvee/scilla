@@ -32,12 +32,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.scilla.*;
-import org.scilla.util.mp3.*;
+import org.scilla.info.*;
 
 /**
  * This servlet handles media requests.
  *
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  * @author R.W. van 't Veer
  */
 public class Servlet extends HttpServlet {
@@ -74,8 +74,7 @@ public class Servlet extends HttpServlet {
             long len = req.getLength();
             response.setContentType(req.getOutputType());
 
-            if (req.getOutputType().equals("audio/mpeg")
-                    || req.getOutputType().equals("audio/mp3")) {
+            if (req.getOutputType().startsWith("audio/")) {
                 addStreamHeaders(req, response);
             }
 
@@ -180,23 +179,26 @@ public class Servlet extends HttpServlet {
     }
 
     /**
-     * Add MP3 info to stream headers using "<TT>icy-name</TT>" and
+     * Add audio info to stream headers using "<TT>icy-name</TT>" and
      * "<TT>x-audiocast-name</TT>".
      * @param req scilla request object
      * @param response servlet response object
      */
     void addStreamHeaders (Request req, HttpServletResponse response) {
         try {
-            ID3v1 id3 = new ID3v1(new File(req.getInputFile()));
+	    AudioInfo info = (AudioInfo) InfoFactory.get(req.getInputFile());
             String title = "";
-            if (id3.getArtist() != null && id3.getArtist().length() != 0) {
-                title += id3.getArtist() + " - ";
+            if (info.getArtist() != null && info.getArtist().length() != 0) {
+                title += info.getArtist() + " - ";
             }
-            if (id3.getAlbum() != null && id3.getAlbum().length() != 0) {
-                title += id3.getAlbum() + " - ";
+            if (info.getPerformer() != null && info.getPerformer().length() != 0) {
+                title += info.getPerformer() + " - ";
             }
-            if (id3.getTitle() != null && id3.getTitle().length() != 0) {
-                title += id3.getTitle();
+            if (info.getAlbum() != null && info.getAlbum().length() != 0) {
+                title += info.getAlbum() + " - ";
+            }
+            if (info.getTitle() != null && info.getTitle().length() != 0) {
+                title += info.getTitle();
             }
             if (title.endsWith(" - ")) {
                 title = title.substring(0, title.lastIndexOf(" - "));
