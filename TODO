@@ -12,6 +12,7 @@ For version 1.0:
 - junit
 - examples:
     - error page
+    - mp3 coding configuration (properties file?)
 
 Future:
 - database interface for source (blobs?)
