@@ -22,12 +22,16 @@
 package org.scilla.info;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * EXIF.
  *
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * @author R.W. van 't Veer
  */
 public class Exif extends HashMap {
@@ -144,6 +148,11 @@ public class Exif extends HashMap {
 	labels.put(new Integer(0xffff), "EXIFUnknown");
     }
 
+    private static Map makers = new HashMap();
+    static {
+        makers.put("Canon", new ExifMakerCanon());
+    }
+
     public Exif (byte[] data)
     throws IOException {
 	super();
@@ -178,6 +187,14 @@ public class Exif extends HashMap {
                     Object key = labels.get(new Integer(field.getTag()));
                     Object val = field.getValue();
                     put(key, val);
+            }
+        }
+        
+        // process makernote
+        if (make != null && makernote != null) {
+            ExifMaker maker = (ExifMaker) makers.get(make.getValue());
+            if (maker != null) {
+                putAll(maker.getTags(data, makernote, tiff.isLittleEndian()));
             }
         }
     }
