@@ -7,43 +7,31 @@ import org.scilla.*;
 import org.scilla.util.*;
 
 public class DirectoryBean {
+    public DirectoryBean () {
+	// empty
+    }
+
+    public DirectoryBean (String path)
+    throws Exception {
+	this.path = path;
+
+	// basename
+	int i = path.lastIndexOf(File.separator);
+	name = i != -1 ? path.substring(i+1) : path;
+
+	scan(false);
+    }
+
+    public String getName () {
+	return name;
+    }
+    private String name = null;
 
     public void setPath (String path)
     throws Exception {
 	this.path = path;
-	String source = ConfigProvider.get().getString(Config.SOURCE_DIR_KEY);
 
-	String[] files = (new File(source + File.separator + path)).list();
-	Arrays.sort(files);
-
-	for (int i = 0; i < files.length; i++) {
-	    String fname = path + File.separator + files[i];
-	    File f = new File(source + File.separator + fname);
-
-	    if (f.isDirectory()) {
-		directories.add(files[i]);
-	    } else {
-		String type = MimeType.getTypeFromFilename(fname);
-		if (type != null && type.startsWith("audio/")) {
-		    TrackBean track = new TrackBean(fname);
-		    tracks.add(track);
-
-		    artists.add(track.getArtist());
-		    performers.add(track.getPerformer());
-		    albums.add(track.getAlbum());
-
-		    if (track.getLength() > 0) {
-			length += track.getLength();
-		    }
-		} else if (type != null && type.startsWith("image/")) {
-		    ImageBean image = new ImageBean(fname);
-		    images.add(image);
-		}
-	    }
-	}
-	artists.remove(null);
-	performers.remove(null);
-	albums.remove(null);
+	scan(true);
     }
     public String getPath () {
 	return path;
@@ -132,4 +120,45 @@ public class DirectoryBean {
 	return directories.size();
     }
     private List directories = new ArrayList();
+
+    private void scan (boolean includeDirectories)
+    throws Exception {
+	String source = ConfigProvider.get().getString(Config.SOURCE_DIR_KEY);
+
+	String[] files = (new File(source + File.separator + path)).list();
+	Arrays.sort(files);
+
+	for (int i = 0; i < files.length; i++) {
+	    if (files[i].startsWith(".")) {
+		continue;
+	    }
+
+	    String fname = path + File.separator + files[i];
+	    File f = new File(source + File.separator + fname);
+
+	    if (f.isDirectory() && includeDirectories) {
+		directories.add(new DirectoryBean(fname));
+	    } else {
+		String type = MimeType.getTypeFromFilename(fname);
+		if (type != null && type.startsWith("audio/")) {
+		    TrackBean track = new TrackBean(fname);
+		    tracks.add(track);
+
+		    artists.add(track.getArtist());
+		    performers.add(track.getPerformer());
+		    albums.add(track.getAlbum());
+
+		    if (track.getLength() > 0) {
+			length += track.getLength();
+		    }
+		} else if (type != null && type.startsWith("image/")) {
+		    ImageBean image = new ImageBean(fname);
+		    images.add(image);
+		}
+	    }
+	}
+	artists.remove(null);
+	performers.remove(null);
+	albums.remove(null);
+    }
 }

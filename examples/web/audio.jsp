@@ -31,9 +31,19 @@
 	    <ul>
 		<c:forEach var="d" items="${dir.directories}">
 		    <c:url var="url" value="audio.jsp">
-			<c:param name="d" value="${dir.path}/${d}"/>
+			<c:param name="d" value="${d.path}"/>
 		    </c:url>
-		    <li><a href='<c:out value="${url}"/>'><c:out value="${d}"/></a></li>
+		    <li>
+			<a href='<c:out value="${url}"/>'><c:out value="${d.name}"/></a>
+			<c:if test="${d.numOfTracks > 0}">
+			    <scilla:playlist id="d" var="playlist"/>
+			    <a href='<c:out value="${playlist}"/>'>
+				<scilla:img src="images/speaker.png" border="0" alt="Play">
+				    <scilla:par key="scale" value="14x14"/>
+				</scilla:img>
+			    </a>
+			</c:if>
+		    </li>
 		</c:forEach>
 	    </ul>
 	</c:if>
