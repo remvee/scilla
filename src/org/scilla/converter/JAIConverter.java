@@ -40,7 +40,7 @@ import org.scilla.util.*;
  * parameter.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public class JAIConverter implements Converter {
     private static Log log = LogFactory.getLog(JAIConverter.class);
@@ -126,7 +126,9 @@ public class JAIConverter implements Converter {
             // recode to output format
             String type = (String) typeMap.get(request.getOutputType());
             FileOutputStream out = new FileOutputStream(outputFile);
-            JAI.create("encode", img, out, type, null);
+            PlanarImage nimg = JAI.create("encode", img, out, type, null);
+            img.dispose();
+            nimg.dispose();
         } catch (Exception ex) {
 	    log.warn("conversion failed", ex);
             exitValue = 1;
@@ -225,19 +227,24 @@ public class JAIConverter implements Converter {
      * @return result image
      */
     PlanarImage handleConversion (PlanarImage img, RequestParameter rp) {
+        PlanarImage nimg = null;
         if (rp.key.equals("scale")) {
-            return scale(img, new GeometryParameter(rp.val));
+            nimg = scale(img, new GeometryParameter(rp.val));
         } else if (rp.key.equals("crop")) {
-	    return crop(img, new GeometryParameter(rp.val));
+	    nimg = crop(img, new GeometryParameter(rp.val));
         } else if (rp.key.equals("rotate")) {
-	    return rotate(img, rp.val);
+	    nimg = rotate(img, rp.val);
         } else if (rp.key.equals("negate")) {
-	    return negate(img);
+	    nimg = negate(img);
+	} else {
+	    // TODO should throw exception here!
+	    log.warn("handleConversion: param '"+rp.key+"' NOT YET IMPLEMENTED");
 	}
+        
+        // drop old version
+        img.dispose();
 
-	// TODO should throw exception here!
-        log.warn("handleConversion: param '"+rp.key+"' NOT YET IMPLEMENTED");
-        return null;
+        return nimg;
     }
 
     /**
