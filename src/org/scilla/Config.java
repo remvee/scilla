@@ -41,7 +41,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * The scilla configuration class.
  *
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  * @author R.W. van 't Veer
  */
 public class Config extends HashMap {
@@ -99,7 +99,7 @@ public class Config extends HashMap {
 		}
 	    }
 	} catch (NamingException ex) {
-	    log.error("failed to read env-entries", ex);
+	    log.info("no env-entries for scilla available");
 	}
     }
 
