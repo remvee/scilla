@@ -340,7 +340,20 @@ System.out.println("getProp("+key+")="+r);
 <HTML>
     <HEAD>
 	<TITLE>
+<%
+	if (mp3List.count("TPE1") != 0 && mp3List.count("TALB") != 0)
+	{
+%>
 	    mp3: <%= mp3List.getProp("TPE1") %> - <%= mp3List.getProp("TALB") %>
+<%
+	}
+	else
+	{
+%>
+	    mp3: <%= path %>/
+<%
+	}
+%>
 	</TITLE>
 	<LINK rel="stylesheet" type="text/css" href="mp3.css"/>
     </HEAD>
@@ -348,77 +361,11 @@ System.out.println("getProp("+key+")="+r);
 	out.print("<BODY" + (background == null ? " bgcolor=\"#EEEEEE\">"
 		: " background=\""+background+"\">"));
 %>
-	<TABLE bgcolor="#FFFFFF" cellpadding=10>
-	    <TR>
+       <TABLE bgcolor="#FFFFFF" cellpadding=10>
+           <TR>
 <%
 	int colWidth = 0;
 
-	// subdirectories, htmls, playlists in this directory
-	Iterator it1 = dirVec.iterator();
-	Iterator it2 = m3uVec.iterator();
-	Iterator it3 = htmVec.iterator();
-	if (it1.hasNext() || it2.hasNext() || it3.hasNext())
-	{
-%>
-		<TD align="left" valign="top">
-		    <TABLE>
-<%
-	    // subdirectories in this directory
-	    while (it1.hasNext())
-	    {
-		String s = (String) it1.next();
-		String sEncoded = (path + "/" + s).replace(' ', '+');
-%>
-			<TR>
-			    <TD>
-				<A href="mp3.jsp?d=<%= sEncoded %>"><%= s %></A>/
-			    </TD>
-			    <TD>
-<%
-		streamLinks(request, out, path+"/"+s, true);
-%>
-			    </TD>
-			</TR>
-<%
-	    }
-
-	    // playlists in this directory
-	    while (it2.hasNext())
-	    {
-		String s = (String) it2.next();
-%>
-			<TR>
-			    <TD>
-				<%=s.substring(0, s.lastIndexOf('.'))%>
-			    </TD>
-			    <TD>
-<%
-		streamLinks(request, out, path+"/"+s);
-%>
-			    </TD>
-			</TR>
-<%
-	    }
-
-	    // htmls in this directory
-	    while (it3.hasNext())
-	    {
-		String s = (String) it3.next();
-		String url = "servlet/scilla/"+path+"/"+s;
-%>
-			<TR>
-			    <TD colspan="2">
-				<A href="<%= url %>"><%= s %></A>
-			    </TD>
-			</TR>
-<%
-	    }
-%>
-		    </TABLE>
-		</TD>
-<%
-	    colWidth++;
-	}
 
 	// audio tracks in this directory
 	if (vec.size() > 0)
@@ -631,6 +578,71 @@ System.out.println("getProp("+key+")="+r);
 	    </TR>
 <%
 	    }
+	}
+
+	// subdirectories, htmls, playlists in this directory
+	Iterator it1 = dirVec.iterator();
+	Iterator it2 = m3uVec.iterator();
+	Iterator it3 = htmVec.iterator();
+	if (it1.hasNext() || it2.hasNext() || it3.hasNext())
+	{
+%>
+		<TD colspan="<%= colWidth %>" align="left" valign="top">
+		    <TABLE>
+<%
+	    // subdirectories in this directory
+	    while (it1.hasNext())
+	    {
+		String s = (String) it1.next();
+		String sEncoded = (path + "/" + s).replace(' ', '+');
+%>
+			<TR>
+			    <TD>
+				<A href="mp3.jsp?d=<%= sEncoded %>"><%= s %></A>/
+			    </TD>
+			    <TD>
+<%
+		streamLinks(request, out, path+"/"+s, true);
+%>
+			    </TD>
+			</TR>
+<%
+	    }
+	    // playlists in this directory
+	    while (it2.hasNext())
+	    {
+		String s = (String) it2.next();
+%>
+			<TR>
+			    <TD>
+				<%=s.substring(0, s.lastIndexOf('.'))%>
+			    </TD>
+			    <TD>
+<%
+		streamLinks(request, out, path+"/"+s);
+%>
+			    </TD>
+			</TR>
+<%
+	    }
+	    // htmls in this directory
+	    while (it3.hasNext())
+	    {
+		String s = (String) it3.next();
+		String url = "servlet/scilla/"+path+"/"+s;
+%>
+			<TR>
+			    <TD colspan="2">
+				<A href="<%= url %>"><%= s %></A>
+			    </TD>
+			</TR>
+<%
+	    }
+%>
+		    </TABLE>
+		</TD>
+<%
+	    colWidth++;
 	}
 %>
 	</TABLE>
