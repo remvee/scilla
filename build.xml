@@ -128,6 +128,7 @@
         </delete>
         <delete dir="${build.dir}"/>
         <delete dir="${apidoc.dir}"/>
+        <delete dir="${lib.dir}"/>
         <delete dir="${depend.dir}"/>
         <delete file="depend-build.xml"/>
         <delete file="${jar.file}"/>

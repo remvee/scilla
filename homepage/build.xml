@@ -41,6 +41,7 @@
 	<delete dir="${build.dir}"/>
 	<delete file="${homepage.build}"/>
 	<delete file="${tar.file}"/>
+	<delete file="changelog.xml"/>
     </target>
 
     <target name="timestamp">

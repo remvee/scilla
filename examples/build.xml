@@ -112,6 +112,9 @@
     <target name="clean"
 	    description="delete generated files">
         <delete dir="${deploy.dir}"/>
+        <delete dir="${lib.dir}"/>
+        <delete dir="${depend.dir}"/>
+        <delete file="depend-build.xml"/>
 	<delete file="${war.file}"/>
     </target>
 
