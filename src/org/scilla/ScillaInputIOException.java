@@ -27,13 +27,11 @@ import java.io.IOException;
  * Input IO exception wrapper.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
-public class ScillaInputIOException extends ScillaException
-{
-    public ScillaInputIOException (IOException ex)
-    {
-	cause = ex;
-	msg = "problem reading data: " + ex.getMessage();
+public class ScillaInputIOException extends ScillaException {
+    public ScillaInputIOException (IOException ex) {
+        cause = ex;
+        msg = "problem reading data: " + ex.getMessage();
     }
 }

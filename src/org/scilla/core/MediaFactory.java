@@ -30,11 +30,10 @@ import org.scilla.converter.*;
 /**
  * The MediaFactory creates a runner or file object.
  *
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  * @author R.W. van 't Veer
  */
-public class MediaFactory
-{
+public class MediaFactory {
     private static final Logger log = LoggerFactory.get(MediaFactory.class);
     private static final Config config = ConfigProvider.get();
 
@@ -48,56 +47,49 @@ public class MediaFactory
      * @return runner or file media object
      */
     public static MediaObject createObject (Request req, String ofn)
-    throws ScillaException
-    {
-	// see if source exists
-	String file = req.getInputFile();
-	if (file != null && ! (new File(file).exists()))
-	{
-	    throw new ScillaNoInputException();
-	}
+    throws ScillaException {
+        // see if source exists
+        String file = req.getInputFile();
+        if (file != null && ! (new File(file).exists())) {
+            throw new ScillaNoInputException();
+        }
 
-	// its a conversionless hit 
-	if (! req.needConverter())
-	{
-	    return new FileObject(req.getInputFile());
-	}
+        // its a conversionless hit
+        if (! req.needConverter()) {
+            return new FileObject(req.getInputFile());
+        }
 
         // find appropriate converter
-	Converter conv = null;
-	Class[] convs = config.getClasses(CONVERTERS_KEY);
-	for (int i = 0; i < convs.length; i++)
-	{
-	    Converter c;
-	    try
-	    {
-		c = (Converter) convs[i].newInstance();
-	    }
-	    catch (Exception ex)
-	    {
-		log.warn("createObject: '"+convs[i]+"'", ex);
-		continue;
-	    }
+        Converter conv = null;
+        Class[] convs = config.getClasses(CONVERTERS_KEY);
+        for (int i = 0; i < convs.length; i++) {
+            Converter c;
+            try {
+                c = (Converter) convs[i].newInstance();
+            } catch (Exception ex) {
+                log.warn("createObject: '"+convs[i]+"'", ex);
+                continue;
+            }
 
-	    if (c.canConvert(req))
-	    {
-		conv = c;
-		break;
-	    }
-	}
-	if (conv == null) throw new ScillaNoConverterException();
-
-	// configure converter
-	conv.setRequest(req);
-	conv.setOutputFile(ofn);
-
-	// log creation of converter
-	if (log.isDebugEnabled())
-	{
-	    log.debug("createObject: "+conv.getClass().getName());
+            if (c.canConvert(req)) {
+                conv = c;
+                break;
+            }
+        }
+        if (conv == null) {
+            throw new ScillaNoConverterException();
 	}
 
-	// create runner object
-	return new RunnerObject(conv);
+        // configure converter
+        conv.setRequest(req);
+        conv.setOutputFile(ofn);
+
+        // log creation of converter
+        if (log.isDebugEnabled()) {
+            log.debug("createObject: "+conv.getClass().getName());
+        }
+
+        // create runner object
+        return new RunnerObject(conv);
     }
 }

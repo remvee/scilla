@@ -33,10 +33,9 @@ import org.scilla.util.*;
  * The Request class holds a scilla media object request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
-public class Request
-{
+public class Request {
     private final static Logger log = LoggerFactory.get(Request.class);
     private final static Config config = ConfigProvider.get();
     private final static CacheManager cache = CacheManager.getInstance();
@@ -57,8 +56,7 @@ public class Request
      * @throws ScillaException when object not retrievable
      */
     public Request (String source, String type, Vector param)
-    throws ScillaException
-    {
+    throws ScillaException {
         this.source = source;
         this.type = type;
         this.param = param;
@@ -68,13 +66,11 @@ public class Request
      * Wrapper around obj member.
      */
     private synchronized MediaObject getObject ()
-    throws ScillaException
-    {
-	if (obj == null)
-	{
-	    obj = cache.get(this);
-	}
-	return obj;
+    throws ScillaException {
+        if (obj == null) {
+            obj = cache.get(this);
+        }
+        return obj;
     }
 
     /**
@@ -82,26 +78,23 @@ public class Request
      * @throws ScillaException accessing media fails
      */
     public InputStream getStream ()
-    throws ScillaException
-    {
-	return getObject().getStream();
+    throws ScillaException {
+        return getObject().getStream();
     }
 
     /**
      * @return length of requested data or -1 if unknown
      */
     public long getLength ()
-    throws ScillaException
-    {
-	return getObject().getLength();
+    throws ScillaException {
+        return getObject().getLength();
     }
 
     /**
      * @return source file relative to source directory
      */
-    public String getSource ()
-    {
-	return source;
+    public String getSource () {
+        return source;
     }
 
     /**
@@ -109,106 +102,102 @@ public class Request
      * @return full path to source file
      * @see org.scilla.Config#SOURCE_DIR_KEY
      */
-    public String getInputFile ()
-    {
-        return config.getString(Config.SOURCE_DIR_KEY)
-		+ File.separator + source;
+    public String getInputFile () {
+        return config.getString(Config.SOURCE_DIR_KEY) + File.separator + source;
     }
 
     /**
      * @return input mime type
      */
-    public String getInputType () { return type; }
+    public String getInputType () {
+        return type;
+    }
 
     /**
      * @return output mime type
      * @see #OUTPUT_TYPE_PARAMETER
      */
-    public String getOutputType ()
-    {
-	String typeP = getParameter(OUTPUT_TYPE_PARAMETER);
-	return typeP != null
-		? MimeType.getTypeFromFileExtension(typeP)
-	    	: type;
+    public String getOutputType () {
+        String typeP = getParameter(OUTPUT_TYPE_PARAMETER);
+        return typeP != null
+               ? MimeType.getTypeFromFileExtension(typeP)
+               : type;
     }
 
     /**
      * @return last modified time of input file in millis
      */
-    public long lastModified ()
-    {
-	return (new File(getInputFile())).lastModified();
+    public long lastModified () {
+        return (new File(getInputFile())).lastModified();
     }
 
     /**
      * @return request paramaters
      */
-    public Vector getParameters () { return param; }
+    public Vector getParameters () {
+        return param;
+    }
 
     /**
      * @return request paramaters keys
      */
-    public Vector getParameterKeys ()
-    {
-	Vector v = new Vector();
-	Iterator it = param.iterator();
-	while (it.hasNext())
-	{
-	    RequestParameter rp = (RequestParameter) it.next();
-	    v.add(rp.key);
-	}
-	return v;
+    public Vector getParameterKeys () {
+        Vector v = new Vector();
+        Iterator it = param.iterator();
+        while (it.hasNext()) {
+            RequestParameter rp = (RequestParameter) it.next();
+            v.add(rp.key);
+        }
+        return v;
     }
 
     /**
      * @param key parameter identifier
      * @return value or null if parameter not set
      */
-     public String  getParameter(String key)
-     {
-	RequestParameter rp;
-	Iterator it = param.iterator();
-	while (it.hasNext())
-	{
-	    rp = (RequestParameter) it.next();
-	    if (key.equals(rp.key)) return rp.val;
-	}
-	return null;
-     }
+    public String  getParameter(String key) {
+        RequestParameter rp;
+        Iterator it = param.iterator();
+        while (it.hasNext()) {
+            rp = (RequestParameter) it.next();
+            if (key.equals(rp.key)) {
+                return rp.val;
+	    }
+        }
+        return null;
+    }
 
     /**
      * @return true if this request needs a converter
      */
-    public boolean needConverter () { return ! param.isEmpty(); }
+    public boolean needConverter () {
+        return ! param.isEmpty();
+    }
 
     /**
      * @return request description
      */
-    public String toString ()
-    {
-	StringBuffer b = new StringBuffer();
-	b.append("source=" + source + ", ");
-	for (Iterator it = param.iterator(); it.hasNext(); )
-	{
-	    RequestParameter rp = (RequestParameter) it.next();
-	    b.append(rp.key + "=" + rp.val + ", ");
-	}
-	return b.substring(0, b.length()-2);
+    public String toString () {
+        StringBuffer b = new StringBuffer();
+        b.append("source=" + source + ", ");
+        for (Iterator it = param.iterator(); it.hasNext(); ) {
+            RequestParameter rp = (RequestParameter) it.next();
+            b.append(rp.key + "=" + rp.val + ", ");
+        }
+        return b.substring(0, b.length()-2);
     }
 
     /**
      * @return request description in HTML format
      */
-    public String toHTML ()
-    {
-	StringBuffer b = new StringBuffer("<DL>");
-	b.append("<DT>source<DD>" + source);
-	for (Iterator it = param.iterator(); it.hasNext(); )
-	{
-	    RequestParameter rp = (RequestParameter) it.next();
-	    b.append("<DT>" + rp.key + "<DD>" + rp.val);
-	}
-	b.append("</DL>");
-	return b.toString();
+    public String toHTML () {
+        StringBuffer b = new StringBuffer("<DL>");
+        b.append("<DT>source<DD>" + source);
+        for (Iterator it = param.iterator(); it.hasNext(); ) {
+            RequestParameter rp = (RequestParameter) it.next();
+            b.append("<DT>" + rp.key + "<DD>" + rp.val);
+        }
+        b.append("</DL>");
+        return b.toString();
     }
 }

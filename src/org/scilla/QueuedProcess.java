@@ -35,10 +35,9 @@ import java.util.StringTokenizer;
  * taken from the scilla configuration.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
-public class QueuedProcess
-{
+public class QueuedProcess {
     private static final Logger log = LoggerFactory.get(QueuedProcess.class);
     private static final Config config = ConfigProvider.get();
 
@@ -54,23 +53,18 @@ public class QueuedProcess
     private static int maxRunners = 5;
     static
     {
-	// get maxRunners from scilla configuration
-	String s = config.getString(MAX_RUNNERS_KEY);
-	try
-	{
-	    maxRunners = Integer.parseInt(s);
-	}
-	catch (NullPointerException npe)
-	{
-	    log.warn(MAX_RUNNERS_KEY+" not availble, defaulting to: "+maxRunners);
-	}
-	catch (NumberFormatException nfe)
-	{
-	    log.warn(MAX_RUNNERS_KEY+" not a number, defaulting to: "+maxRunners, nfe);
-	}
+        // get maxRunners from scilla configuration
+        String s = config.getString(MAX_RUNNERS_KEY);
+        try {
+            maxRunners = Integer.parseInt(s);
+        } catch (NullPointerException npe) {
+            log.warn(MAX_RUNNERS_KEY+" not availble, defaulting to: "+maxRunners);
+        } catch (NumberFormatException nfe) {
+            log.warn(MAX_RUNNERS_KEY+" not a number, defaulting to: "+maxRunners, nfe);
+        }
 
-	// initialized semaphore
-	sem = new Semaphore(maxRunners);
+        // initialized semaphore
+        sem = new Semaphore(maxRunners);
     }
 
     /**
@@ -82,9 +76,8 @@ public class QueuedProcess
      * @see #MAX_RUNNERS_KEY
      */
     public QueuedProcess (String[] args)
-    throws IOException
-    {
-	this(args, null, null);
+    throws IOException {
+        this(args, null, null);
     }
 
     /**
@@ -99,161 +92,153 @@ public class QueuedProcess
      * @see #MAX_RUNNERS_KEY
      */
     public QueuedProcess (String[] args, String[] envp, File dir)
-    throws IOException
-    {
-	// make sure a space exists
-	sem.decr();
+    throws IOException {
+        // make sure a space exists
+        sem.decr();
 
-	// attache wrapper
-	String[] wrapper = config.getStringArray(WRAPPER_KEY, " ");
-	if (wrapper != null)
-	{
-	    String[] targs = new String[wrapper.length + args.length];
-	    System.arraycopy(wrapper, 0, targs, 0, wrapper.length);
-	    System.arraycopy(args, 0, targs, wrapper.length, args.length);
-	    args = targs;
-	}
+        // attache wrapper
+        String[] wrapper = config.getStringArray(WRAPPER_KEY, " ");
+        if (wrapper != null) {
+            String[] targs = new String[wrapper.length + args.length];
+            System.arraycopy(wrapper, 0, targs, 0, wrapper.length);
+            System.arraycopy(args, 0, targs, wrapper.length, args.length);
+            args = targs;
+        }
 
-	// log execution
-	if (log.isInfoEnabled())
-	{
-	    StringBuffer sb = new StringBuffer();
-	    for (int i = 0; i < args.length; i++)
-	    {
-		sb.append(args[i]); sb.append(' ');
+        // log execution
+        if (log.isInfoEnabled()) {
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < args.length; i++) {
+                sb.append(args[i]);
+                sb.append(' ');
+            }
+            log.info("process: "+sb);
+
+            if (envp != null) {
+                sb = new StringBuffer();
+                for (int i = 0; i < envp.length; i++) {
+                    sb.append(envp[i]);
+                    sb.append(' ');
+                }
+                log.debug("env: "+sb);
+            }
+            if (dir != null) {
+                log.debug("dir: "+dir);
 	    }
-	    log.info("process: "+sb);
+        }
 
-	    if (envp != null)
-	    {
-		sb = new StringBuffer();
-		for (int i = 0; i < envp.length; i++)
-		{
-		    sb.append(envp[i]);
-		    sb.append(' ');
-		}
-		log.debug("env: "+sb);
-	    }
-	    if (dir != null) log.debug("dir: "+dir);
-	}
+        // execute process
+        try {
+            proc = Runtime.getRuntime().exec(args, envp, dir);
+        } catch (IOException e) {
+            sem.incr();
+            throw e;
+        }
 
-	// execute process
-	try
-	{
-	    proc = Runtime.getRuntime().exec(args, envp, dir);
-	}
-	catch (IOException e)
-	{
-	    sem.incr();
-	    throw e;
-	}
-
-	// redirect stdout and stderr
-	stdout = new OutputLogger(proc.getInputStream());
-	stdout.start();
-	stderr = new OutputLogger(proc.getErrorStream());
-	stderr.start();
+        // redirect stdout and stderr
+        stdout = new OutputLogger(proc.getInputStream());
+        stdout.start();
+        stderr = new OutputLogger(proc.getErrorStream());
+        stderr.start();
     }
 
     /**
      * Wait for process to finish.
      */
-    public synchronized void waitFor ()
-    {
-	if (proc != null)
-	{
-	    try { proc.waitFor(); }
-	    catch (InterruptedException e) { } // will never happen
-	    sem.incr();
+    public synchronized void waitFor () {
+        if (proc != null) {
+            try {
+                proc.waitFor();
+            } catch (InterruptedException e) {
+		// will never happen
+	    }
+            sem.incr();
 
-	    exitValue = proc.exitValue();
-	    proc = null;
-	}
+            exitValue = proc.exitValue();
+            proc = null;
+        }
     }
 
     /**
      * Wait for process to finished and return the exit value.
      * @return exit value
      */
-    public int exitValue ()
-    {
-	waitFor();
-	return exitValue;
+    public int exitValue () {
+        waitFor();
+        return exitValue;
     }
 
-    public String getErrorLog ()
-    {
-	waitFor();
-	return stderr.toString();
+    public String getErrorLog () {
+        waitFor();
+        return stderr.toString();
     }
 }
 
 /**
  * simple semaphore class
  */
-class Semaphore
-{
+class Semaphore {
     int counter;
 
-    public Semaphore (int arg)
-    {
-	counter = arg;
+    public Semaphore (int arg) {
+        counter = arg;
     }
 
-    public synchronized void incr ()
-    {
-	counter++;
-	notify();
+    public synchronized void incr () {
+        counter++;
+        notify();
     }
 
-    public synchronized void decr ()
-    {
-	while (counter == 0)
-	{
-	    try { wait(); }
-	    catch (InterruptedException e) { } // will never happen
-	}
-	counter--;
+    public synchronized void decr () {
+        while (counter == 0) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+		// will never happen
+	    }
+        }
+        counter--;
     }
 }
 
 /**
  * simple output logging thread
  */
-class OutputLogger extends Thread
-{
+class OutputLogger extends Thread {
     InputStream in;
     String data;
 
-    public OutputLogger (InputStream in)
-    {
-	this.in = in;
+    public OutputLogger (InputStream in) {
+        this.in = in;
     }
 
-    public void run ()
-    {
-	BufferedReader br = new BufferedReader(new InputStreamReader(in));
-	StringBuffer sb = new StringBuffer();
-	String s;
-	try
-	{
-	    while ((s = br.readLine()) != null)
-	    {
-		sb.append(s);
-		sb.append('\n');
-	    }
-	}
-	catch (IOException e) { /* ignore */ }
-	finally
-	{
-	    try { br.close(); } catch (IOException e ) { /* ignore */ }
-	}
-	data = sb.toString();
+    public void run () {
+        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        StringBuffer sb = new StringBuffer();
+        String s;
+        try {
+            while ((s = br.readLine()) != null) {
+                sb.append(s);
+                sb.append('\n');
+            }
+        } catch (IOException e) {
+	    // ignore
+        } finally {
+            try {
+                br.close();
+            } catch (IOException e ) {
+		// ignore
+            }
+        }
+        data = sb.toString();
     }
 
-    public String toString ()
-    {
-	try { this.join(); } catch (InterruptedException ex) { /* ignore */ }
-	return data;
+    public String toString () {
+        try {
+            this.join();
+        } catch (InterruptedException ex) {
+	    // ignore
+        }
+        return data;
     }
 }

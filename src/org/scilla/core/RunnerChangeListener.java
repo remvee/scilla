@@ -22,11 +22,10 @@
 package org.scilla.core;
 
 /**
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @author R.W. van 't Veer
  */
-public interface RunnerChangeListener
-{
+public interface RunnerChangeListener {
     public static final int RUNNER_FINISHED = 0;
     public void runnerChange (RunnerObject or, int code);
 }

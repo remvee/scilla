@@ -27,11 +27,10 @@ import java.io.IOException;
 /**
  * The scilla configuration provider.
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @author R.W. van 't Veer
  */
-public class ConfigProvider
-{
+public class ConfigProvider {
     static final Logger log = LoggerFactory.get(ConfigProvider.class);
 
     /** list of configuration implementations */
@@ -40,28 +39,25 @@ public class ConfigProvider
     static Config config = null;
     static
     {
-	// try to load a configuration implementation
-	for (int i = 0; i < configImpls.length; i++)
-	{
-	    try
-	    {
-		config = (Config) Class.forName(configImpls[i]).newInstance();
-		break;
-	    }
-	    catch (Exception ex) { /* ignore */ }
-	}
-	if (config == null)
-	{
-	    log.fatal("can not get configuration instance");
-	}
+        // try to load a configuration implementation
+        for (int i = 0; i < configImpls.length; i++) {
+            try {
+                config = (Config) Class.forName(configImpls[i]).newInstance();
+                break;
+            } catch (Exception ex) {
+		// ignore
+            }
+        }
+        if (config == null) {
+            log.fatal("can not get configuration instance");
+        }
     }
 
     /**
      * Get current configuration object.
      * @return current configuration
      */
-    public static Config get ()
-    {
-	return config;
+    public static Config get () {
+        return config;
     }
 }

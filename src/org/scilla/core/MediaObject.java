@@ -29,10 +29,9 @@ import org.scilla.*;
  * Interface to a media object.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
-public interface MediaObject
-{
+public interface MediaObject {
     /**
      * Get media input stream.
      * @throws ScillaException when a problem occures

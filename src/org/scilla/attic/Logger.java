@@ -32,11 +32,10 @@ package org.scilla;
  *   <LI>debug</LI>
  * </OL>
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @author R.W. van 't Veer
  */
-public interface Logger
-{
+public interface Logger {
     /**
      * Configure logger interface.
      * @param obj a configuration object

@@ -34,10 +34,9 @@ import org.scilla.*;
  * finished or not.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
-public class CachedObject implements MediaObject
-{
+public class CachedObject implements MediaObject {
     private static final Logger log = LoggerFactory.get(CachedObject.class);
 
     /** output file name */
@@ -50,9 +49,8 @@ public class CachedObject implements MediaObject
      * Construct media object for cached object.
      * @param filename full name of result file
      */
-    public CachedObject (String filename)
-    {
-	this.filename = filename;
+    public CachedObject (String filename) {
+        this.filename = filename;
     }
 
     /**
@@ -60,28 +58,29 @@ public class CachedObject implements MediaObject
      * @param filename full name of result file
      * @param runner still running output producer
      */
-    public CachedObject (String filename, RunnerObject runner)
-    {
-	this.filename = filename;
-	this.runner = runner;
+    public CachedObject (String filename, RunnerObject runner) {
+        this.filename = filename;
+        this.runner = runner;
     }
 
 
     public InputStream getStream ()
-    throws ScillaException
-    {
-	return new MediaStream(filename, runner);
+    throws ScillaException {
+        return new MediaStream(filename, runner);
     }
 
     /**
      * @return file length or -1 if still being generated
      */
-    public long getLength ()
-    {
-	if (runner != null && !runner.hasFinished()) return -1;
+    public long getLength () {
+        if (runner != null && !runner.hasFinished()) {
+            return -1;
+	}
 
-	File f = new File(filename);
-	if (log.isDebugEnabled()) log.debug("length="+f.length());
-	return f.length();
+        File f = new File(filename);
+        if (log.isDebugEnabled()) {
+            log.debug("length="+f.length());
+	}
+        return f.length();
     }
 }

@@ -25,12 +25,10 @@ package org.scilla;
  * Input data does not exists exception.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
-public class ScillaNoInputException extends ScillaException
-{
-    public ScillaNoInputException ()
-    {
-	msg = "source not available";
+public class ScillaNoInputException extends ScillaException {
+    public ScillaNoInputException () {
+        msg = "source not available";
     }
 }

@@ -27,13 +27,11 @@ import java.io.IOException;
  * Output IO exception wrapper.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
-public class ScillaOutputIOException extends ScillaException
-{
-    public ScillaOutputIOException (IOException ex)
-    {
-	cause = ex;
-	msg = "problem writing stream: " + ex.getMessage();
+public class ScillaOutputIOException extends ScillaException {
+    public ScillaOutputIOException (IOException ex) {
+        cause = ex;
+        msg = "problem writing stream: " + ex.getMessage();
     }
 }

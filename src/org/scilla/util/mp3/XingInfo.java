@@ -27,14 +27,13 @@ import java.io.*;
  * Read-only access the Xing info tag in an MP3 file.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @see <CODE>xmms-1.2.4/Input/mpg123/dxhead.c</CODE>
  */
-public class XingInfo extends FrameHeader
-{
+public class XingInfo extends FrameHeader {
 
-/// locals
-///
+    /// locals
+    ///
 
     int flags = 0;
     int frames = -1;
@@ -44,8 +43,8 @@ public class XingInfo extends FrameHeader
     double tpf = 0;
 
 
-/// constants
-///
+    /// constants
+    ///
 
     public final static int FRAMES_FLAG = 1;
     public final static int BYTES_FLAG = 2;
@@ -54,8 +53,8 @@ public class XingInfo extends FrameHeader
     private final static double[] tpfbs = { 0, 384, 1152, 1152 };
 
 
-/// constructors
-///
+    /// constructors
+    ///
 
     /**
      * Pass to FrameHeader to access first head and try to extract a
@@ -65,20 +64,18 @@ public class XingInfo extends FrameHeader
      * @throws IOException when file not readable
      * @throws Mp3Exception when tag not present
      */
-    public XingInfo (File f) throws IOException, Mp3Exception
-    {
+    public XingInfo (File f) throws IOException, Mp3Exception {
         super(f);
 
         // forward to Xing info
         mp3File.skipBytes(isMpegVersion1()
-                    ? (isSingleChannel() ? 17 : 32)
-                    : (isSingleChannel() ?  9 : 17));
+		? (isSingleChannel() ? 17 : 32)
+		: (isSingleChannel() ?  9 : 17));
 
         // test if tag is present
         byte[] tag = new byte[4];
         mp3File.read(tag);
-        if (! (new String(tag)).equals("Xing"))
-        {
+        if (! (new String(tag)).equals("Xing")) {
             throw new Mp3Exception("no tag present");
         }
 
@@ -87,88 +84,99 @@ public class XingInfo extends FrameHeader
         // extract data
         flags = extractI4(mp3File);
 
-        if ((flags & FRAMES_FLAG) != 0) frames = extractI4(mp3File);
-
-        if ((flags & BYTES_FLAG) != 0) bytes = extractI4(mp3File);
-
-        if ((flags & TOC_FLAG) != 0)
-        {
+        if ((flags & FRAMES_FLAG) != 0) {
+            frames = extractI4(mp3File);
+	}
+        if ((flags & BYTES_FLAG) != 0) {
+            bytes = extractI4(mp3File);
+	}
+        if ((flags & TOC_FLAG) != 0) {
             toc = new byte[100];
-            for (int i = 0; i < 100; i++)
-            {
+            for (int i = 0; i < 100; i++) {
                 toc[i] = mp3File.readByte();
             }
         }
 
-        if ((flags & VBR_SCALE_FLAG) != 0) vbrscale = extractI4(mp3File);
+        if ((flags & VBR_SCALE_FLAG) != 0) {
+            vbrscale = extractI4(mp3File);
+	}
 
         tpf = tpfbs[layerToInt()] / getSampleRate();
-        if (isMpegVersion25() || isMpegVersion2()) tpf /= 2;
+        if (isMpegVersion25() || isMpegVersion2()) {
+            tpf /= 2;
+	}
     }
 
 
-/// accessors
-///
+    /// accessors
+    ///
 
     /** @return number of frames */
-    public int getFrames () { return frames; }
+    public int getFrames () {
+        return frames;
+    }
 
     /** @return number of data bytes */
-    public int getBytes () { return bytes; }
+    public int getBytes () {
+        return bytes;
+    }
 
     /** @return variable bitrate scale */
-    public int getVbrScale () { return vbrscale; }
+    public int getVbrScale () {
+        return vbrscale;
+    }
 
     /** @return table of content */
-    public byte[] getToc () { return toc; }
+    public byte[] getToc () {
+        return toc;
+    }
 
     /** @return length in seconds */
-    public int getLength ()
-    {
+    public int getLength () {
         double n = tpf * (double) frames;
         return (int) n;
     }
 
     /** @return average bitrate */
-    public int getBitRate ()
-    {
+    public int getBitRate () {
         return (int) ( (bytes * 8) / (tpf * frames * 1000) );
     }
 
 
-/// private functions
-///
+    /// private functions
+    ///
 
     private static int extractI4 (RandomAccessFile f)
-            throws IOException
-    {
+    throws IOException {
         int n = 0;
-        final byte[] b = new byte[4]; f.read(b);
-        
-        n |= b[0] & 0xff; n <<= 8;
-        n |= b[1] & 0xff; n <<= 8;
-        n |= b[2] & 0xff; n <<= 8;
+        final byte[] b = new byte[4];
+        f.read(b);
+
+        n |= b[0] & 0xff;
+        n <<= 8;
+        n |= b[1] & 0xff;
+        n <<= 8;
+        n |= b[2] & 0xff;
+        n <<= 8;
         n |= b[3] & 0xff;
 
         return n;
     }
 
 
-/// debugging
-///
+    /// debugging
+    ///
 
     /**
      * debugging..
      */
     public static void main (String[] args)
-        throws Exception
-    {
-        for (int i = 0; i < args.length; i++)
-        {
+    throws Exception {
+        for (int i = 0; i < args.length; i++) {
             XingInfo h = new XingInfo(new File(args[i]));
             System.out.println(args[i] + ":\n    " + h);
         }
     }
 }
 
-/* end of $Id: XingInfo.java,v 1.4 2001/09/21 20:04:45 remco Exp $ */
+/* end of $Id: XingInfo.java,v 1.5 2002/11/30 15:14:39 remco Exp $ */

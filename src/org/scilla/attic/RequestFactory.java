@@ -33,10 +33,9 @@ import org.scilla.util.*;
  * kind of request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
-public class RequestFactory
-{
+public class RequestFactory {
     /**
      * Interpret HTTP request to create a scilla request.
      * @param req HTTP request
@@ -45,37 +44,32 @@ public class RequestFactory
      * @return scilla request
      */
     public static Request createFromHttpServletRequest (HttpServletRequest req)
-    throws ScillaException
-    {
+    throws ScillaException {
         // source file
         String source = req.getPathInfo();
-	if (("/"+source).indexOf("/../") != -1)
-	{
-	    throw new ScillaIllegalRequestException();
-	}
+        if (("/"+source).indexOf("/../") != -1) {
+            throw new ScillaIllegalRequestException();
+        }
 
         // source mime type
         String type = MimeType.getTypeFromFilename(source);
-	if (type == null)
-	{
-	    throw new ScillaException("unknow input type");
-	}
+        if (type == null) {
+            throw new ScillaException("unknow input type");
+        }
 
         // conversion parameters from QUERY_STRING
         Vector pars = new Vector();
-	String qs = req.getQueryString();
-	if (qs != null)
-	{
-	    StringTokenizer st = new StringTokenizer(qs, "&");
-	    while (st.hasMoreTokens())
-	    {
-		String t = st.nextToken();
-		int i = t.indexOf('=');
-		String k = URLDecoder.decode(i > 0 ? t.substring(0, i) : t);
-		String v = i > 0 ? URLDecoder.decode(t.substring(i+1)) : null;
-		pars.add(new RequestParameter(k, v));
-	    }
-	}
+        String qs = req.getQueryString();
+        if (qs != null) {
+            StringTokenizer st = new StringTokenizer(qs, "&");
+            while (st.hasMoreTokens()) {
+                String t = st.nextToken();
+                int i = t.indexOf('=');
+                String k = URLDecoder.decode(i > 0 ? t.substring(0, i) : t);
+                String v = i > 0 ? URLDecoder.decode(t.substring(i+1)) : null;
+                pars.add(new RequestParameter(k, v));
+            }
+        }
 
         return new Request(source, type, pars);
     }
@@ -89,8 +83,7 @@ public class RequestFactory
      * @return scilla request
      */
     public static Request createFromArgv (String[] args)
-    throws ScillaException
-    {
+    throws ScillaException {
         // source file
         String source = args[0];
 
@@ -99,14 +92,13 @@ public class RequestFactory
 
         // conversion parameters
         Vector pars = new Vector();
-	for (int i = 1; i < args.length; i++)
-	{
-	    String s = args[i];
-	    int j = s.indexOf("=");
-	    String key = s.substring(0, j);
-	    String val = s.substring(j + 1);
-	    pars.add(new RequestParameter(key, val));
-	}
+        for (int i = 1; i < args.length; i++) {
+            String s = args[i];
+            int j = s.indexOf("=");
+            String key = s.substring(0, j);
+            String val = s.substring(j + 1);
+            pars.add(new RequestParameter(key, val));
+        }
 
         return new Request(source, type, pars);
     }

@@ -25,19 +25,17 @@ package org.scilla;
  * Request parameter holder.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
-public class RequestParameter
-{
+public class RequestParameter {
     public String key, val;
 
     /**
      * @param key key to value
      * @param value value to key
      */
-    public RequestParameter (String key, String val)
-    {
+    public RequestParameter (String key, String val) {
         this.key = key;
-	this.val = val;
+        this.val = val;
     }
 }

@@ -32,12 +32,11 @@ import org.scilla.LoggerFactory;
 
 /**
  * Class for mapping filenames to mime types and visa versa.
- *
- * @version $Revision: 1.3 $
+ * TODO ugly handling of <tt>param</tt> element..
+ * @version $Revision: 1.4 $
  * @author R.W. van 't Veer
  */
-public class MimeType
-{
+public class MimeType {
     private static final Logger log = LoggerFactory.get(MimeType.class);
 
     /** name of property file to hold mime types */
@@ -47,99 +46,88 @@ public class MimeType
 
     private static Properties param = null;
 
-    private static void readProperties ()
-    {
-	param = new Properties();
-	MimeType f = new MimeType();
+    private static void readProperties () {
+        param = new Properties();
+        MimeType f = new MimeType();
     }
 
-    protected MimeType ()
-    {
-	InputStream in = null;
-	try
-	{
-	    in = this.getClass().getClassLoader().getResourceAsStream(PROPERTY_FILE);
-	    if (in != null)
-	    {
-		param.load(in);
-		log.debug("properties loaded: " + PROPERTY_FILE);
-	    }
-	    else
-	    {
-		log.fatal("properties not available: " + PROPERTY_FILE);
-	    }
-	}
-	catch (IOException ex)
-	{
-	    log.fatal("can't load properties: " + PROPERTY_FILE, ex);
-	}
-	finally
-	{
-	    if (in != null)
-	    {
-		try { in.close(); }
-		catch (IOException e) { e.printStackTrace(); }
-	    }
-	}
+    protected MimeType () {
+        InputStream in = null;
+        try {
+            in = this.getClass().getClassLoader().getResourceAsStream(PROPERTY_FILE);
+            if (in != null) {
+                param.load(in);
+                log.debug("properties loaded: " + PROPERTY_FILE);
+            } else {
+                log.fatal("properties not available: " + PROPERTY_FILE);
+            }
+        } catch (IOException ex) {
+            log.fatal("can't load properties: " + PROPERTY_FILE, ex);
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     /**
      * @param ext filename extension
      * @return mime type
      */
-    public static String getTypeFromFileExtension(String ext)
-    {
-	// public methods using param must make sure the propfile is loaded
-	if (param == null) readProperties();
+    public static String getTypeFromFileExtension(String ext) {
+        // public methods using param must make sure the propfile is loaded
+        if (param == null) {
+            readProperties();
+	}
 
-	String type = param.getProperty(PROPERTY_PREFIX+"."+ext);
-	return type;
+        String type = param.getProperty(PROPERTY_PREFIX+"."+ext);
+        return type;
     }
 
     /**
      * @param fname filename
      * @return mime type
      */
-    public static String getTypeFromFilename (String fname)
-    {
-	return getTypeFromFileExtension(getExtensionFromFilename(fname));
+    public static String getTypeFromFilename (String fname) {
+        return getTypeFromFileExtension(getExtensionFromFilename(fname));
     }
 
     /**
      * @param type mime type
      * @return filename extension
      */
-    public static String getExtensionForType (String type)
-    {
-	// public methods using param must make sure the propfile is loaded
-	if (param == null) readProperties();
-
-	// find first match
-	Enumeration e = param.propertyNames();
-	while (e.hasMoreElements())
-	{
-	    String key = (String) e.nextElement();
-	    if (type.equals(param.getProperty(key)))
-	    {
-		return getExtensionFromFilename(key);
-	    }
+    public static String getExtensionForType (String type) {
+        // public methods using param must make sure the propfile is loaded
+        if (param == null) {
+            readProperties();
 	}
 
-	return null;
+        // find first match
+        Enumeration e = param.propertyNames();
+        while (e.hasMoreElements()) {
+            String key = (String) e.nextElement();
+            if (type.equals(param.getProperty(key))) {
+                return getExtensionFromFilename(key);
+            }
+        }
+
+        return null;
     }
 
     /**
      * @param fname filename
      * @return filename extension
      */
-    private static String getExtensionFromFilename (String fname)
-    {
-	int i = fname.lastIndexOf('.');
-	if (i != -1)
-	{
-	    return fname.substring(i+1);
-	}
+    private static String getExtensionFromFilename (String fname) {
+        int i = fname.lastIndexOf('.');
+        if (i != -1) {
+            return fname.substring(i+1);
+        }
 
-	return null;
+        return null;
     }
 }

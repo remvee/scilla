@@ -27,17 +27,15 @@ import java.util.Enumeration;
  * The scilla configuration interface.
  *
  * @see org.scilla.ConfigProvider#get()
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  * @author R.W. van 't Veer
  */
-public interface Config
-{
+public interface Config {
     /** key to cache directory */
     public static final String CACHE_DIR_KEY = "cache.dir";
     /** key to source directory */
     public static final String SOURCE_DIR_KEY = "source.dir";
 
-// accessors
     /**
      * Enumerate all configuration keys.
      * @return key enumeration
@@ -92,7 +90,6 @@ public interface Config
      */
     public Class[] getClasses (String key);
 
-// modifiers
     /**
      * Set string value in configuration.
      * @param key handle to resource

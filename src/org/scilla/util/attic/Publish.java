@@ -28,26 +28,28 @@ import org.scilla.*;
 /**
  * Simple main class for debugging scilla.
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @author R.W. van 't Veer
  */
-public class Publish
-{
+public class Publish {
     /**
      * Writes requested data to standart output.
      * @param args conversion parameters
      * @see org.scilla.RequestFactory#createFromArgv(String[])
      */
     public static void main (String[] args)
-    throws Exception
-    {
+    throws Exception {
         Request req = RequestFactory.createFromArgv(args);
-	System.err.println("outputType='"+req.getOutputType()+"'");
+        System.err.println("outputType='"+req.getOutputType()+"'");
 
-	InputStream in = req.getStream();
-	OutputStream out = System.out;
-	int n; byte[] b = new byte[4096];
-	while ((n = in.read(b)) != -1) out.write(b, 0, n);
-	in.close(); out.close();
+        InputStream in = req.getStream();
+        OutputStream out = System.out;
+        int n;
+        byte[] b = new byte[4096];
+        while ((n = in.read(b)) != -1) {
+            out.write(b, 0, n);
+	}
+        in.close();
+        out.close();
     }
 }

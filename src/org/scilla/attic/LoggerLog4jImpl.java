@@ -37,11 +37,10 @@ import org.apache.log4j.xml.DOMConfigurator;
 /**
  * The scilla log4j logger implementation.
  *
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @author R.W. van 't Veer
  */
-public class LoggerLog4jImpl implements Logger
-{
+public class LoggerLog4jImpl implements Logger {
     org.apache.log4j.Logger logger;
 
     public static final String LOG4J_PROPERTY_FILE = "org/scilla/log4j.properties";
@@ -49,14 +48,12 @@ public class LoggerLog4jImpl implements Logger
 
     public LoggerLog4jImpl () { }
 
-    private LoggerLog4jImpl (org.apache.log4j.Logger logger)
-    {
-	this.logger = logger;
+    private LoggerLog4jImpl (org.apache.log4j.Logger logger) {
+        this.logger = logger;
     }
 
-    public static Logger getInstance (Class clazz)
-    {
-	return new LoggerLog4jImpl(org.apache.log4j.Logger.getLogger(clazz));
+    public static Logger getInstance (Class clazz) {
+        return new LoggerLog4jImpl(org.apache.log4j.Logger.getLogger(clazz));
     }
 
     /**
@@ -70,79 +67,96 @@ public class LoggerLog4jImpl implements Logger
      * @see org.apache.log4j.BasicConfigurator
      */
     public void configure ()
-    throws Exception
-    {
-	ClassLoader cl = this.getClass().getClassLoader();
-	boolean configured = false;
+    throws Exception {
+        ClassLoader cl = this.getClass().getClassLoader();
+        boolean configured = false;
 
-	if (! configured) // configure from xml file
-	{
-	    InputStream in = null;
-	    try
-	    {
-		in = cl.getResourceAsStream(LOG4J_XML_FILE);
-		if (in != null)
-		{
-		    DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		    Document d = db.parse(in);
-		    DOMConfigurator.configure(d.getDocumentElement());
-		    configured = true;
-		}
-	    }
-	    catch (Exception e)
-	    {
-		e.printStackTrace();
-	    }
-	    finally
-	    {
-		if (in != null)
-		{
-		    try { in.close(); }
-		    catch (IOException e) { e.printStackTrace(); }
-		}
-	    }
-	}
+        if (! configured) // configure from xml file
+        {
+            InputStream in = null;
+            try {
+                in = cl.getResourceAsStream(LOG4J_XML_FILE);
+                if (in != null) {
+                    DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                    Document d = db.parse(in);
+                    DOMConfigurator.configure(d.getDocumentElement());
+                    configured = true;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
 
-	if (! configured) // configure from properties file
-	{
-	    InputStream in = null;
-	    try
-	    {
-		in = cl.getResourceAsStream(LOG4J_PROPERTY_FILE);
-		if (in != null)
-		{
-		    Properties prop = new Properties();
-		    prop.load(in);
-		    PropertyConfigurator.configure(prop);
-		    configured = true;
-		}
-	    }
-	    catch (IOException e)
-	    {
-		e.printStackTrace();
-	    }
-	    finally
-	    {
-		if (in != null)
-		{
-		    try { in.close(); }
-		    catch (IOException e) { e.printStackTrace(); }
-		}
-	    }
-	}
+        if (! configured) {
+	    // configure from properties file
+            InputStream in = null;
+            try {
+                in = cl.getResourceAsStream(LOG4J_PROPERTY_FILE);
+                if (in != null) {
+                    Properties prop = new Properties();
+                    prop.load(in);
+                    PropertyConfigurator.configure(prop);
+                    configured = true;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 
-    public void assertLog (boolean assertion, String msg) { logger.assertLog(assertion, msg); }
-    public void debug (Object msg) { logger.debug(msg); }
-    public void debug (Object msg, Throwable t) { logger.debug(msg, t); }
-    public void info(Object msg) { logger.info(msg); }
-    public void info(Object msg, Throwable t) { logger.info(msg, t); }
-    public void warn(Object msg) { logger.warn(msg); }
-    public void warn(Object msg, Throwable t) { logger.warn(msg, t); }
-    public void error(Object msg) { logger.error(msg); }
-    public void error(Object msg, Throwable t) { logger.error(msg, t); }
-    public void fatal(Object msg) { logger.fatal(msg); }
-    public void fatal(Object msg, Throwable t) { logger.fatal(msg, t); }
-    public boolean isDebugEnabled() { return logger.isDebugEnabled(); }
-    public boolean isInfoEnabled() { return logger.isInfoEnabled(); }
+    public void assertLog (boolean assertion, String msg) {
+        logger.assertLog(assertion, msg);
+    }
+    public void debug (Object msg) {
+        logger.debug(msg);
+    }
+    public void debug (Object msg, Throwable t) {
+        logger.debug(msg, t);
+    }
+    public void info(Object msg) {
+        logger.info(msg);
+    }
+    public void info(Object msg, Throwable t) {
+        logger.info(msg, t);
+    }
+    public void warn(Object msg) {
+        logger.warn(msg);
+    }
+    public void warn(Object msg, Throwable t) {
+        logger.warn(msg, t);
+    }
+    public void error(Object msg) {
+        logger.error(msg);
+    }
+    public void error(Object msg, Throwable t) {
+        logger.error(msg, t);
+    }
+    public void fatal(Object msg) {
+        logger.fatal(msg);
+    }
+    public void fatal(Object msg, Throwable t) {
+        logger.fatal(msg, t);
+    }
+    public boolean isDebugEnabled() {
+        return logger.isDebugEnabled();
+    }
+    public boolean isInfoEnabled() {
+        return logger.isInfoEnabled();
+    }
 }

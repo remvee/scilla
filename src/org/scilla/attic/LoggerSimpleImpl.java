@@ -26,73 +26,66 @@ import java.io.PrintStream;
 /**
  * The scilla simple logger implementation.
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @author R.W. van 't Veer
  */
-public class LoggerSimpleImpl implements Logger
-{
+public class LoggerSimpleImpl implements Logger {
     String cname;
     PrintStream out = System.out;
 
     boolean isDebugEnabled = true;
     boolean isInfoEnabled = true;
 
-    private LoggerSimpleImpl (String cname)
-    {
-	this.cname = cname;
+    private LoggerSimpleImpl (String cname) {
+        this.cname = cname;
     }
 
-    public static Logger getInstance (Class clazz)
-    {
-	return new LoggerSimpleImpl(clazz.getName());
+    public static Logger getInstance (Class clazz) {
+        return new LoggerSimpleImpl(clazz.getName());
     }
 
-    public void configure () throws Exception { /* nop */ }
+    public void configure () throws Exception { /* nop */
+    }
 
-    public void assertLog (boolean assertion, String msg)
-    {
-	if (! assertion) debug(msg);
+    public void assertLog (boolean assertion, String msg) {
+        if (! assertion) {
+            debug(msg);
+	}
     }
-    public void debug (Object msg)
-    {
-	out.println(cname+": DEBUG: "+msg);
+    public void debug (Object msg) {
+        out.println(cname+": DEBUG: "+msg);
     }
-    public void debug (Object msg, Throwable t)
-    {
-	out.println(cname+": DEBUG: "+msg+": "+t);
+    public void debug (Object msg, Throwable t) {
+        out.println(cname+": DEBUG: "+msg+": "+t);
     }
-    public void info(Object msg)
-    {
-	out.println(cname+": INFO: "+msg);
+    public void info(Object msg) {
+        out.println(cname+": INFO: "+msg);
     }
-    public void info(Object msg, Throwable t)
-    {
-	out.println(cname+": INFO: "+msg+": "+t);
+    public void info(Object msg, Throwable t) {
+        out.println(cname+": INFO: "+msg+": "+t);
     }
-    public void warn(Object msg)
-    {
-	out.println(cname+": WARN: "+msg);
+    public void warn(Object msg) {
+        out.println(cname+": WARN: "+msg);
     }
-    public void warn(Object msg, Throwable t)
-    {
-	out.println(cname+": WARN: "+msg+": "+t);
+    public void warn(Object msg, Throwable t) {
+        out.println(cname+": WARN: "+msg+": "+t);
     }
-    public void error(Object msg)
-    {
-	out.println(cname+": ERROR: "+msg);
+    public void error(Object msg) {
+        out.println(cname+": ERROR: "+msg);
     }
-    public void error(Object msg, Throwable t)
-    {
-	out.println(cname+": ERROR: "+msg+": "+t);
+    public void error(Object msg, Throwable t) {
+        out.println(cname+": ERROR: "+msg+": "+t);
     }
-    public void fatal(Object msg)
-    {
-	out.println(cname+": FATAL: "+msg);
+    public void fatal(Object msg) {
+        out.println(cname+": FATAL: "+msg);
     }
-    public void fatal(Object msg, Throwable t)
-    {
-	out.println(cname+": FATAL: "+msg+": "+t);
+    public void fatal(Object msg, Throwable t) {
+        out.println(cname+": FATAL: "+msg+": "+t);
     }
-    public boolean isDebugEnabled() { return isDebugEnabled; }
-    public boolean isInfoEnabled() { return isInfoEnabled; }
+    public boolean isDebugEnabled() {
+        return isDebugEnabled;
+    }
+    public boolean isInfoEnabled() {
+        return isInfoEnabled;
+    }
 }

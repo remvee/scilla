@@ -35,10 +35,9 @@ import org.scilla.converter.*;
  * A runner object is a media object currently being converted.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
-public class RunnerObject implements MediaObject
-{
+public class RunnerObject implements MediaObject {
     private static final Logger log = LoggerFactory.get(RunnerObject.class);
 
     private Converter conv;
@@ -47,8 +46,7 @@ public class RunnerObject implements MediaObject
      * Create media object.
      * @param conv ready to run coonverter
      */
-    public RunnerObject (Converter conv)
-    {
+    public RunnerObject (Converter conv) {
         this.conv = conv;
     }
 
@@ -56,40 +54,36 @@ public class RunnerObject implements MediaObject
      * Start converter in the background.
      * @see org.scilla.converter.Converter#start()
      */
-    public void start ()
-    {
-	// start converter thread
-	final Converter conv_ = conv;
-	final RunnerObject runner_ = this;
-	Thread convThread = new Thread()
-	{
-	    public void run ()
-	    {
+    public void start () {
+        // start converter thread
+        final Converter conv_ = conv;
+        final RunnerObject runner_ = this;
+        Thread convThread = new Thread() {
+	    public void run () {
 		conv_.convert();
 		runner_.fireChangeEvent(RunnerChangeListener.RUNNER_FINISHED);
 	    }
 	};
-	convThread.start();
+        convThread.start();
     }
 
     /**
      * @return true if converter has finished
      */
-    public boolean hasFinished ()
-    {
-	if (finishedFlag) {
-	    return true;
-	}
+    public boolean hasFinished () {
+        if (finishedFlag) {
+            return true;
+        }
 
-	if (conv.hasFinished()) {
-	    finishedFlag = true;
+        if (conv.hasFinished()) {
+            finishedFlag = true;
 
-	    String fn = conv.getOutputFile();
-	    if (! exitSuccess()) {
-		(new File(fn)).delete();
-	    }
-	}
-	return finishedFlag;
+            String fn = conv.getOutputFile();
+            if (! exitSuccess()) {
+                (new File(fn)).delete();
+            }
+        }
+        return finishedFlag;
     }
     private boolean finishedFlag = false;
 
@@ -98,9 +92,8 @@ public class RunnerObject implements MediaObject
      * @return true if converter exit success
      * @see org.scilla.converter.Converter#exitSuccess()
      */
-    public boolean exitSuccess ()
-    {
-	return conv.exitSuccess();
+    public boolean exitSuccess () {
+        return conv.exitSuccess();
     }
 
     /**
@@ -108,42 +101,39 @@ public class RunnerObject implements MediaObject
      * @return conversion error message
      * @see org.scilla.converter.Converter#getErrorMessage()
      */
-    public String getErrorMessage()
-    {
-	return conv.getErrorMessage();
+    public String getErrorMessage() {
+        return conv.getErrorMessage();
     }
 
     /**
      * @return file this runner write to
      */
-    public String getOutputFile ()
-    {
-	return conv.getOutputFile();
+    public String getOutputFile () {
+        return conv.getOutputFile();
     }
 
     /**
      * @return -1 because file length currently unknown
      */
-    public long getLength () { return -1; }
-
-    public InputStream getStream ()
-    throws ScillaException
-    {
-	String filename = conv.getOutputFile();
-	return new MediaStream(filename, this);
+    public long getLength () {
+        return -1;
     }
 
-    public void addRunnerChangeListener (RunnerChangeListener listener)
-    {
-	listeners.add(listener);
+    public InputStream getStream ()
+    throws ScillaException {
+        String filename = conv.getOutputFile();
+        return new MediaStream(filename, this);
+    }
+
+    public void addRunnerChangeListener (RunnerChangeListener listener) {
+        listeners.add(listener);
     }
     private List listeners = new Vector();
 
-    public void fireChangeEvent (int code)
-    {
-	for (Iterator it = listeners.iterator(); it.hasNext();) {
-	    RunnerChangeListener listener = (RunnerChangeListener) it.next();
-	    listener.runnerChange(this, code);
-	}
+    public void fireChangeEvent (int code) {
+        for (Iterator it = listeners.iterator(); it.hasNext();) {
+            RunnerChangeListener listener = (RunnerChangeListener) it.next();
+            listener.runnerChange(this, code);
+        }
     }
 }

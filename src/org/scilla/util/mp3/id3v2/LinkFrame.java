@@ -28,10 +28,9 @@ import java.util.*;
  * Representation of link frames (<TT>W000</TT> - <TT>WZZZ</TT>).
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
-public class LinkFrame extends Frame
-{
+public class LinkFrame extends Frame {
     String url;
     /** for <TT>WXXX</TT> frames */
     String descr = null;
@@ -44,33 +43,38 @@ public class LinkFrame extends Frame
      * @param minor minor version of tag
      */
     public LinkFrame (byte[] data, int offset, int minor)
-    throws Exception
-    {
-	super(data, offset, minor);
+    throws Exception {
+        super(data, offset, minor);
 
-	// optionally get description
-	int i = 0;
-	if (frameId.equals("WXXX"))
-	{
-	    boolean isUnicode = false;
-	    switch (frameData[i++])
-	    {
-		case 0: enc = "ISO-8859-1"; break;
-		case 1:
-		case 2: enc = "UTF-16"; isUnicode = true; break;
-		case 3: enc = "UTF-8"; break;
-		default: throw new RuntimeException("text encoding not supported");
-	    }
+        // optionally get description
+        int i = 0;
+        if (frameId.equals("WXXX")) {
+            boolean isUnicode = false;
+            switch (frameData[i++]) {
+            case 0:
+                enc = "ISO-8859-1";
+                break;
+            case 1:
+            case 2:
+                enc = "UTF-16";
+                isUnicode = true;
+                break;
+            case 3:
+                enc = "UTF-8";
+                break;
+            default:
+                throw new RuntimeException("text encoding not supported");
+            }
 
-	    // get description
-	    int j = TextFrame.nextStringTerminator(frameData, i, isUnicode);
-	    descr = new String(frameData, i, j - i, enc);
-	    i = j + (isUnicode ? 2 : 1);
-	}
+            // get description
+            int j = TextFrame.nextStringTerminator(frameData, i, isUnicode);
+            descr = new String(frameData, i, j - i, enc);
+            i = j + (isUnicode ? 2 : 1);
+        }
 
-	// get url
-	int j = TextFrame.nextStringTerminator(frameData, i, false);
-	url = new String(frameData, i, j - i);
+        // get url
+        int j = TextFrame.nextStringTerminator(frameData, i, false);
+        url = new String(frameData, i, j - i);
     }
 
     /**
@@ -78,11 +82,10 @@ public class LinkFrame extends Frame
      * @param id frame identifier
      * @param url URL for this frame
      */
-    public LinkFrame (String id, String url)
-    {
-	frameId = id;
-	this.descr = null;
-	this.url = url;
+    public LinkFrame (String id, String url) {
+        frameId = id;
+        this.descr = null;
+        this.url = url;
     }
 
     /**
@@ -92,60 +95,60 @@ public class LinkFrame extends Frame
      * @param enc description encoding
      * @param url URL for this frame
      */
-    public LinkFrame (String id, String descr, String enc, String url)
-    {
-	frameId = id;
-	this.descr = descr;
-	this.enc = enc;
-	this.url = url;
+    public LinkFrame (String id, String descr, String enc, String url) {
+        frameId = id;
+        this.descr = descr;
+        this.enc = enc;
+        this.url = url;
     }
 
     /** @return URL of this frame */
-    public String getUrl () { return url; }
+    public String getUrl () {
+        return url;
+    }
     /** @return description for this link or <TT>null</TT> */
-    public String getDescription () { return descr; }
-
-    public byte[] getBytes ()
-    throws UnsupportedEncodingException
-    {
-	int i = 0;
-	byte[] result;
-	byte[] urlData = url.getBytes();
-
-	if (descr != null)
-	{
-	    int encId = 0;
-	    if (enc.equals("ISO-8859-1")) encId = 0;
-	    else if (enc.equals("UTF-16"))
-	    {
-		enc = "ISO-8859-1";
-		encId = 0; 
-		System.err.println("WARNING: converted unicode to latin1");
-	    }
-	    else if (enc.equals("UTF-8")) encId = 3;
-	    else enc = "ISO-8859-1";
-
-	    byte[] descrData = descr.getBytes(enc);
-	    int resultLen = 1+descrData.length+1+urlData.length;
-	    result = new byte[resultLen];
-	    result[i++] = (byte) encId;
-	    System.arraycopy(descrData, 0, result, i, descrData.length);
-	    i += descrData.length;
-	    result[i++] = 0;
-	}
-	else
-	{
-	    result = new byte[urlData.length];
-	}
-	System.arraycopy(urlData, 0, result, i, urlData.length);
-
-	return result;
+    public String getDescription () {
+        return descr;
     }
 
-    public String toString ()
-    {
-	return frameId.equals("WXXX")
-		?  super.toString() + ": \"" + descr + "\" \"" + url + "\""
-		: super.toString() + ": \"" + url + "\"";
+    public byte[] getBytes ()
+    throws UnsupportedEncodingException {
+        int i = 0;
+        byte[] result;
+        byte[] urlData = url.getBytes();
+
+        if (descr != null) {
+            int encId = 0;
+            if (enc.equals("ISO-8859-1")) {
+                encId = 0;
+            } else if (enc.equals("UTF-16")) {
+                enc = "ISO-8859-1";
+                encId = 0;
+                System.err.println("WARNING: converted unicode to latin1");
+            } else if (enc.equals("UTF-8")) {
+                encId = 3;
+            } else {
+                enc = "ISO-8859-1";
+	    }
+
+            byte[] descrData = descr.getBytes(enc);
+            int resultLen = 1+descrData.length+1+urlData.length;
+            result = new byte[resultLen];
+            result[i++] = (byte) encId;
+            System.arraycopy(descrData, 0, result, i, descrData.length);
+            i += descrData.length;
+            result[i++] = 0;
+        } else {
+            result = new byte[urlData.length];
+        }
+        System.arraycopy(urlData, 0, result, i, urlData.length);
+
+        return result;
+    }
+
+    public String toString () {
+        return frameId.equals("WXXX")
+               ?  super.toString() + ": \"" + descr + "\" \"" + url + "\""
+               : super.toString() + ": \"" + url + "\"";
     }
 }

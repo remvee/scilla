@@ -25,12 +25,10 @@ package org.scilla;
  * No converter for requested data exception.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
-public class ScillaNoConverterException extends ScillaException
-{
-    public ScillaNoConverterException ()
-    {
-	msg = "can not convert";
+public class ScillaNoConverterException extends ScillaException {
+    public ScillaNoConverterException () {
+        msg = "can not convert";
     }
 }

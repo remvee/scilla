@@ -25,12 +25,10 @@ package org.scilla;
  * Output not available exception.  Thrown when conversion failed.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
-public class ScillaNoOutputException extends ScillaException
-{
-    public ScillaNoOutputException ()
-    {
-	msg = "conversion failed";
+public class ScillaNoOutputException extends ScillaException {
+    public ScillaNoOutputException () {
+        msg = "conversion failed";
     }
 }

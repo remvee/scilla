@@ -31,10 +31,9 @@ import org.scilla.*;
  * has finished.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class MediaStream extends InputStream
-{
+public class MediaStream extends InputStream {
     private static final Logger log = LoggerFactory.get(MediaStream.class);
 
     /** milis to wait in wait for file loop */
@@ -48,110 +47,100 @@ public class MediaStream extends InputStream
     InputStream in = null;
 
     public MediaStream (String filename, RunnerObject runner)
-    throws ScillaException
-    {
-	this.filename = filename;
-	this.runner = runner;
+    throws ScillaException {
+        this.filename = filename;
+        this.runner = runner;
 
-	// make sure input file exists
-	File f = new File(filename);
-	if (! f.exists())
-	{
-	    if (runner != null && ! runner.hasFinished())
-	    {
-		// wait for file to appear
-		while (! f.exists() && ! runner.hasFinished())
-		{
-		    try
-		    {
-			Thread.currentThread().sleep(WAIT_FOR_FILE_TIMEOUT);
+        // make sure input file exists
+        File f = new File(filename);
+        if (! f.exists()) {
+            if (runner != null && ! runner.hasFinished()) {
+                // wait for file to appear
+                while (! f.exists() && ! runner.hasFinished()) {
+                    try {
+                        Thread.currentThread().sleep(WAIT_FOR_FILE_TIMEOUT);
+                    } catch (InterruptedException ex) {
+			// ignore
 		    }
-		    catch (InterruptedException ex) { }
-		}
-	    }
-	    // did runner leave any output?
-	    if (! f.exists())
-	    {
-		String err = runner != null ? runner.getErrorMessage() : null;
-		if (err != null)
-		{
-		    throw new ScillaConversionFailedException(err);
-		}
-		else
-		{
-		    throw new ScillaNoOutputException();
-		}
-	    }
-	}
+                }
+            }
+            // did runner leave any output?
+            if (! f.exists()) {
+                String err = runner != null ? runner.getErrorMessage() : null;
+                if (err != null) {
+                    throw new ScillaConversionFailedException(err);
+                } else {
+                    throw new ScillaNoOutputException();
+                }
+            }
+        }
 
-	// open file for reading
-	try
-	{
-	    in = new FileInputStream(f);
-	}
-	catch (FileNotFoundException ex)
-	{
-	    // will never happen?
-	    log.error(ex);
-	    throw new RuntimeException("unexpected "+ex.getClass().getName()+" for "+filename);
-	}
+        // open file for reading
+        try {
+            in = new FileInputStream(f);
+        } catch (FileNotFoundException ex) {
+            // will never happen?
+            log.error(ex);
+            throw new RuntimeException("unexpected "+ex.getClass().getName()+" for "+filename);
+        }
     }
 
     public int read ()
-    throws IOException
-    {
-	// read without going beyond EOF when k
-	while (runner != null && ! runner.hasFinished())
-	{
-	    try
-	    {
-		Thread.currentThread().sleep(WAIT_FOR_READ_TIMEOUT);
+    throws IOException {
+        // read without going beyond EOF when k
+        while (runner != null && ! runner.hasFinished()) {
+            try {
+                Thread.currentThread().sleep(WAIT_FOR_READ_TIMEOUT);
+            } catch (InterruptedException ex) {
+		// ignore
 	    }
-	    catch (InterruptedException ex) { }
 
-	    if (in.available() > 0) return in.read();
-	}
+            if (in.available() > 0) {
+                return in.read();
+	    }
+        }
 
-	return in.read();
+        return in.read();
     }
     public int read (byte[] b)
-    throws IOException
-    {
-	// read without going beyond EOF when k
-	while (runner != null && ! runner.hasFinished())
-	{
-	    try
-	    {
-		Thread.currentThread().sleep(WAIT_FOR_READ_TIMEOUT);
+    throws IOException {
+        // read without going beyond EOF when k
+        while (runner != null && ! runner.hasFinished()) {
+            try {
+                Thread.currentThread().sleep(WAIT_FOR_READ_TIMEOUT);
+            } catch (InterruptedException ex) {
+		// ignore
 	    }
-	    catch (InterruptedException ex) { }
 
-	    if (in.available() > 0) return in.read(b);
-	}
+            if (in.available() > 0) {
+                return in.read(b);
+	    }
+        }
 
-	return in.read(b);
+        return in.read(b);
     }
     public int read (byte[] b, int off, int len)
-    throws IOException
-    {
-	// read without going beyond EOF when k
-	while (runner != null && ! runner.hasFinished())
-	{
-	    try
-	    {
-		Thread.currentThread().sleep(WAIT_FOR_READ_TIMEOUT);
+    throws IOException {
+        // read without going beyond EOF when k
+        while (runner != null && ! runner.hasFinished()) {
+            try {
+                Thread.currentThread().sleep(WAIT_FOR_READ_TIMEOUT);
+            } catch (InterruptedException ex) {
+		// ignore
 	    }
-	    catch (InterruptedException ex) { }
 
-	    if (in.available() > 0) return in.read(b, off, len);
-	}
+            if (in.available() > 0) {
+                return in.read(b, off, len);
+	    }
+        }
 
-	return in.read(b, off, len);
+        return in.read(b, off, len);
     }
 
     public void close ()
-    throws IOException
-    {
-	if (in != null) in.close();
+    throws IOException {
+        if (in != null) {
+            in.close();
+	}
     }
 }

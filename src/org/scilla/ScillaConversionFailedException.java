@@ -25,12 +25,10 @@ package org.scilla;
  * Converter failed.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class ScillaConversionFailedException extends ScillaException
-{
-    public ScillaConversionFailedException (String msg)
-    {
-	super(msg);
+public class ScillaConversionFailedException extends ScillaException {
+    public ScillaConversionFailedException (String msg) {
+        super(msg);
     }
 }

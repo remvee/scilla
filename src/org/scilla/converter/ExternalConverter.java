@@ -110,10 +110,9 @@ import org.scilla.util.*;
  * </DL>
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
-public class ExternalConverter implements Converter
-{
+public class ExternalConverter implements Converter {
     private static final Logger log = LoggerFactory.get(ExternalConverter.class);
     private static final Config config = ConfigProvider.get();
 
@@ -134,7 +133,7 @@ public class ExternalConverter implements Converter
     private static Vector reservedParameters = new Vector();
     static
     {
-	reservedParameters.add(Request.OUTPUT_TYPE_PARAMETER);
+        reservedParameters.add(Request.OUTPUT_TYPE_PARAMETER);
     }
     private static Hashtable inputTypeMap = new Hashtable();
     private static Hashtable outputTypeMap = new Hashtable();
@@ -152,374 +151,313 @@ public class ExternalConverter implements Converter
     private static HashSet blacklistSet = new HashSet();
     static
     {
-	Enumeration keys = config.keys();
-	while (keys.hasMoreElements())
-	{
-	    String key = (String) keys.nextElement();
-	    if (key.startsWith(CONVERTER_PREFIX))
-	    {
-		String tail = key.substring(CONVERTER_PREFIX.length()+1);
-		StringTokenizer keyst = new StringTokenizer(tail, ""+keyDelimiter);
-		String name = keyst.nextToken();
-		String type = keyst.nextToken();
-		String val = config.getString(key);
-		if (type.equals("exec"))
-		{
-		    execMap.put(name, val);
+        Enumeration keys = config.keys();
+        while (keys.hasMoreElements()) {
+            String key = (String) keys.nextElement();
+            if (key.startsWith(CONVERTER_PREFIX)) {
+                String tail = key.substring(CONVERTER_PREFIX.length()+1);
+                StringTokenizer keyst = new StringTokenizer(tail, ""+keyDelimiter);
+                String name = keyst.nextToken();
+                String type = keyst.nextToken();
+                String val = config.getString(key);
+                if (type.equals("exec")) {
+                    execMap.put(name, val);
 
-		    // blacklist it if executable not available
-		    try
-		    {
-			Runtime.getRuntime().exec(new String[] { val }).waitFor();
-		    }
-		    catch (Throwable ex)
-		    {
-			blacklistSet.add(name);
-		    }
-		}
-		else if (type.equals("format"))
-		{
-		    formatMap.put(name, val);
-		}
-		else if (type.equals("ignore_exitstat"))
-		{
-		    if (config.getBoolean(key)) ignoreExitstatSet.add(name);
-		}
-		else if (type.equals("cd_to_output_dir"))
-		{
-		    if (config.getBoolean(key)) cd2outputDirSet.add(name);
-		}
-		else if (type.equals("silent_switch"))
-		{
-		    silentSwitchMap.put(name, val);
-		}
-		else if (type.equals("inputtypes"))
-		{
-		    StringTokenizer st = new StringTokenizer(val);
-		    while (st.hasMoreTokens())
-		    {
-			String mtype = st.nextToken();
-			Set s = (Set) inputTypeMap.get(mtype);
-			if (s == null)
-			{
-			    s = new HashSet();
-			    inputTypeMap.put(mtype, s);
-			}
-			s.add(name);
-		    }
-		}
-		else if (type.equals("outputtypes"))
-		{
-		    StringTokenizer st = new StringTokenizer(val);
-		    while (st.hasMoreTokens())
-		    {
-			String mtype = st.nextToken();
-			Set s = (Set) outputTypeMap.get(mtype);
-			if (s == null)
-			{
-			    s = new HashSet();
-			    outputTypeMap.put(mtype, s);
-			}
-			s.add(name);
-		    }
-		}
-		else if (type.equals("inputswitch"))
-		{
-		    if (keyst.hasMoreTokens())
-		    {
-			String mtype = keyst.nextToken();
-			inputSwitchMap.put(name+keyDelimiter+mtype, val);
-		    }
-		    else
-		    {
-			inputSwitchMap.put(name, val);
-		    }
-		}
-		else if (type.equals("outputswitch"))
-		{
-		    if (keyst.hasMoreTokens())
-		    {
-			String mtype = keyst.nextToken();
-			outputSwitchMap.put(name+keyDelimiter+mtype, val);
-		    }
-		    else
-		    {
-			outputSwitchMap.put(name, val);
-		    }
-		}
-		else if (type.equals("switch"))
-		{
-		    String stype = keyst.nextToken();
-		    String sname = keyst.nextToken();
+                    // blacklist it if executable not available
+                    try {
+                        Runtime.getRuntime().exec(new String[] { val }).waitFor();
+                    } catch (Throwable ex) {
+                        blacklistSet.add(name);
+                    }
+                } else if (type.equals("format")) {
+                    formatMap.put(name, val);
+                } else if (type.equals("ignore_exitstat")) {
+                    if (config.getBoolean(key))
+                        ignoreExitstatSet.add(name);
+                } else if (type.equals("cd_to_output_dir")) {
+                    if (config.getBoolean(key))
+                        cd2outputDirSet.add(name);
+                } else if (type.equals("silent_switch")) {
+                    silentSwitchMap.put(name, val);
+                } else if (type.equals("inputtypes")) {
+                    StringTokenizer st = new StringTokenizer(val);
+                    while (st.hasMoreTokens()) {
+                        String mtype = st.nextToken();
+                        Set s = (Set) inputTypeMap.get(mtype);
+                        if (s == null) {
+                            s = new HashSet();
+                            inputTypeMap.put(mtype, s);
+                        }
+                        s.add(name);
+                    }
+                } else if (type.equals("outputtypes")) {
+                    StringTokenizer st = new StringTokenizer(val);
+                    while (st.hasMoreTokens()) {
+                        String mtype = st.nextToken();
+                        Set s = (Set) outputTypeMap.get(mtype);
+                        if (s == null) {
+                            s = new HashSet();
+                            outputTypeMap.put(mtype, s);
+                        }
+                        s.add(name);
+                    }
+                } else if (type.equals("inputswitch")) {
+                    if (keyst.hasMoreTokens()) {
+                        String mtype = keyst.nextToken();
+                        inputSwitchMap.put(name+keyDelimiter+mtype, val);
+                    } else {
+                        inputSwitchMap.put(name, val);
+                    }
+                } else if (type.equals("outputswitch")) {
+                    if (keyst.hasMoreTokens()) {
+                        String mtype = keyst.nextToken();
+                        outputSwitchMap.put(name+keyDelimiter+mtype, val);
+                    } else {
+                        outputSwitchMap.put(name, val);
+                    }
+                } else if (type.equals("switch")) {
+                    String stype = keyst.nextToken();
+                    String sname = keyst.nextToken();
 
-		    // for can convert
-		    Set s = (Set) parameterMap.get(sname);
-		    if (s == null)
-		    {
-			s = new HashSet();
-			parameterMap.put(sname, s);
-		    }
-		    s.add(name);
+                    // for can convert
+                    Set s = (Set) parameterMap.get(sname);
+                    if (s == null) {
+                        s = new HashSet();
+                        parameterMap.put(sname, s);
+                    }
+                    s.add(name);
 
-		    // for commandline building
-		    if (stype.equals("string"))
-		    {
-			Hashtable h = (Hashtable) stringSwitchMap.get(name);
-			if (h == null)
-			{
-			    h = new Hashtable();
-			    stringSwitchMap.put(name, h);
-			}
-			h.put(sname, val);
-		    }
-		    else if (stype.equals("number"))
-		    {
-			Hashtable h = (Hashtable) numberSwitchMap.get(name);
-			if (h == null)
-			{
-			    h = new Hashtable();
-			    numberSwitchMap.put(name, h);
-			}
-			h.put(sname, val);
-		    }
-		    else if (stype.equals("boolean"))
-		    {
-			Hashtable h = (Hashtable) booleanSwitchMap.get(name);
-			if (h == null)
-			{
-			    h = new Hashtable();
-			    booleanSwitchMap.put(name, h);
-			}
-			h.put(sname, val);
-		    }
-		}
-	    }
+                    // for commandline building
+                    if (stype.equals("string")) {
+                        Hashtable h = (Hashtable) stringSwitchMap.get(name);
+                        if (h == null) {
+                            h = new Hashtable();
+                            stringSwitchMap.put(name, h);
+                        }
+                        h.put(sname, val);
+                    } else if (stype.equals("number")) {
+                        Hashtable h = (Hashtable) numberSwitchMap.get(name);
+                        if (h == null) {
+                            h = new Hashtable();
+                            numberSwitchMap.put(name, h);
+                        }
+                        h.put(sname, val);
+                    } else if (stype.equals("boolean")) {
+                        Hashtable h = (Hashtable) booleanSwitchMap.get(name);
+                        if (h == null) {
+                            h = new Hashtable();
+                            booleanSwitchMap.put(name, h);
+                        }
+                        h.put(sname, val);
+                    }
+                }
+            }
+        }
+
+        if (blacklistSet.size() > 0) {
+            log.error("excutable does not exist for: "+blacklistSet);
+        }
+    }
+
+    public void convert () {
+        started = true;
+        _convert();
+        finished = true;
+    }
+
+    private void _convert () {
+        // build commandline
+        Vector cmdline = new Vector();
+        cmdline.add(execMap.get(converterName));
+
+        // handle commandline format
+        final String format = (String) formatMap.get(converterName);
+        final int formatLen = format.length();
+        for (int i = 0; i < formatLen; i++) {
+            switch (format.charAt(i)) {
+            case 'i':
+                // add input file, optionally with switch
+                if (inputSwitchMap.containsKey(converterName)) {
+                    cmdline.add(inputSwitchMap.get(converterName));
+                } else {
+                    String mtype = request.getInputType();
+                    String btype = mtype.substring(0, mtype.indexOf('/'));
+                    mtype = converterName+keyDelimiter+mtype;
+                    btype = converterName+keyDelimiter+btype;
+                    if (inputSwitchMap.containsKey(mtype)) {
+                        cmdline.add(inputSwitchMap.get(mtype));
+                    } else if (inputSwitchMap.containsKey(btype)) {
+                        cmdline.add(inputSwitchMap.get(btype));
+                    }
+                }
+                cmdline.add(request.getInputFile());
+                break;
+            case 'o':
+                // add output file, optionally with switch
+                if (outputSwitchMap.containsKey(converterName)) {
+                    cmdline.add(outputSwitchMap.get(converterName));
+                } else {
+                    String mtype = request.getOutputType();
+                    String btype = mtype.substring(0, mtype.indexOf('/'));
+                    mtype = converterName+keyDelimiter+mtype;
+                    btype = converterName+keyDelimiter+btype;
+                    if (outputSwitchMap.containsKey(mtype)) {
+                        cmdline.add(outputSwitchMap.get(mtype));
+                    } else if (outputSwitchMap.containsKey(btype)) {
+                        cmdline.add(outputSwitchMap.get(btype));
+                    }
+                }
+                if (cd2outputDirSet.contains(converterName)) {
+                    String fn = outputFile.substring(outputFile.lastIndexOf(File.separator)+1);
+                    cmdline.add(fn);
+                } else {
+                    cmdline.add(outputFile);
+                }
+                break;
+            case 's':
+                // add silent switch
+                if (silentSwitchMap.containsKey(converterName)) {
+                    cmdline.add(silentSwitchMap.get(converterName));
+                }
+
+                // add switches to commandline
+                Hashtable sm = (Hashtable) stringSwitchMap.get(converterName);
+                Hashtable nm = (Hashtable) numberSwitchMap.get(converterName);
+                Hashtable bm = (Hashtable) booleanSwitchMap.get(converterName);
+                Iterator it = request.getParameters().iterator();
+                while (it.hasNext()) {
+                    RequestParameter rp = (RequestParameter) it.next();
+                    if (reservedParameters.indexOf(rp.key) == -1) {
+                        // string
+                        if (sm != null && sm.containsKey(rp.key)) {
+                            cmdline.add(sm.get(rp.key));
+                            cmdline.add(rp.val);
+                        }
+                        // number
+                        else if (nm != null && nm.containsKey(rp.key)) {
+                            cmdline.add(nm.get(rp.key));
+                            cmdline.add(rp.val);
+                        }
+                        // boolean
+                        else if (bm != null && bm.containsKey(rp.key)) {
+                            cmdline.add(bm.get(rp.key));
+                        }
+                    }
+                }
+                break;
+            default:
+                // TODO throw exception
+                break;
+            }
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("cmdline: "+cmdline);
 	}
 
-	if (blacklistSet.size() > 0)
-	{
-	    log.error("excutable does not exist for: "+blacklistSet);
-	}
+        // prepare command
+        String[] cmd = (String[]) cmdline.toArray(new String[0]);
+        File dir = null;
+        if (cd2outputDirSet.contains(converterName)) {
+            String dn = outputFile.substring(0, outputFile.lastIndexOf(File.separator));
+            dir = new File(dn);
+        }
+
+        // run system command
+        QueuedProcess proc = null;
+        try {
+            proc = new QueuedProcess(cmd, null, dir);
+            // wait for command to finish
+            exitValue = proc.exitValue();
+        } catch (Exception e) {
+            errorMessage = e.getMessage();
+        }
+        if (proc != null) {
+            errorMessage = proc.getErrorLog();
+        }
     }
 
-    public void convert ()
-    {
-	started = true;
-	_convert();
-	finished = true;
-    }
+    public boolean canConvert (Request req) {
+        Set conv = new HashSet();
+        Collection c;
+        Iterator it;
 
-    private void _convert ()
-    {
-	// build commandline
-	Vector cmdline = new Vector();
-	cmdline.add(execMap.get(converterName));
-
-	// handle commandline format
-	final String format = (String) formatMap.get(converterName);
-	final int formatLen = format.length();
-	for (int i = 0; i < formatLen; i++)
-	{
-	    switch (format.charAt(i))
-	    {
-		case 'i':
-		    // add input file, optionally with switch
-		    if (inputSwitchMap.containsKey(converterName))
-		    {
-			cmdline.add(inputSwitchMap.get(converterName));
-		    }
-		    else
-		    {
-			String mtype = request.getInputType();
-			String btype = mtype.substring(0, mtype.indexOf('/'));
-			mtype = converterName+keyDelimiter+mtype;
-			btype = converterName+keyDelimiter+btype;
-			if (inputSwitchMap.containsKey(mtype))
-			{
-			    cmdline.add(inputSwitchMap.get(mtype));
-			}
-			else if (inputSwitchMap.containsKey(btype))
-			{
-			    cmdline.add(inputSwitchMap.get(btype));
-			}
-		    }
-		    cmdline.add(request.getInputFile());
-		    break;
-		case 'o':
-		    // add output file, optionally with switch
-		    if (outputSwitchMap.containsKey(converterName))
-		    {
-			cmdline.add(outputSwitchMap.get(converterName));
-		    }
-		    else
-		    {
-			String mtype = request.getOutputType();
-			String btype = mtype.substring(0, mtype.indexOf('/'));
-			mtype = converterName+keyDelimiter+mtype;
-			btype = converterName+keyDelimiter+btype;
-			if (outputSwitchMap.containsKey(mtype))
-			{
-			    cmdline.add(outputSwitchMap.get(mtype));
-			}
-			else if (outputSwitchMap.containsKey(btype))
-			{
-			    cmdline.add(outputSwitchMap.get(btype));
-			}
-		    }
-		    if (cd2outputDirSet.contains(converterName))
-		    {
-			String fn = outputFile.substring(outputFile.lastIndexOf(File.separator)+1);
-			cmdline.add(fn);
-		    }
-		    else
-		    {
-			cmdline.add(outputFile);
-		    }
-		    break;
-		case 's':
-		    // add silent switch
-		    if (silentSwitchMap.containsKey(converterName))
-		    {
-			cmdline.add(silentSwitchMap.get(converterName));
-		    }
-
-		    // add switches to commandline
-		    Hashtable sm = (Hashtable) stringSwitchMap.get(converterName);
-		    Hashtable nm = (Hashtable) numberSwitchMap.get(converterName);
-		    Hashtable bm = (Hashtable) booleanSwitchMap.get(converterName);
-		    Iterator it = request.getParameters().iterator();
-		    while (it.hasNext())
-		    {
-			RequestParameter rp = (RequestParameter) it.next();
-			if (reservedParameters.indexOf(rp.key) == -1)
-			{
-			    // string
-			    if (sm != null && sm.containsKey(rp.key))
-			    {
-				cmdline.add(sm.get(rp.key));
-				cmdline.add(rp.val);
-			    }
-			    // number
-			    else if (nm != null && nm.containsKey(rp.key))
-			    {
-				cmdline.add(nm.get(rp.key));
-				cmdline.add(rp.val);
-			    }
-			    // boolean
-			    else if (bm != null && bm.containsKey(rp.key))
-			    {
-				cmdline.add(bm.get(rp.key));
-			    }
-			}
-		    }
-		    break;
-		default:
-		    // TODO throw exception
-		    break;
-	    }
+        // can handle input?
+        c = (Collection) inputTypeMap.get(req.getInputType());
+        if (c == null) {
+            return false;
 	}
-	if (log.isDebugEnabled()) log.debug("cmdline: "+cmdline);
-
-	// prepare command
-	String[] cmd = (String[]) cmdline.toArray(new String[0]);
-	File dir = null;
-	if (cd2outputDirSet.contains(converterName))
-	{
-	    String dn = outputFile.substring(0, outputFile.lastIndexOf(File.separator));
-	    dir = new File(dn);
+        conv.addAll(c);
+        if (conv.size() == 0) {
+            return false;
 	}
 
-	// run system command
-	QueuedProcess proc = null;
-	try
-	{
-	    proc = new QueuedProcess(cmd, null, dir);
-	    // wait for command to finish
-	    exitValue = proc.exitValue();
+        // can handle output?
+        c = (Collection) inputTypeMap.get(req.getInputType());
+        if (c == null) {
+            return false;
 	}
-	catch (Exception e)
-	{
-	    errorMessage = e.getMessage();
-	}
-	if (proc != null)
-	{
-	    errorMessage = proc.getErrorLog();
-	}
-    }
-
-    public boolean canConvert (Request req)
-    {
-	Set conv = new HashSet();
-	Collection c;
-	Iterator it;
-
-	// can handle input?
-	c = (Collection) inputTypeMap.get(req.getInputType());
-	if (c == null) return false;
-	conv.addAll(c);
-	if (conv.size() == 0) return false;
-
-	// can handle output?
-	c = (Collection) inputTypeMap.get(req.getInputType());
-	if (c == null) return false;
-	conv.retainAll(c);
-	if (conv.size() == 0) return false;
-
-	// supports all parameters?
-	it = req.getParameterKeys().iterator();
-	while (it.hasNext())
-	{
-	    String key = (String) it.next();
-	    if (reservedParameters.indexOf(key) == -1)
-	    {
-		c = (Collection) parameterMap.get(key);
-		if (c == null) return false;
-		conv.retainAll(c);
-		if (conv.size() == 0) return false;
-	    }
+        conv.retainAll(c);
+        if (conv.size() == 0) {
+            return false;
 	}
 
-	// determine which is "best"
-	// TODO add weight parameter
-	it = conv.iterator();
-	converterName = (String) it.next();
+        // supports all parameters?
+        it = req.getParameterKeys().iterator();
+        while (it.hasNext()) {
+            String key = (String) it.next();
+            if (reservedParameters.indexOf(key) == -1) {
+                c = (Collection) parameterMap.get(key);
+                if (c == null) {
+                    return false;
+		}
+                conv.retainAll(c);
+                if (conv.size() == 0) {
+                    return false;
+		}
+            }
+        }
 
-	log.debug("appropriate converter: "+converterName);
-	return true;
+        // determine which is "best"
+        // TODO add weight parameter
+        it = conv.iterator();
+        converterName = (String) it.next();
+
+        log.debug("appropriate converter: "+converterName);
+        return true;
     }
 
-    public void setRequest (Request req)
-    {
-	request = req;
+    public void setRequest (Request req) {
+        request = req;
     }
 
-    public boolean exitSuccess ()
-    {
-	if (! finished) throw new IllegalStateException();
-	return ignoreExitstatSet.contains(converterName)
-		|| (exitValue == 0);
+    public boolean exitSuccess () {
+        if (! finished) {
+            throw new IllegalStateException();
+	}
+        return ignoreExitstatSet.contains(converterName)
+               || (exitValue == 0);
     }
 
-    public String getErrorMessage ()
-    {
-	if (! finished) throw new IllegalStateException();
-	return errorMessage;
+    public String getErrorMessage () {
+        if (! finished) {
+            throw new IllegalStateException();
+	}
+        return errorMessage;
     }
 
-    public void setOutputFile (String fn)
-    {
-	if (started) throw new IllegalStateException();
-	outputFile = fn;
+    public void setOutputFile (String fn) {
+        if (started) {
+            throw new IllegalStateException();
+	}
+        outputFile = fn;
     }
 
-    public String getOutputFile ()
-    {
-	return outputFile;
+    public String getOutputFile () {
+        return outputFile;
     }
 
-    public boolean hasFinished ()
-    {
-	return finished;
+    public boolean hasFinished () {
+        return finished;
     }
 
 }

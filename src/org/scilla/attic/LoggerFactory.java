@@ -29,11 +29,10 @@ import java.lang.reflect.Method;
 /**
  * The scilla logger factory.
  *
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @author R.W. van 't Veer
  */
-public class LoggerFactory
-{
+public class LoggerFactory {
     static Logger log = null;
 
     private static Class loggerClass = null;
@@ -42,69 +41,61 @@ public class LoggerFactory
     /**
      * Need the classloader to pick up configuration files.
      */
-    private LoggerFactory ()
-    {
-	// see if we can load the log4j logger
-	try
-	{
-	    loggerClass = this.getClass().forName("org.scilla.LoggerLog4jImpl");
-	    Logger virgin = (Logger) loggerClass.newInstance();
-	    virgin.configure();
-	    getInstanceMethod = loggerClass.getMethod("getInstance", new Class[] { Class.class });
-	}
-	catch (Throwable t) { t.printStackTrace(); /* nop */ }
+    private LoggerFactory () {
+        // see if we can load the log4j logger
+        try {
+            loggerClass = this.getClass().forName("org.scilla.LoggerLog4jImpl");
+            Logger virgin = (Logger) loggerClass.newInstance();
+            virgin.configure();
+            getInstanceMethod = loggerClass.getMethod("getInstance", new Class[] { Class.class });
+        } catch (Throwable t) {
+            t.printStackTrace(); /* nop */
+        }
 
-	// fallback to simple logger
-	if (getInstanceMethod == null)
-	{
-	    try
-	    {
-		getInstanceMethod = LoggerSimpleImpl.class.getMethod("getInstance", new Class[] { Class.class });
-	    }
-	    catch (Throwable t) // logging is dead
-	    {
-		t.printStackTrace();
-	    }
-	}
+        // fallback to simple logger
+        if (getInstanceMethod == null) {
+            try {
+                getInstanceMethod = LoggerSimpleImpl.class.getMethod("getInstance", new Class[] { Class.class });
+            } catch (Throwable t) // logging is dead
+            {
+                t.printStackTrace();
+            }
+        }
 
-	// try to say hi
-	try
-	{
-	    log = (Logger) getInstanceMethod.invoke(null, new Object[] { LoggerFactory.class });
-	    log.info("---> LOGGING STARTED <---");
-	}
-	catch (Throwable t)
-	{
-	    t.printStackTrace();
-	}
+        // try to say hi
+        try {
+            log = (Logger) getInstanceMethod.invoke(null, new Object[] { LoggerFactory.class });
+            log.info("---> LOGGING STARTED <---");
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
     }
 
     private static LoggerFactory _instance = null;
     private volatile static boolean configuredFlag = false;
 
-    private static synchronized void configure ()
-    {
-	if (_instance == null)
-	{
-	    _instance = new LoggerFactory();
-	    configuredFlag = true;
-	}
+    private static synchronized void configure () {
+        if (_instance == null) {
+            _instance = new LoggerFactory();
+            configuredFlag = true;
+        }
     }
 
     /**
      * Get logger for class.
      * @return logger object
      */
-    public static synchronized Logger get (Class clazz)
-    {
-	if (! configuredFlag) LoggerFactory.configure();
+    public static synchronized Logger get
+        (Class clazz) {
+        if (! configuredFlag)
+            LoggerFactory.configure();
 
-	Logger log = null;
-	try
-	{
-	    log = (Logger) getInstanceMethod.invoke(null, new Object[] { clazz });
-	}
-	catch (Throwable t) { /* nop */ }
-	return log;
+        Logger log = null;
+        try {
+            log = (Logger) getInstanceMethod.invoke(null, new Object[] { clazz });
+        } catch (Throwable t) {
+	    // ignore
+        }
+        return log;
     }
 }

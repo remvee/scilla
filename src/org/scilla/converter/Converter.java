@@ -32,10 +32,9 @@ import org.scilla.core.*;
  * Converter interface.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
-public interface Converter
-{
+public interface Converter {
     /**
      * start conversion
      */

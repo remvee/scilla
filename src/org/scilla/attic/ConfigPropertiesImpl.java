@@ -32,11 +32,10 @@ import java.io.IOException;
 /**
  * The scilla configuration implementation using property files.
  *
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  * @author R.W. van 't Veer
  */
-public class ConfigPropertiesImpl implements Config
-{
+public class ConfigPropertiesImpl implements Config {
     private static final Logger log = LoggerFactory.get(ConfigPropertiesImpl.class);
 
     /** name of configuration file */
@@ -44,137 +43,117 @@ public class ConfigPropertiesImpl implements Config
 
     private final Properties prop = new Properties();
 
-    public ConfigPropertiesImpl ()
-    {
-	InputStream in = null;
+    public ConfigPropertiesImpl () {
+        InputStream in = null;
 
-	// read property file
-	try
-	{
-	    ClassLoader cl = this.getClass().getClassLoader();
-	    in = cl.getResourceAsStream(PROPERTY_FILE);
-	    if (in != null)
-	    {
-		prop.load(in);
-		log.debug("properties loaded: "+PROPERTY_FILE);
-	    }
-	    else
-	    {
-		log.fatal("properties not avialable: "+PROPERTY_FILE);
-	    }
+        // read property file
+        try {
+            ClassLoader cl = this.getClass().getClassLoader();
+            in = cl.getResourceAsStream(PROPERTY_FILE);
+            if (in != null) {
+                prop.load(in);
+                log.debug("properties loaded: "+PROPERTY_FILE);
+            } else {
+                log.fatal("properties not avialable: "+PROPERTY_FILE);
+            }
 
-	}
-	catch (IOException ex)
-	{
-	    log.fatal("can't load properties: " + PROPERTY_FILE, ex);
-	}
-	finally
-	{
-	    if (in != null)
-	    {
-		try { in.close(); }
-		catch (IOException e) { log.warn(e); }
-	    }
-	}
+        } catch (IOException ex) {
+            log.fatal("can't load properties: " + PROPERTY_FILE, ex);
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    log.warn(e);
+                }
+            }
+        }
     }
 
-// cache for expensive operations
+    // cache for expensive operations
     private final Hashtable stringArrays = new Hashtable();
     private final Hashtable classArrays = new Hashtable();
     private final Hashtable[] cache = { stringArrays, classArrays };
 
-// accessors
-    public Enumeration keys ()
-    {
-	return prop.propertyNames();
+    // accessors
+    public Enumeration keys () {
+        return prop.propertyNames();
     }
 
-    public boolean exists (String key)
-    {
-	return prop.containsKey(key);
+    public boolean exists (String key) {
+        return prop.containsKey(key);
     }
 
-    public boolean getBoolean (String key)
-    {
-	return Boolean.valueOf(prop.getProperty(key)).booleanValue();
+    public boolean getBoolean (String key) {
+        return Boolean.valueOf(prop.getProperty(key)).booleanValue();
     }
 
     public int getInt (String key)
-    throws NumberFormatException
-    {
-	return Integer.parseInt(prop.getProperty(key));
+    throws NumberFormatException {
+        return Integer.parseInt(prop.getProperty(key));
     }
 
-    public String getString (String key)
-    {
-	return prop.getProperty(key);
+    public String getString (String key) {
+        return prop.getProperty(key);
     }
 
-    public String[] getStringArray (String key, String delim)
-    {
-	if (stringArrays.containsKey(key))
-	{
-	    return (String[]) stringArrays.get(key);
-	}
+    public String[] getStringArray (String key, String delim) {
+        if (stringArrays.containsKey(key)) {
+            return (String[]) stringArrays.get(key);
+        }
 
-	String s = prop.getProperty(key);
-	if (s == null) return null;
+        String s = prop.getProperty(key);
+        if (s == null)
+            return null;
 
-	StringTokenizer st = new StringTokenizer(s, delim);
-	Vector v = new Vector();
-	while (st.hasMoreTokens())
-	{
-	    v.add(st.nextToken());
-	}
-	String[] val = (String[]) v.toArray(new String[0]);
+        StringTokenizer st = new StringTokenizer(s, delim);
+        Vector v = new Vector();
+        while (st.hasMoreTokens()) {
+            v.add(st.nextToken());
+        }
+        String[] val = (String[]) v.toArray(new String[0]);
 
-	stringArrays.put(key, val);
-	return val;
+        stringArrays.put(key, val);
+        return val;
     }
 
-    public Class[] getClasses (String key)
-    {
-	if (classArrays.containsKey(key))
-	{
-	    return (Class[]) classArrays.get(key);
-	}
+    public Class[] getClasses (String key) {
+        if (classArrays.containsKey(key)) {
+            return (Class[]) classArrays.get(key);
+        }
 
-	String s = prop.getProperty(key);
-	if (s == null) return null;
+        String s = prop.getProperty(key);
+        if (s == null)
+            return null;
 
-	StringTokenizer st = new StringTokenizer(s, ",:; \t\r\n");
-	Vector v = new Vector();
-	while (st.hasMoreTokens())
-	{
-	    String cn = null;
-	    try
-	    {
-		cn = st.nextToken();
-		v.add(Class.forName(cn));
-	    }
-	    catch (Throwable ex)
-	    {
-		log.warn("getClasses("+key+"): "+cn+": "+ex);
-		log.debug("", ex);
-	    }
-	}
-	Class[] val = (Class[]) v.toArray(new Class[0]);
+        StringTokenizer st = new StringTokenizer(s, ",:; \t\r\n");
+        Vector v = new Vector();
+        while (st.hasMoreTokens()) {
+            String cn = null;
+            try {
+                cn = st.nextToken();
+                v.add(Class.forName(cn));
+            } catch (Throwable ex) {
+                log.warn("getClasses("+key+"): "+cn+": "+ex);
+                log.debug("", ex);
+            }
+        }
+        Class[] val = (Class[]) v.toArray(new Class[0]);
 
-	classArrays.put(key, val);
-	return val;
+        classArrays.put(key, val);
+        return val;
     }
 
-// modifiers
-    public void setString (String key, String val)
-    {
-	log.debug("setString: "+key+"="+val);
+    // modifiers
+    public void setString (String key, String val) {
+        log.debug("setString: "+key+"="+val);
 
-	// see if we cache some array
-	for (int i = 0; i < cache.length; i++)
-	{
-	    Hashtable ht = cache[i];
-	    if (ht.containsKey(key)) ht.remove(key);
-	}
-	prop.setProperty(key, val);
+        // see if we cache some array
+        for (int i = 0; i < cache.length; i++) {
+            Hashtable ht = cache[i];
+            if (ht.containsKey(key))
+                ht.remove(key);
+        }
+        prop.setProperty(key, val);
     }
 }
