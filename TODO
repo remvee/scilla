@@ -1,4 +1,6 @@
 For version 1.0:
+- servlet:
+    setContentLength not set on normal request..
 - scilla taglib, load media via
 	config.getServletContext().getResourceAsStream("spam.jpg")
     image tag:
