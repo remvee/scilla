@@ -19,7 +19,7 @@
   <property name="excludes.file" value="excludes.txt"/>
 
 <!-- for documentation building -->
-  <property name="doc.dir"           value="doc"/>
+  <property name="apidoc.dir"        value="doc"/>
   <property name="doc.title"         value="scilla API documentation"/>
   <property name="doc.pkgnames"      value="org.scilla.*"/>
   <property name="doc.apidocurl.jdk" value="http://java.sun.com/products/jdk/1.3/docs/api/"/>
@@ -30,7 +30,7 @@
 
 <!-- targets -->
   <target name="prepare">
-    <mkdir dir="${doc.dir}"/>
+    <mkdir dir="${apidoc.dir}"/>
     <mkdir dir="${build.dir}"/>
     <available property="jai.inclasspath" classname="javax.media.jai.JAI"/>
     <available property="log4j.inclasspath" classname="org.apache.log4j.Category"/>
@@ -82,8 +82,8 @@
     <jar jarfile="${jar.file}" basedir="${build.dir}"/>
   </target>
 
-  <target name="doc" depends="prepare">
-    <javadoc sourcepath="${src.dir}" destdir="${doc.dir}"
+  <target name="apidoc" depends="prepare">
+    <javadoc sourcepath="${src.dir}" destdir="${apidoc.dir}"
 	windowtitle="${doc.title}" packagenames="${doc.pkgnames}">
 	<link href="${doc.apidocurl.jdk}"/>
     </javadoc>
@@ -117,7 +117,7 @@
       <fileset dir="." includes="**/*.bak"/>
     </delete>
     <delete dir="${build.dir}"/>
-    <delete dir="${doc.dir}"/>
+    <delete dir="${apidoc.dir}"/>
     <delete file="${jar.file}"/>
     <delete file="${excludes.file}"/>
     <delete file="tags"/>

@@ -21,17 +21,17 @@
   <property name="scilla.project" value=".."/>
 
   <!-- deployment hierarchy -->
-  <property name="deploy.dir"   value="${tomcat.home}/webapps/${app.name}"/>
-  <property name="webinf.dir"   value="${deploy.dir}/WEB-INF"/>
-  <property name="build.dir"    value="${webinf.dir}/classes"/>
-  <property name="lib.dir"      value="${webinf.dir}/lib"/>
-
+  <property name="deploy.dir" value="${tomcat.home}/webapps/${app.name}"/>
+  <property name="webinf.dir" value="${deploy.dir}/WEB-INF"/>
+  <property name="build.dir"  value="${webinf.dir}/classes"/>
+  <property name="lib.dir"    value="${webinf.dir}/lib"/>
+  <property name="apidoc.dir" value="${deploy.dir}/doc"/>
 
 
 <!-- targets -->
 
 
-  <target name="all" depends="prepare,scilla,compile">
+  <target name="all" depends="prepare,scilla,compile,apidoc">
     <echo>FIN</echo>
   </target>
 
@@ -66,6 +66,7 @@
     <!-- create cache dir for scilla -->
     <mkdir dir="${cache.dir}"/>
 
+    <available property="apidoc.done" file="${apidoc.dir}"/>
   </target>
 
 
@@ -76,6 +77,13 @@
 	<include name="**/*.properties"/>
       </fileset>
     </copy>
+  </target>
+
+
+  <target name="apidoc" depends="prepare" unless="apidoc.done">
+    <ant dir="${scilla.project}" target="apidoc">
+	<property name="apidoc.dir" value="${apidoc.dir}"/>
+    </ant>
   </target>
 
 
