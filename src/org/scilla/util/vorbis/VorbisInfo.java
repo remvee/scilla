@@ -31,7 +31,7 @@ import java.util.Set;
 
 /**
  * @author Remco van 't Veer
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class VorbisInfo {
     public final String PAGE_MARKER = "OggS";
@@ -102,9 +102,13 @@ public class VorbisInfo {
 		    d[j] = data[pos++];
 		}
 		String v = new String(d, "UTF-8");
-		String key = v.substring(0, v.indexOf('=')).toLowerCase();
-		String val = v.substring(v.indexOf('=') + 1);
-		commentMap.put(key, val);
+
+		int p = v.indexOf('=');
+		if (p != -1) {
+		    String key = v.substring(0, p).toLowerCase();
+		    String val = v.substring(p + 1);
+		    commentMap.put(key, val);
+		}
 	    }
 	}
 	// goto last frame
