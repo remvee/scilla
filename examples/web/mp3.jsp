@@ -15,11 +15,14 @@ throws IOException
     String encoding = (request.getRemoteHost().equals("localhost")
 	    || request.getRemoteHost().equals("127.0.0.1"))
 	    ? "file" : "stream";
+    String imgSrc = "servlet/sservlet/speaker.png?scale=14x14&outputtype=gif";
     out.println("<A href=\"servlet/playlist.m3u"+
 	    "?f="+encoding+
 	    "&d="+pathEncoded+
 	    (recursive ? "&r=1" : "")+
-	    "\">Play</A>");
+	    "\">"+
+	    "<IMG src=\""+imgSrc+"\" alt=\"play\" border=0>"+
+	    "</A>");
 }
 
 %>
@@ -200,25 +203,43 @@ throws IOException
 	{
 %>
 		<TD align="left" valign="top">
+		    <TABLE>
 <%
 	    while (e1.hasMoreElements())
 	    {
 		String s = (String) e1.nextElement();
 		String sEncoded = (path + "/" + s).replace(' ', '+');
 %>
-		    <BR><A href="mp3.jsp?d=<%= sEncoded %>"><%= s %></A>/
+			<TR>
+			    <TD>
+				<A href="mp3.jsp?d=<%= sEncoded %>"><%= s %></A>/
+			    </TD>
+			    <TD>
 <%
 		streamLinks(request, out, path+"/"+s, true);
+%>
+			    </TD>
+			</TR>
+<%
 	    }
 	    while (e2.hasMoreElements())
 	    {
 		String s = (String) e2.nextElement();
 %>
-		    <BR><%=s.substring(0, s.lastIndexOf('.'))%>
+			<TR>
+			    <TD>
+				<%=s.substring(0, s.lastIndexOf('.'))%>
+			    </TD>
+			    <TD>
 <%
 		streamLinks(request, out, path+"/"+s);
+%>
+			    </TD>
+			</TR>
+<%
 	    }
 %>
+		    </TABLE>
 		</TD>
 <%
 	}
