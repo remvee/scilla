@@ -33,7 +33,7 @@ import org.scilla.util.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  * @author R.W. van 't Veer
  */
 public class CacheManager implements RunnerChangeListener {
@@ -50,8 +50,9 @@ public class CacheManager implements RunnerChangeListener {
      * @return CacheManager for this scilla instance
      */
     public static synchronized CacheManager getInstance () {
-        if (_instance == null)
+        if (_instance == null) {
             _instance = new CacheManager();
+	}
         return _instance;
     }
 
@@ -63,55 +64,54 @@ public class CacheManager implements RunnerChangeListener {
      * @return requested object
      * @throws ScillaException when object creation failed
      */
-    public MediaObject get
-        (Request req)
-        throws ScillaException {
-            MediaObject obj = null;
+    public MediaObject get (Request req)
+    throws ScillaException {
+	MediaObject obj = null;
 
-            String ofn = getCacheFilename(req);
-            File ifile = new File(req.getInputFile());
-            File ofile = new File(ofn);
+	String ofn = getCacheFilename(req);
+	File ifile = new File(req.getInputFile());
+	File ofile = new File(ofn);
 
-            // does source really exist
-            if (!ifile.exists()) {
-                throw new ScillaNoInputException();
-            }
-            // conversion still running?
-            obj = (RunnerObject) runners.get(ofn);
-            if (obj != null) {
-                log.debug("existing runner: "+obj);
-                obj = new CachedObject(ofn, (RunnerObject) obj);
-                log.debug("get="+obj);
-                return obj;
-            }
-            // output in cache and source not newer than cache
-            if (ofile.exists() && ifile.lastModified() < ofile.lastModified()) {
-                obj = new CachedObject(ofn);
-                log.debug("get="+obj);
-                return obj;
-            }
-            // create new MediaObject
-            obj = MediaFactory.createObject(req, ofn);
-            if (obj instanceof RunnerObject) {
-                RunnerObject ro = (RunnerObject) obj;
+	// does source really exist
+	if (!ifile.exists()) {
+	    throw new ScillaNoInputException();
+	}
+	// conversion still running?
+	obj = (RunnerObject) runners.get(ofn);
+	if (obj != null) {
+	    log.debug("existing runner: "+obj);
+	    obj = new CachedObject(ofn, (RunnerObject) obj);
+	    log.debug("get="+obj);
+	    return obj;
+	}
+	// output in cache and source not newer than cache
+	if (ofile.exists() && ifile.lastModified() < ofile.lastModified()) {
+	    obj = new CachedObject(ofn);
+	    log.debug("get="+obj);
+	    return obj;
+	}
+	// create new MediaObject
+	obj = MediaFactory.createObject(req, ofn);
+	if (obj instanceof RunnerObject) {
+	    RunnerObject ro = (RunnerObject) obj;
 
-                // make sure output file can be writen
-                ensureCacheDirectoryFor(ofn);
+	    // make sure output file can be writen
+	    ensureCacheDirectoryFor(ofn);
 
-                // register change listener
-                runners.put(ofn, ro);
-                ro.addRunnerChangeListener(this);
+	    // register change listener
+	    runners.put(ofn, ro);
+	    ro.addRunnerChangeListener(this);
 
-                // add runner to list and start converter
-                ro.start();
+	    // add runner to list and start converter
+	    ro.start();
 
-                log.debug("get="+obj);
-                return obj;
-            }
+	    log.debug("get="+obj);
+	    return obj;
+	}
 
-	    // not a runner probably original
-            return obj;
-        }
+	// not a runner probably original
+	return obj;
+    }
 
     public void runnerChange (RunnerObject ro, int code) {
         log.debug("runnerChange: "+ro+", "+code);
@@ -136,7 +136,7 @@ public class CacheManager implements RunnerChangeListener {
         }
     }
 
-    String getCacheFilename (Request req) {
+    private String getCacheFilename (Request req) {
         StringBuffer result = new StringBuffer(req.getSource());
         result.append("?");
 
@@ -203,7 +203,7 @@ public class CacheManager implements RunnerChangeListener {
         return fn;
     }
 
-    void ensureCacheDirectoryFor (String fn) {
+    private void ensureCacheDirectoryFor (String fn) {
         String path = fn.substring(0, fn.lastIndexOf(File.separator));
         (new File(path)).mkdirs();
     }
