@@ -1,7 +1,21 @@
 For version 1.0:
-- Servlet:
-    don't hard code only source and cache dir, but allow all
-    properties to be set.
+- Installer:
+    - executable jar
+	- META-INF/MANIFEST.MF: making it execute Configure.class
+	- Confugure.class
+	- scilla.war
+	- data/: from data/source
+    - Configure
+	- get all init-param's from web.xml
+	- confirm all values; descriptions, default values from
+	  param-value (except source.dir which is cwd), empty
+	  value illegal
+	- test/create source.dir
+	- copy data files to source.dir
+	- write war and replace web.xml
+- RequestFactory:
+    - command line
+    - xml for a ant task
 - JAIConverter
     - sync parameters with imagick so they will be interchangable.
       Maybe we want to define parameter sets as kind of interface?
