@@ -27,13 +27,12 @@ import java.util.*;
 /**
  * EXIF.
  *
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @author R.W. van 't Veer
  */
 public class Exif extends HashMap {
-    private boolean littleEndian;
-    private byte[] data;
-
+    private TiffHeader tiff;
+    
     private static final int EXIF_T_EXIFIFD = 0x8769;
     private static final int EXIF_T_GPSIFD = 0x8825;
     private static final int EXIF_T_INTEROP = 0xa005;
@@ -47,7 +46,7 @@ public class Exif extends HashMap {
 	labels.put(new Integer(0x0103), "EXIFCompression");
 	labels.put(new Integer(0x0106), "EXIFPhotometricInterpretation");
 	labels.put(new Integer(0x010a), "EXIFFillOrder");
-	labels.put(new Integer(0x010d), "EXIFDocumentName");
+	labels.put(new Integer(0x010d), "EXentryocumentName");
 	labels.put(new Integer(0x010e), "EXIFImageDescription");
 	labels.put(new Integer(0x010f), "EXIFMake");
 	labels.put(new Integer(0x0110), "EXIFModel");
@@ -62,7 +61,7 @@ public class Exif extends HashMap {
 	labels.put(new Integer(0x0128), "EXIFResolutionUnit");
 	labels.put(new Integer(0x012d), "EXIFTransferFunction");
 	labels.put(new Integer(0x0131), "EXIFSoftware");
-	labels.put(new Integer(0x0132), "EXIFDateTime");
+	labels.put(new Integer(0x0132), "EXentryateTime");
 	labels.put(new Integer(0x013b), "EXIFArtist");
 	labels.put(new Integer(0x013e), "EXIFWhitePoint");
 	labels.put(new Integer(0x013f), "EXIFPrimaryChromaticities");
@@ -89,8 +88,8 @@ public class Exif extends HashMap {
 	labels.put(new Integer(0x8827), "EXIFISOSpeedRatings");
 	labels.put(new Integer(0x8828), "EXIFOECF");
 	labels.put(new Integer(0x9000), "EXIFExifVersion");
-	labels.put(new Integer(0x9003), "EXIFDateTimeOriginal");
-	labels.put(new Integer(0x9004), "EXIFDateTimeDigitized");
+	labels.put(new Integer(0x9003), "EXentryateTimeOriginal");
+	labels.put(new Integer(0x9004), "EXentryateTimeDigitized");
 	labels.put(new Integer(0x9101), "EXIFComponentsConfiguration");
 	labels.put(new Integer(0x9102), "EXIFCompressedBitsPerPixel");
 	labels.put(new Integer(0x9201), "EXIFShutterSpeedValue");
@@ -129,271 +128,41 @@ public class Exif extends HashMap {
 	labels.put(new Integer(0xa401), "EXIFCustomRendered");
 	labels.put(new Integer(0xa402), "EXIFExposureMode");
 	labels.put(new Integer(0xa403), "EXIFWhiteBalance");
-	labels.put(new Integer(0xa404), "EXIFDigitalZoomRatio");
+	labels.put(new Integer(0xa404), "EXentryigitalZoomRatio");
 	labels.put(new Integer(0xa405), "EXIFFocalLenIn35mmFilm");
 	labels.put(new Integer(0xa406), "EXIFSceneCaptureType");
 	labels.put(new Integer(0xa407), "EXIFGainControl");
 	labels.put(new Integer(0xa408), "EXIFContrast");
 	labels.put(new Integer(0xa409), "EXIFSaturation");
 	labels.put(new Integer(0xa40a), "EXIFSharpness");
-	labels.put(new Integer(0xa40b), "EXIFDeviceSettingDescr");
+	labels.put(new Integer(0xa40b), "EXentryeviceSettingDescr");
 	labels.put(new Integer(0xa40c), "EXIFSubjectDistRange");
 	labels.put(new Integer(0xa420), "EXIFImageUniqueID");
 	labels.put(new Integer(0xffff), "EXIFUnknown");
     }
 
-    public Exif (byte[] in)
+    public Exif (byte[] data)
     throws IOException {
 	super();
+        this.tiff = new TiffHeader(data);
 
-	int pos = 0;
-	data = in;
-
-	// determine byte order
-	{
-	    int c1 = read1ByteInt(data, pos);
-	    pos++;
-	    int c2 = read1ByteInt(data, pos);
-	    pos++;
-	    if (c1 == 'I' && c2 == 'I') {
-		littleEndian = true;
-	    } else if (c1 == 'M' && c2 == 'M') {
-		littleEndian = false;
-	    } else {
-		throw new IOException("not a tiff; missing II or MM");
-	    }
-	}
-
-	// verify endianess
-	if (read2ByteInt(data, pos) != 42) {
-	    throw new IOException("not a tiff; byte order broken");
-	}
-	pos += 2;
-
-	// goto first IFD
-	pos = read4ByteInt(data, pos);
-
-	// read all IFDs
-	List ifds = new ArrayList();
-	List exififds = new ArrayList();
-	readIfds(data, pos, ifds, exififds);
-
-	// process exif ifds
-	for (Iterator it = exififds.iterator(); it.hasNext();) {
-	    IFD ifd = (IFD) it.next();
-	    int ipos = (int) ((Long) ifd.val).longValue();
-	    readIfds(data, ipos, ifds, null);
-	}
-
-	// put ifds in map
-	for (Iterator it = ifds.iterator(); it.hasNext();) {
-	    IFD ifd = (IFD) it.next();
-	    String key = (String) labels.get(new Integer(ifd.tag));
-	    Object val = ifd.val;
-	    put(key, val);
-	}
-    }
-
-    private int read1ByteInt (byte[] data, int pos) {
-	return data[pos] & 0xff;
-    }
-
-    private int read2ByteInt (byte[] data, int pos) {
-	int n1 = data[pos++] & 0xff;
-	int n2 = data[pos] & 0xff;
-
-	return littleEndian
-		? ((n2 << 8) | n1)
-		: ((n1 << 8) | n2);
-    }
-
-    private int read4ByteInt (byte[] data, int pos) {
-	int n1 = data[pos++] & 0xff;
-	int n2 = data[pos++] & 0xff;
-	int n3 = data[pos++] & 0xff;
-	int n4 = data[pos] & 0xff;
-
-	return littleEndian
-		? ((n4 << 24) | (n3 << 16) | (n2 << 8) | n1)
-		: ((n1 << 24) | (n2 << 16) | (n3 << 8) | n4);
-    }
-
-    private void readIfds(byte[] data, int pos, List ifds, List exififds) {
-        int p = pos;
-	while (p != 0) {
-	    int num = read2ByteInt(data, p);
-	    p += 2;
-
-	    for (int i = 0; i < num; i++) {
-		IFD ifd = new IFD(data, p);
-		p += 12;
-
-		ifds.add(ifd);
-
-		if (exififds != null) {
-		    switch (ifd.tag) {
-			case EXIF_T_EXIFIFD:
-			case EXIF_T_GPSIFD:
-			case EXIF_T_INTEROP:
-			    exififds.add(ifd);
-                        default:
-		    }
-		}
-	    }
-
-	    p = read4ByteInt(data, p);
-	}
-    }
-
-    private class IFD {
-	int tag;
-	int type;
-	int len;
-	int voffset;
-	byte[] data;
-	Object val;
-
-	IFD (byte[] idata, int pos) {
-	    data = idata;
-
-	    tag = read2ByteInt(data, pos);
-	    pos += 2;
-	    type = read2ByteInt(data, pos);
-	    pos += 2;
-	    len = read4ByteInt(data, pos);
-	    pos += 4;
-	    voffset = read4ByteInt(data, pos);
-
-	    // read value
-	    val = null;
-	    switch (type) {
-		case 1: // BYTE
-		case 6: // SIGNED BYTE
-		    if (len == 1) {
-			short v = (short) (voffset & 0xff);
-			val = new Short(isSigned(type) ? signedByte(v) : v);
-		    } else {
-			int p = len > 4 ? voffset : pos;
-			byte[] d = new byte[len];
-			for (int i = 0; i < len; i++) {
-			    d[i] = data[p++];
-			}
-			val = d;
-		    }
-		    break;
-		case 2: // ASCII
-		    {
-			int i = len > 4 ? voffset : pos;
-			StringBuffer sb = new StringBuffer();
-			for (; data[i] != 0; i++) {
-			    sb.append((char) data[i]);
-			}
-			val = sb.toString();
-		    }
-		    break;
-		case 3: // SHORT 16-bit unsigned
-		case 8: // SSHORT 16-bit signed
-		    if (len == 1) {
-			int v = voffset & 0xffff;
-			val = new Integer(isSigned(type) ? signedShort(v) : v);
-		    } else {
-			int p = len > 2 ? voffset : pos;
-			int[] d = new int[len];
-			for (int i = 0; i < len; i++) {
-			    int v = read2ByteInt(data, p);
-			    d[i] = isSigned(type) ? signedShort(v) : v;
-			    p += 2;
-			}
-			val = d;
-		    }
-		    break;
-		case 4: // LONG 32-bit unsigned
-		case 9: // SLONG 32-bit signed
-		    if (len == 1) {
-			long v = voffset & 0xffffffff;
-			val = new Long(isSigned(type) ? signedLong(v) : v);
-		    } else {
-			int p = len > 1 ? voffset : pos;
-			long[] d = new long[len];
-			for (int i = 0; i < len; i++) {
-			    long v = read4ByteInt(data, p);
-			    d[i] = isSigned(type) ? signedLong(v) : v;
-			    p += 4;
-			}
-			val = d;
-		    }
-		    break;
-		case 5: // RATIONAL
-		case 10: // SRATIONAL
-		    if (len == 1) {
-			long numerator = (long) read4ByteInt(data, voffset);
-			long denominator = (long) read4ByteInt(data, voffset + 4);
-			if (isSigned(type)) {
-			    numerator = signedLong(numerator);
-			    denominator = signedLong(denominator);
-			}
-			val = new Rational(numerator, denominator);
-		    }
-		    break;
-		case 7: // UNDEF
-		    val = null;
-		    break;
-		case 11: // FLOAT
-		    val = "IMPLEMENT FLOAT!";
-		    break;
-		case 12: // DOUBLE
-		    val = "IMPLEMENT DOUBLE!";
-		    break;
-		default: // UNKNOWN
-		    val = "UNKNOWN";
-	    }
-	}
-    }
-
-    private static boolean isSigned (int type) {
-	switch (type) {
-	    case 6: case 8: case 9: case 10:
-		return true;
-            default:
-                return false;
-	}
-    }
-
-    private static long signedLong (long v) {
-	return (v & 0x80000000L) != 0 ?  v | 0xffffffff00000000L : v;
-    }
-
-    private static int signedShort (int v) {
-	return (v & 0x8000) != 0 ?  v | 0xffff0000 : v;
-    }
-
-    private static short signedByte (short v) {
-	return (v & 0x80) != 0 ? (short) (v | 0xff00) : v;
-    }
-
-    public static class Rational {
-	private long numerator;
-	private long denominator;
-
-	public Rational (long n, long d) {
-	    numerator = n;
-	    denominator = d;
-	}
-
-	public long getNumerator () {
-	    return numerator;
-	}
-
-	public long getDenominator () {
-	    return denominator;
-	}
-
-	public double getDouble () {
-	    return (double) numerator / (double) denominator;
-	}
-
-	public String toString () {
-	    return numerator + "/" + denominator;
-	}
+        // collect exif fields
+        List fields = new ArrayList();
+	for (Iterator it = tiff.getFields().iterator(); it.hasNext();) {
+	    TiffHeader.Field field = (TiffHeader.Field) it.next();
+            int tag = field.getTag();
+            if (tag == EXIF_T_EXIFIFD || tag == EXIF_T_GPSIFD || tag == EXIF_T_INTEROP) {
+                TiffHeader t = new TiffHeader(data, field.getOffset(), tiff.isLittleEndian());
+                fields.addAll(t.getFields());
+            }
+        }
+        
+        // process entrys
+        for (Iterator it = fields.iterator(); it.hasNext();) {
+            TiffHeader.Field field = (TiffHeader.Field) it.next();
+            Object key = labels.get(new Integer(field.getTag()));
+            Object val = field.getValue();
+            put(key, val);
+        }
     }
 }
