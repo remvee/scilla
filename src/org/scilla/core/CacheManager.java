@@ -34,7 +34,7 @@ import org.scilla.util.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  * @author R.W. van 't Veer
  */
 public class CacheManager
@@ -89,6 +89,9 @@ public class CacheManager
 	runners.remove(filename);
     }
 
+    // synchronization object for get method
+    private static Object getMonitor = new Object();
+
     /**
      * Get object from cache.  The CacheManager will lookup a
      * equivalent object in cache.  When no cached object is available
@@ -97,7 +100,7 @@ public class CacheManager
      * @return requested object
      * @throws ScillaException when object creation failed
      */
-    public synchronized MediaObject get (Request req)
+    public MediaObject get (Request req)
     throws ScillaException 
     {
 	MediaObject obj = null;
@@ -107,42 +110,42 @@ public class CacheManager
 	File infile = new File(infilename);
 	File outfile = new File(outfilename);
 
-	// don't cache this object
-	if (! req.allowCaching())
+	// need synchronization for runner list
+	synchronized (getMonitor)
 	{
-	    obj = MediaFactory.createObject(req);
-	}
-	// already have runner
-	else if (getRunner(outfilename) != null)
-	{
-	    obj = new CachedObject(outfilename);
-	}
-	// source exists, output in cache and source not newer than cache
-	else if (infile.exists() && outfile.exists()
-		&& infile.lastModified() < outfile.lastModified())
-	{
-	    obj = new CachedObject(outfilename);
-	}
+	    // don't cache this object
+	    if (! req.allowCaching())
+	    {
+		obj = MediaFactory.createObject(req);
+	    }
+	    // already have runner
+	    else if (getRunner(outfilename) != null)
+	    {
+		obj = new CachedObject(outfilename);
+	    }
+	    // source exists, output in cache and source not newer than cache
+	    else if (infile.exists() && outfile.exists()
+		    && infile.lastModified() < outfile.lastModified())
+	    {
+		obj = new CachedObject(outfilename);
+	    }
+	    else
+	    {
+		// create new MediaObject
+		obj = MediaFactory.createObject(req);
+		if (obj.allowCaching())
+		{
+		    RunnerObject runner = (RunnerObject) obj;
 
-	if (obj != null)
-	{
-	    log.debug("get="+obj);
-	    return obj;
-	}
+		    // configure for caching
+		    ensureCacheDirectoryFor(outfilename);
+		    runner.setOutputFile(outfilename);
+		    runner.setDeleteOutput(false);
 
-	// create new MediaObject
-	obj = MediaFactory.createObject(req);
-	if (obj.allowCaching())
-	{
-	    RunnerObject runner = (RunnerObject) obj;
-
-	    // configure for caching
-	    ensureCacheDirectoryFor(outfilename);
-	    runner.setOutputFile(outfilename);
-	    runner.setDeleteOutput(false);
-
-	    // start converter
-	    runner.start();
+		    // add runner to list and start converter
+		    runner.start();
+		}
+	    }
 	}
 
 	log.debug("get="+obj);

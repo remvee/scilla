@@ -1,7 +1,6 @@
 For version 1.0:
 - include log4j jar 
 - make work with orion
-- make synchronized part of CacheManager.get smaller
 - review threading mess
 - JAIConverter
     - sync parameters with imagick so they will be interchangable.
