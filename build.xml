@@ -54,15 +54,16 @@
 
 
 	<target name="compile" depends="prepare.compile,depend" description="compile java source files">
-		<javac srcdir="${src.dir}" destdir="${build.dir}" excludesfile="${excludes.file}">
-			<classpath refid="build.classpath" />
-		</javac>
 		<copy todir="${build.dir}">
 			<fileset dir="${src.dir}">
 				<include name="**/*.properties" />
 				<include name="**/*.xml" />
+				<include name="**/*.java" />
 			</fileset>
 		</copy>
+		<javac srcdir="${src.dir}" destdir="${build.dir}" excludesfile="${excludes.file}" debug="yes">
+			<classpath refid="build.classpath" />
+		</javac>
 	</target>
 
 
