@@ -1,122 +1,118 @@
 <project name="Scilla Examples" default="deploy" basedir=".">
 
-    <!-- application identifier -->
-    <property name="app.name" value="scilla"/>
-    <property name="war.file" value="scilla.war"/>
+	<!-- application identifier -->
+	<property name="app.name" value="scilla" />
+	<property name="war.file" value="scilla.war" />
 
-    <!-- deployment hierarchy -->
-    <property name="deploy.dir" value="${basedir}/deploy"/>
-    <property name="webinf.dir" value="${deploy.dir}/WEB-INF"/>
-    <property name="webinf.lib.dir" value="${webinf.dir}/lib"/>
-    <property name="classes.dir" value="${webinf.dir}/classes"/>
+	<!-- deployment hierarchy -->
+	<property name="deploy.dir" value="${basedir}/deploy" />
+	<property name="webinf.dir" value="${deploy.dir}/WEB-INF" />
+	<property name="webinf.lib.dir" value="${webinf.dir}/lib" />
+	<property name="classes.dir" value="${webinf.dir}/classes" />
 
-    <!-- example compilation -->
-    <property name="src.dir" value="src"/>
-    <property name="lib.dir" value="lib"/>
-    <property name="lib.runtime.dir" value="lib/runtime"/>
-    <property name="depend.dir" value="depend"/>
+	<!-- example compilation -->
+	<property name="src.dir" value="src" />
+	<property name="lib.dir" value="lib" />
+	<property name="lib.runtime.dir" value="lib/runtime" />
+	<property name="depend.dir" value="depend" />
 
-    <!-- build class path -->
-    <path id="build.classpath">
-	<pathelement location="${classes.dir}"/>
-	<pathelement path="${classpath}"/>
-	<fileset dir="${lib.dir}">
-	    <include name="**/*.jar"/>
-	</fileset>
-    </path>
+	<!-- build class path -->
+	<path id="build.classpath">
+		<pathelement location="${classes.dir}" />
+		<pathelement path="${classpath}" />
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
 
-<!-- targets -->
-    <target name="deploy" depends="scilla,prepare,compile,webxml1,webxml2">
-        <echo>FIN</echo>
-    </target>
-
-
-    <target name="scilla">
-	<ant dir=".." target="jar"/>
-	<copy file="../scilla.jar" todir="${lib.runtime.dir}"/>
-    </target>
+	<!-- targets -->
+	<target name="deploy" depends="scilla,prepare,compile,webxml1,webxml2">
+		<echo>FIN</echo>
+	</target>
 
 
-    <target name="prepare" depends="depend">
-        <!-- copy all JSP and HTML files -->
-        <mkdir  dir="${deploy.dir}"/>
-        <copy todir="${deploy.dir}">
-            <fileset dir="web" excludes="**/*.swp"/>
-        </copy>
-
-        <!-- web-app resources -->
-        <mkdir dir="${webinf.dir}"/>
-
-        <!-- copy the libraries we depend on -->
-        <mkdir dir="${webinf.lib.dir}"/>
-        <copy todir="${webinf.lib.dir}">
-            <fileset dir="${lib.dir}/runtime">
-		<include name="*.jar"/>
-	    </fileset>
-        </copy>
-
-        <!-- copy the tld's -->
-        <mkdir dir="${webinf.dir}"/>
-        <copy todir="${webinf.dir}">
-            <fileset dir="etc/tld"/>
-        </copy>
-
-        <!-- create classes dir for helper classes -->
-        <mkdir dir="${classes.dir}"/>
-    </target>
-
-    <target name="depend"
-	    description="fetch libraries this code depends on from the web">
-        <mkdir dir="${depend.dir}"/>
-
-        <style style="../misc/depend-build.xsl" in="depend.xml" out="depend-build.xml"/>
-        <ant antfile="depend-build.xml">
-            <property name="lib.dir" value="${lib.dir}"/>
-            <property name="work.dir" value="${depend.dir}"/>
-        </ant>
-    </target>
-
-    <target name="compile" depends="prepare"
-	    description="compile example specific java source files">
-        <javac srcdir="${src.dir}" destdir="${classes.dir}">
-	    <classpath refid="build.classpath"/>
-	</javac>
-        <copy todir="${classes.dir}">
-            <fileset dir="${src.dir}">
-                <include name="**/*.properties"/>
-            </fileset>
-        </copy>
-    </target>
+	<target name="scilla">
+		<ant dir=".." target="jar" />
+		<copy file="../scilla.jar" todir="${lib.runtime.dir}" />
+	</target>
 
 
-    <target name="webxml1" depends="prepare" if="source.dir">
-        <delete file="${webinf.dir}/web.xml"/>
-        <copy file="etc/web.xml" tofile="${webinf.dir}/web.xml"/>
-	<replace file="${webinf.dir}/web.xml" summary="yes">
-	    <replacefilter token="@source.dir@" value="${source.dir}"/>
-	</replace>
-    </target>
+	<target name="prepare" depends="depend">
+		<!-- copy all JSP and HTML files -->
+		<mkdir dir="${deploy.dir}" />
+		<copy todir="${deploy.dir}">
+			<fileset dir="web" excludes="**/*.swp" />
+		</copy>
+
+		<!-- web-app resources -->
+		<mkdir dir="${webinf.dir}" />
+
+		<!-- copy the libraries we depend on -->
+		<mkdir dir="${webinf.lib.dir}" />
+		<copy todir="${webinf.lib.dir}">
+			<fileset dir="${lib.dir}/runtime">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+
+		<!-- copy the tld's -->
+		<mkdir dir="${webinf.dir}" />
+		<copy todir="${webinf.dir}">
+			<fileset dir="etc/tld" />
+		</copy>
+
+		<!-- create classes dir for helper classes -->
+		<mkdir dir="${classes.dir}" />
+	</target>
+
+	<target name="depend" description="fetch libraries this code depends on from the web">
+		<mkdir dir="${depend.dir}" />
+
+		<style style="../misc/depend-build.xsl" in="depend.xml" out="depend-build.xml" />
+		<ant antfile="depend-build.xml">
+			<property name="lib.dir" value="${lib.dir}" />
+			<property name="work.dir" value="${depend.dir}" />
+		</ant>
+	</target>
+
+	<target name="compile" depends="prepare" description="compile example specific java source files">
+		<javac srcdir="${src.dir}" destdir="${classes.dir}">
+			<classpath refid="build.classpath" />
+		</javac>
+		<copy todir="${classes.dir}">
+			<fileset dir="${src.dir}">
+				<include name="**/*.properties" />
+			</fileset>
+		</copy>
+	</target>
 
 
-    <target name="webxml2" depends="prepare" unless="source.dir">
-	<fail message="set source.dir to an absolute directory location containing image and audio files"/>
-    </target>
+	<target name="webxml1" depends="prepare" if="source.dir">
+		<delete file="${webinf.dir}/web.xml" />
+		<copy file="etc/web.xml" tofile="${webinf.dir}/web.xml" />
+		<replace file="${webinf.dir}/web.xml" summary="yes">
+			<replacefilter token="@source.dir@" value="${source.dir}" />
+		</replace>
+	</target>
 
 
-    <target name="war" depends="deploy"
-	    description="create war file for example jsps">
-        <jar jarfile="${war.file}" basedir="${deploy.dir}"/>
-    </target>
+	<target name="webxml2" depends="prepare" unless="source.dir">
+		<fail message="set source.dir to an absolute directory location containing image and audio files" />
+	</target>
 
 
-    <target name="clean"
-	    description="delete generated files">
-        <delete dir="${deploy.dir}"/>
-        <delete dir="${lib.dir}"/>
-        <delete dir="${depend.dir}"/>
-        <delete file="depend-build.xml"/>
-	<delete file="${war.file}"/>
-    </target>
+	<target name="war" depends="deploy" description="create war file for example jsps">
+		<jar jarfile="${war.file}" basedir="${deploy.dir}" />
+	</target>
+
+
+	<target name="clean" description="delete generated files">
+		<delete dir="${deploy.dir}" />
+		<delete dir="${lib.dir}" />
+		<delete dir="${depend.dir}" />
+		<delete file="depend-build.xml" />
+		<delete file="${war.file}" />
+	</target>
 
 
 </project>

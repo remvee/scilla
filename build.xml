@@ -1,140 +1,132 @@
 <project name="scilla" default="compile" basedir=".">
 
-<!-- build tool configuration -->
-    <property name="ctags.exec" value="exctags"/>
+	<!-- build tool configuration -->
+	<property name="ctags.exec" value="exctags" />
 
-<!-- building sites -->
-    <property name="src.dir" value="src"/>
-    <property name="build.dir" value="build"/>
-    <property name="jar.file" value="scilla.jar"/>
-    <property name="excludes.file" value="excludes.txt"/>
-    <property name="lib.dir" value="lib"/>
-    <property name="depend.dir" value="depend"/>
-    <property name="examples.dir" value="examples"/>
-    <property name="examples.lib.dir" value="${examples.dir}/lib"/>
+	<!-- building sites -->
+	<property name="src.dir" value="src" />
+	<property name="build.dir" value="build" />
+	<property name="jar.file" value="scilla.jar" />
+	<property name="excludes.file" value="excludes.txt" />
+	<property name="lib.dir" value="lib" />
+	<property name="depend.dir" value="depend" />
+	<property name="examples.dir" value="examples" />
+	<property name="examples.lib.dir" value="${examples.dir}/lib" />
 
-<!-- for documentation building -->
-    <property name="apidoc.dir" value="doc/apidoc"/>
-    <property name="doc.title" value="scilla API documentation"/>
-    <property name="doc.pkgnames" value="org.scilla.*"/>
-    <property name="doc.apidocurl.jdk" value="http://java.sun.com/products/jdk/1.3/docs/api/"/>
+	<!-- for documentation building -->
+	<property name="apidoc.dir" value="doc/apidoc" />
+	<property name="doc.title" value="scilla API documentation" />
+	<property name="doc.pkgnames" value="org.scilla.*" />
+	<property name="doc.apidocurl.jdk" value="http://java.sun.com/products/jdk/1.3/docs/api/" />
 
-<!-- build class path -->
-    <path id="build.classpath">
-        <pathelement location="${build.dir}"/>
-        <pathelement path="${classpath}"/>
-        <fileset dir="${lib.dir}">
-            <include name="**/*.jar"/>
-        </fileset>
-    </path>
-
-
-<!-- targets -->
-    <target name="prepare">
-        <mkdir dir="${apidoc.dir}"/>
-        <mkdir dir="${build.dir}"/>
-        <mkdir dir="${lib.dir}"/>
-        <mkdir dir="${depend.dir}"/>
-
-        <available property="jai.inclasspath" classname="javax.media.jai.JAI">
-            <classpath refid="build.classpath"/>
-	</available>
-        <delete file="${excludes.file}"/>
-        <touch file="${excludes.file}"/>
-    </target>
+	<!-- build class path -->
+	<path id="build.classpath">
+		<pathelement location="${build.dir}" />
+		<pathelement path="${classpath}" />
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
 
 
-    <target name="prepare.compile" depends="prepare,prepare.jai"/>
+	<!-- targets -->
+	<target name="prepare">
+		<mkdir dir="${apidoc.dir}" />
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${lib.dir}" />
+		<mkdir dir="${depend.dir}" />
+
+		<available property="jai.inclasspath" classname="javax.media.jai.JAI">
+			<classpath refid="build.classpath" />
+		</available>
+		<delete file="${excludes.file}" />
+		<touch file="${excludes.file}" />
+	</target>
 
 
-    <target name="prepare.jai" unless="jai.inclasspath">
-        <echo file="${excludes.file}" append="yes">org/scilla/converter/JAIConverter.java
+	<target name="prepare.compile" depends="prepare,prepare.jai" />
+
+
+	<target name="prepare.jai" unless="jai.inclasspath">
+		<echo file="${excludes.file}" append="yes">org/scilla/converter/JAIConverter.java
 </echo>
-    </target>
+	</target>
 
 
-    <target name="compile" depends="prepare.compile,depend"
-	    description="compile java source files">
-        <javac srcdir="${src.dir}" destdir="${build.dir}" excludesfile="${excludes.file}">
-            <classpath refid="build.classpath"/>
-        </javac>
-        <copy todir="${build.dir}">
-            <fileset dir="${src.dir}">
-		<include name="**/*.properties"/>
-		<include name="**/*.xml"/>
-            </fileset>
-        </copy>
-    </target>
+	<target name="compile" depends="prepare.compile,depend" description="compile java source files">
+		<javac srcdir="${src.dir}" destdir="${build.dir}" excludesfile="${excludes.file}">
+			<classpath refid="build.classpath" />
+		</javac>
+		<copy todir="${build.dir}">
+			<fileset dir="${src.dir}">
+				<include name="**/*.properties" />
+				<include name="**/*.xml" />
+			</fileset>
+		</copy>
+	</target>
 
 
-    <target name="jar" depends="compile"
-	    description="put java class files in jar">
-        <jar jarfile="${jar.file}" basedir="${build.dir}"/>
-    </target>
+	<target name="jar" depends="compile" description="put java class files in jar">
+		<jar jarfile="${jar.file}" basedir="${build.dir}" />
+	</target>
 
 
-    <target name="apidoc" depends="prepare"
-	    description="compile javadoc from source files">
-        <javadoc sourcepath="${src.dir}" destdir="${apidoc.dir}"
-		windowtitle="${doc.title}" packagenames="${doc.pkgnames}">
-	    <link href="${doc.apidocurl.jdk}"/>
-	    <classpath refid="build.classpath"/>
-        </javadoc>
-    </target>
+	<target name="apidoc" depends="prepare" description="compile javadoc from source files">
+		<javadoc sourcepath="${src.dir}" destdir="${apidoc.dir}" windowtitle="${doc.title}" packagenames="${doc.pkgnames}">
+			<link href="${doc.apidocurl.jdk}" />
+			<classpath refid="build.classpath" />
+		</javadoc>
+	</target>
 
 
-    <target name="depend"
-	    description="fetch libraries this code depends on from the web">
-        <style style="misc/depend-build.xsl" in="depend.xml" out="depend-build.xml"/>
-        <ant antfile="depend-build.xml">
-            <property name="lib.dir" value="${lib.dir}"/>
-            <property name="work.dir" value="${depend.dir}"/>
-        </ant>
-    </target>
+	<target name="depend" description="fetch libraries this code depends on from the web">
+		<style style="misc/depend-build.xsl" in="depend.xml" out="depend-build.xml" />
+		<ant antfile="depend-build.xml">
+			<property name="lib.dir" value="${lib.dir}" />
+			<property name="work.dir" value="${depend.dir}" />
+		</ant>
+	</target>
 
 
-    <target name="ctags"
-	    description="create tags file for vi(1)">
-        <exec executable="${ctags.exec}">
-            <arg value="-R"/>
-            <arg value="${src.dir}"/>
-        </exec>
-    </target>
+	<target name="ctags" description="create tags file for vi(1)">
+		<exec executable="${ctags.exec}">
+			<arg value="-R" />
+			<arg value="${src.dir}" />
+		</exec>
+	</target>
 
 
-    <target name="examples" depends="jar"
-	    description="build examples war-file">
-        <mkdir dir="${examples.lib.dir}"/>
-        <mkdir dir="${examples.lib.dir}/runtime"/>
-        <copy file="${jar.file}" todir="${examples.lib.dir}/runtime"/>
-        <copy todir="${examples.lib.dir}">
-            <fileset dir="${lib.dir}">
-		<include name="**/*.jar"/>
-            </fileset>
-        </copy>
-        <ant dir="examples" target="war"/>
-    </target>
+	<target name="examples" depends="jar" description="build examples war-file">
+		<mkdir dir="${examples.lib.dir}" />
+		<mkdir dir="${examples.lib.dir}/runtime" />
+		<copy file="${jar.file}" todir="${examples.lib.dir}/runtime" />
+		<copy todir="${examples.lib.dir}">
+			<fileset dir="${lib.dir}">
+				<include name="**/*.jar" />
+			</fileset>
+		</copy>
+		<ant dir="examples" target="war" />
+	</target>
 
 
-    <target name="homepage" description="build homepage">
-        <ant dir="homepage"/>
-    </target>
+	<target name="homepage" description="build homepage">
+		<ant dir="homepage" />
+	</target>
 
 
-    <target name="clean"
-	    description="delete generated files">
-        <delete quiet="true">
-            <fileset dir="." includes="ChangeLog*"/>
-        </delete>
-        <delete dir="${build.dir}"/>
-        <delete dir="${apidoc.dir}"/>
-        <delete dir="${lib.dir}"/>
-        <delete dir="${depend.dir}"/>
-        <delete file="depend-build.xml"/>
-        <delete file="${jar.file}"/>
-        <delete file="${excludes.file}"/>
-        <delete file="tags"/>
-        <ant dir="examples" target="clean"/>
-    </target>
+	<target name="clean" description="delete generated files">
+		<delete quiet="true">
+			<fileset dir="." includes="ChangeLog*" />
+		</delete>
+		<delete dir="${build.dir}" />
+		<delete dir="${apidoc.dir}" />
+		<delete dir="${lib.dir}" />
+		<delete dir="${depend.dir}" />
+		<delete file="depend-build.xml" />
+		<delete file="${jar.file}" />
+		<delete file="${excludes.file}" />
+		<delete file="tags" />
+		<ant dir="examples" target="clean" />
+	</target>
 
 </project>
