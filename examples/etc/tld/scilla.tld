@@ -13,7 +13,7 @@
 	<bodycontent>jsp</bodycontent>
 	<attribute>
 	    <name>src</name>
-	    <required>false</required>
+	    <required>true</required>
 	    <rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
