@@ -110,7 +110,7 @@ import org.scilla.core.*;
  * <BR>MPEG2 samplerates(kHz): 16 22.05 24 
  * <BR>bitrates(kbs): 8 16 24 32 40 48 56 64 80 96 112 128 144 160 
  *
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * @see <A href="http://www.sulaco.org/mp3/">The LAME Project</A>
  * @author R.W. van 't Veer
  */
@@ -152,11 +152,13 @@ public class LameConverter extends Converter
     {
 	// create command line
 	String[] cmdLine = createCmdLine();
+	File dir = new File(outputFile.substring(0,
+		outputFile.lastIndexOf(File.separator)));
 
 	// run system command
 	try
 	{
-	    proc = new QueuedProcess(cmdLine);
+	    proc = new QueuedProcess(cmdLine, null, dir);
 	    exitValue = proc.exitValue();
 	}
 	catch (Exception e)
@@ -375,8 +377,8 @@ public class LameConverter extends Converter
 	// keep it quiet
 	v.add("-S");
 
-	// and the output file
-	v.add(outputFile);
+	// and the base of the output file
+	v.add(outputFile.substring(outputFile.lastIndexOf(File.separator)+1));
 
 	return (String[]) v.toArray(new String[0]);
     }

@@ -25,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.File;
 import java.util.Vector;
 import java.util.StringTokenizer;
 
@@ -37,7 +38,7 @@ import org.apache.log4j.Category;
  *
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class QueuedProcess
 {
@@ -103,6 +104,23 @@ public class QueuedProcess
     public QueuedProcess (String[] args)
     throws IOException
     {
+	this(args, null, null);
+    }
+
+    /**
+     * Create and executed a queued OS process.  The process is
+     * created when a semaphore is below the configured value.
+     * @param args command arguments
+     * @param envp array of strings, each element of which has
+     * environment variable settings in format name=value
+     * @param dir working directory
+     * @throws IOException when execution fails
+     * @see java.lang.Runtime#exec(String[])
+     * @see #MAX_RUNNERS_PROPERTY
+     */
+    public QueuedProcess (String[] args, String[] envp, File dir)
+    throws IOException
+    {
 	if (log.isInfoEnabled())
 	{
 	    StringBuffer sb = new StringBuffer();
@@ -112,6 +130,18 @@ public class QueuedProcess
 		sb.append(' ');
 	    }
 	    log.info("process: "+sb);
+
+	    if (envp != null)
+	    {
+		sb = new StringBuffer();
+		for (int i = 0; i < envp.length; i++)
+		{
+		    sb.append(envp[i]);
+		    sb.append(' ');
+		}
+		log.info("env: "+sb);
+	    }
+	    if (dir != null) log.info("dir: "+dir);
 	}
 
 	// make sure a space exists
@@ -138,7 +168,7 @@ public class QueuedProcess
 	// execute process
 	try
 	{
-	    proc = Runtime.getRuntime().exec(args);
+	    proc = Runtime.getRuntime().exec(args, envp, dir);
 	}
 	catch (IOException e)
 	{
