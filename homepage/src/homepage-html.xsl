@@ -1,96 +1,102 @@
 <?xml version="1.0"?>
 
-<xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-    <xsl:output method="html"/>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    <xsl:output method="xml" indent="yes"/>
 
+    <!-- discard title elements in sections -->
     <xsl:template match="title"/>
 
-    <xsl:template match="para">
-	<P>
-	    <xsl:value-of select="." disable-output-escaping="yes"/>
-	</P>
+    <!-- copy content of html blocks -->
+    <xsl:template match="html">
+	<xsl:value-of select="." disable-output-escaping="yes"/>
     </xsl:template>
 
+    <!-- a downloadable release from a cvs tag -->
     <xsl:template match="release">
-	<P>
+	<p>
 	    <xsl:variable name="filebase" select="@filebase"/>
-	    <A href="{$filebase}.zip"><xsl:value-of select="@filebase"/>.zip</A>
-	    <BR />
-	    <xsl:value-of select="." disable-output-escaping="yes"/>
-	</P>
+	    <a href="{$filebase}.zip"><xsl:value-of select="@filebase"/>.zip</a>
+	    <br />
+	    <xsl:value-of select="html" disable-output-escaping="yes"/>
+	</p>
     </xsl:template>
 
+    <!-- the first @max entries of external changelog file -->
     <xsl:template match="changelog">
 	<xsl:variable name="file" select="@file"/>
 	<xsl:variable name="max" select="@max"/>
-	<P>
-	    Last <xsl:value-of select="@max"/> changelog messages.
-	    <UL>
+	<xsl:variable name="dist" select="@dist"/>
+	<p>
+	    <xsl:choose>
+		<xsl:when test="$dist != ''">
+		    Last <xsl:value-of select="@max"/>
+		    <xsl:text> </xsl:text>
+		    <a href="{$dist}">changelog</a> messages.
+		</xsl:when>
+		<xsl:otherwise>
+		    Last <xsl:value-of select="@max"/> changelog messages.
+		</xsl:otherwise>
+	    </xsl:choose>
+	    <ul>
 		<xsl:for-each select="document($file)/changelog/entry">
 		    <xsl:if test="position() &lt;= $max">
 			<xsl:apply-templates select="."/>
 		    </xsl:if>
 		</xsl:for-each>
-	    </UL>
-	</P>
+	    </ul>
+	</p>
     </xsl:template>
 
     <!-- changelog entries -->
     <xsl:template match="entry">
-	<LI>
-	    <xsl:value-of select="date"/>
-	    <xsl:text> </xsl:text>
-	    <xsl:value-of select="time"/>
+	<li>
+	    <xsl:value-of select="date"/><xsl:text> </xsl:text><xsl:value-of select="time"/>
 	    by <xsl:value-of select="author"/>
 
-	    <P>
-		<PRE><xsl:for-each select="./msg"><xsl:value-of select="."/></xsl:for-each></PRE>
-
-		<UL>
-		    <xsl:for-each select="./file/name">
-			<LI><xsl:value-of select="."/></LI>
-		    </xsl:for-each>
-		</UL>
-	    </P>
-	</LI>
+	    <div>
+		<xsl:for-each select="./msg"><xsl:value-of select="."/></xsl:for-each>
+	    </div>
+	    <ul>
+		<xsl:for-each select="./file/name">
+		    <li><xsl:value-of select="."/></li>
+		</xsl:for-each>
+	    </ul>
+	</li>
     </xsl:template>
 
+    <!-- html root -->
     <xsl:template match="/">
 	<xsl:variable name="location" select="/homepage/location"/>
-	<HTML>
-	    <HEAD>
-		<TITLE><xsl:value-of select="/homepage/title"/></TITLE>
-	    </HEAD>
+	<html>
+	    <head>
+		<title><xsl:value-of select="/homepage/title"/></title>
+	    </head>
 
-	    <BODY bgcolor="white">
-		<H1><xsl:value-of select="/homepage/title"/></H1>
-		<P>
-		    <xsl:value-of select="/homepage/description"/>
-		</P>
+	    <body>
+		<h1><xsl:value-of select="/homepage/title"/></h1>
+		<xsl:apply-templates select="/homepage/description"/>
 
 		<!-- menu -->
-		<UL>
+		<ul>
 		    <xsl:for-each select="/homepage/section">
 			<xsl:variable name="anchor"><xsl:number/></xsl:variable>
-			<LI><A name="_{$anchor}" href="#{$anchor}"><xsl:value-of select="title"/></A></LI>
+			<li><a name="_{$anchor}" href="#{$anchor}"><xsl:value-of select="title"/></a></li>
 		    </xsl:for-each>
-		</UL>
-		<HR/>
+		</ul>
+		<hr/>
 
 		<xsl:for-each select="/homepage/section">
 		    <xsl:variable name="anchor"><xsl:number/></xsl:variable>
-		    <H2><A name="{$anchor}" href="#_{$anchor}"><xsl:value-of select="title"/></A></H2>
-		    <xsl:for-each select=".">
-			<xsl:apply-templates select="."/>
-		    </xsl:for-each>
+		    <h2><a name="{$anchor}" href="#_{$anchor}"><xsl:value-of select="title"/></a></h2>
+		    <xsl:apply-templates select="."/>
 		</xsl:for-each>
-		<HR/>
+		<hr/>
 
-		<DIV align="right">
+		<div align="right">
 		    <xsl:apply-templates select="/homepage/date"/>
-		</DIV>
-	    </BODY>
-	</HTML>
+		</div>
+	    </body>
+	</html>
     </xsl:template>
 
-</xsl:transform>
+</xsl:stylesheet>
