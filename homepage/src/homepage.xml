@@ -126,8 +126,8 @@
     <section>
         <title>Bug reports etc.</title>
 	<para><![CDATA[
-            Please send an email to rwvtveer<EM>at</EM>xs4all.nl if you
-            find a problem not mentioned in
+	    Please send an email to rwvtveer <EM>at</EM> xs4all.nl
+	    if you find a problem not mentioned in
             <A href="projects/scilla/TODO">TODO</A>.    Please include
             information about the version you are using.
 	]]></para>
