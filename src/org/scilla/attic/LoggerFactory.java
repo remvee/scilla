@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
 /**
  * The scilla logger factory.
  *
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @author R.W. van 't Veer
  */
 public class LoggerFactory {
@@ -56,8 +56,8 @@ public class LoggerFactory {
         if (getInstanceMethod == null) {
             try {
                 getInstanceMethod = LoggerSimpleImpl.class.getMethod("getInstance", new Class[] { Class.class });
-            } catch (Throwable t) // logging is dead
-            {
+            } catch (Throwable t) {
+		// logging is dead
                 t.printStackTrace();
             }
         }
@@ -85,10 +85,10 @@ public class LoggerFactory {
      * Get logger for class.
      * @return logger object
      */
-    public static synchronized Logger get
-        (Class clazz) {
-        if (! configuredFlag)
+    public static synchronized Logger get (Class clazz) {
+        if (! configuredFlag) {
             LoggerFactory.configure();
+	}
 
         Logger log = null;
         try {
@@ -96,6 +96,7 @@ public class LoggerFactory {
         } catch (Throwable t) {
 	    // ignore
         }
+
         return log;
     }
 }
