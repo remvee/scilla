@@ -11,9 +11,6 @@ For version 1.0:
 - log4j
 - junit
 - examples:
-    - default to mp3 filename if no ID3v1 exists
-	- servlet icecast header
-	- jsp directory index
     - error page
 
 Future:
