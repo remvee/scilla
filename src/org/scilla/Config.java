@@ -27,7 +27,7 @@ import java.util.Enumeration;
  * The scilla configuration interface.
  *
  * @see org.scilla.ConfigFactory#get()
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * @author R.W. van 't Veer
  */
 public interface Config
@@ -52,6 +52,14 @@ public interface Config
      * @return true if key available
      */
     public boolean exists (String key);
+
+    /**
+     * Get boolean value from configuration.
+     * @param key handle to resource
+     * @return true if key exists and is set to <CODE>true</CODE>
+     * @see java.lang.Boolean#valueOf(String)
+     */
+    public boolean getBoolean(String key);
 
     /**
      * Get integer value from configuration.

@@ -32,7 +32,7 @@ import java.io.IOException;
 /**
  * The scilla configuration implemation using property files.
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @author R.W. van 't Veer
  */
 public class ConfigPropertiesImpl implements Config
@@ -62,7 +62,12 @@ public class ConfigPropertiesImpl implements Config
     }
 
 // accessors
-    public int getInt(String key)
+    public boolean getBoolean (String key)
+    {
+	return Boolean.valueOf(prop.getProperty(key)).booleanValue();
+    }
+
+    public int getInt (String key)
     throws NumberFormatException
     {
 	return Integer.parseInt(prop.getProperty(key));
