@@ -49,7 +49,7 @@ public class ImageTag extends TagSupport {
 	    out.append(" style=\""+HTMLUtil.escape(getStyle())+"\"");
 	}
 	if (getStyleClass() != null) {
-	    out.append(" class=\""+HTMLUtil.escape(getClass())+"\"");
+	    out.append(" class=\""+HTMLUtil.escape(getStyleClass())+"\"");
 	}
 
 	out.append("/>");
