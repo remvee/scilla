@@ -24,7 +24,6 @@
   <property name="deploy.dir"   value="${tomcat.home}/webapps/${app.name}"/>
   <property name="webinf.dir"   value="${deploy.dir}/WEB-INF"/>
   <property name="build.dir"    value="${webinf.dir}/classes"/>
-  <property name="download.dir" value="build/download"/>
   <property name="lib.dir"      value="${webinf.dir}/lib"/>
 
 
