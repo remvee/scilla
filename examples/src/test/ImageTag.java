@@ -34,6 +34,30 @@ public class ImageTag extends TagSupport {
 
     public int doStartTag ()
     throws JspException {
+	HttpServletRequest pageRequest = (HttpServletRequest) pageContext.getRequest();
+
+	// content negotiation..  sort of.. TODO
+	if (getOutputType() == null) {
+	    try {
+		ImageInfo inputInfo = (ImageInfo) InfoFactory.get(getRequest().getOutputFile());
+
+		// images not jpeg or gif need special care
+		if (! inputInfo.isJPEG() && ! inputInfo.isGIF()) {
+		    String acceptHeader = pageRequest.getHeader("accept");
+
+		    // handle PNGs
+		    boolean acceptPNG = acceptHeader != null && acceptHeader.indexOf("image/png") != -1;
+		    if (! acceptPNG && inputInfo.isPNG()) {
+			// indexed or transparent images become gifs others jpegs
+			setOutputType(inputInfo.isIndexed() || inputInfo.hasAlphaChannel() ? "gif" : "jpg");
+		    }
+		}
+	    } catch (Exception ex) {
+		throw new JspException("failed to identify input", ex);
+	    }
+	}
+
+	// start build img tag
 	StringBuffer out = new StringBuffer();
 	out.append("<img");
 
@@ -43,10 +67,10 @@ public class ImageTag extends TagSupport {
 
 	// try to get and pass height and width
 	try {
-	    ImageInfo info = (ImageInfo) InfoFactory.get(getRequest().getOutputFile());
-	    if (info != null) {
-		int width = info.getWidth();
-		int height = info.getHeight();
+	    ImageInfo outputInfo = (ImageInfo) InfoFactory.get(getRequest().getOutputFile());
+	    if (outputInfo != null) {
+		int width = outputInfo.getWidth();
+		int height = outputInfo.getHeight();
 		if (width != -1 && height != -1) {
 		    out.append(" width=\"");
 		    out.append(width+"");
@@ -133,6 +157,14 @@ public class ImageTag extends TagSupport {
 	return transform;
     }
     private String transform = null;
+
+    public void setOutputType (String v) {
+	outputType = v;
+    }
+    public String getOutputType () {
+	return outputType;
+    }
+    private String outputType = null;
 
 // image attributes
     public void setAlt (String v) {
@@ -223,6 +255,10 @@ public class ImageTag extends TagSupport {
      */
     private List getRequestParameters () {
 	List result = new ArrayList();
+
+	if (outputType != null) {
+	    result.add(new RequestParameter(Request.OUTPUT_TYPE_PARAMETER, outputType));
+	}
 
 	if (transform == null) {
 	    return result;

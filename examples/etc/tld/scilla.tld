@@ -17,6 +17,11 @@
 	    <rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
+	    <name>outputtype</name>
+	    <required>false</required>
+	    <rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
 	    <name>transform</name>
 	    <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
