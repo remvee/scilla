@@ -40,6 +40,19 @@ public class ImageTag extends TagSupport {
 	    // ignore..
 	}
 
+	if (getAlt() != null) {
+	    out.append(" alt=\""+HTMLUtil.escape(getAlt())+"\"");
+	}
+	if (getBorder() != null) {
+	    out.append(" border=\""+HTMLUtil.escape(getBorder())+"\"");
+	}
+	if (getStyle() != null) {
+	    out.append(" style=\""+HTMLUtil.escape(getStyle())+"\"");
+	}
+	if (getStyleClass() != null) {
+	    out.append(" class=\""+HTMLUtil.escape(getClass())+"\"");
+	}
+
 	out.append("/>");
 
 	try {
@@ -89,13 +102,45 @@ public class ImageTag extends TagSupport {
     private String src = null;
     private String absSrc = null;
 
-    public void setScale (String scale) {
-	this.scale = scale;
+    public void setScale (String v) {
+	this.scale = v;
     }
     public String getScale () {
 	return scale;
     }
     private String scale = null;
+
+    public void setAlt (String v) {
+	this.alt = v;
+    }
+    public String getAlt () {
+	return alt;
+    }
+    private String alt = "";
+
+    public void setBorder (String v) {
+	this.border = v;
+    }
+    public String getBorder () {
+	return border;
+    }
+    private String border = null;
+
+    public void setStyle (String v) {
+	this.style = v;
+    }
+    public String getStyle () {
+	return style;
+    }
+    private String style = null;
+
+    public void setStyleClass (String v) {
+	this.styleClass = v;
+    }
+    public String getStyleClass () {
+	return styleClass;
+    }
+    private String styleClass = null;
 
     private Request getRequest ()
     throws Exception {
