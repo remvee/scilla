@@ -19,6 +19,8 @@ public class PlaylistServlet extends HttpServlet
 
     final static String PATH_PARAM = "d"; // MUST NOT BE IN USE BY SCILLA!!
     final static String RECURS_PARAM = "r"; // MUST NOT BE IN USE BY SCILLA!!
+    final static String OUTPUT_TYPE_PARAM = "t"; // MUST NOT BE IN USE BY SCILLA!!
+    final static String DEFAULT_OUTPUT_TYPE = "mp3";
     final static String SCILLA_SERVLET = "scilla";
 
     public void doGet (HttpServletRequest request, HttpServletResponse response)
@@ -43,6 +45,14 @@ public class PlaylistServlet extends HttpServlet
 	    encoding = stripParameter(encoding, RECURS_PARAM);
 	}
 
+	// output type parameter
+	String outputType = DEFAULT_OUTPUT_TYPE;
+	if (request.getParameter(OUTPUT_TYPE_PARAM) != null)
+	{
+	    outputType = request.getParameter(OUTPUT_TYPE_PARAM);
+	    encoding = stripParameter(encoding, OUTPUT_TYPE_PARAM);
+	}
+
 	// cleanup encoding
 	if (encoding.equals("?")) encoding = "";
 
@@ -51,10 +61,12 @@ public class PlaylistServlet extends HttpServlet
 	type = type.substring(type.lastIndexOf('.')+1);
 
 	// request from localhost does need a stream or encoding
+	boolean isLocal = false;
 	String urlPrefix = null;
 	if (request.getServerName().equals("127.0.0.1")
 		|| request.getServerName().equals("localhost"))
 	{
+	    isLocal = true;
 	    urlPrefix = scillaConfig.getString(Config.SOURCE_DIR_KEY);
 	    encoding = "";
 	}
@@ -112,9 +124,14 @@ public class PlaylistServlet extends HttpServlet
 		out.println("#EXTINF:"+getTrackLength(t)+","+getTrackTitle(t));
 
 		// url
-		fn = fn.replace(File.separatorChar, '/');
-		fn = fn.replace(' ', '+');
-		out.println(urlPrefix+fn+encoding);
+		if (isLocal) {
+		    out.println(urlPrefix+fn+encoding);
+		} else {
+		    fn = fn.replace(File.separatorChar, '/');
+		    fn = fn.replace(' ', '+');
+		    fn += "." + outputType;
+		    out.println(urlPrefix+fn+encoding);
+		}
 	    }
 	}
 	else
@@ -197,6 +214,7 @@ public class PlaylistServlet extends HttpServlet
     boolean isPlayable (String fn)
     {
 	return fn.toLowerCase().endsWith(".mp3")
+		|| fn.toLowerCase().endsWith(".ogg")
 		|| fn.toLowerCase().endsWith(".wav");
     }
 
@@ -213,7 +231,7 @@ public class PlaylistServlet extends HttpServlet
 	    {
 		vec.addAll(find(source, fn));
 	    }
-	    else if (files[i].toLowerCase().endsWith(".mp3"))
+	    else if (isPlayable(fn))
 	    {
 		vec.add(fn);
 	    }
