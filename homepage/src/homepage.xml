@@ -1,7 +1,7 @@
 <homepage>
     <title>Scilla - media server</title>
     <location>http://www.xs4all.nl/~rwvtveer/scilla</location>
-    <date>$Date: 2003/01/05 16:51:29 $</date>
+    <date>$Date: 2003/02/27 23:23:19 $</date>
     <description>
 	<html><![CDATA[
 	    <p>
@@ -32,6 +32,13 @@
 			<dd>
 			    Allows conversion from WAV to MP3 and recoding of MP3 to
 			    create streamable audio.
+			</dd>
+			<dt> <a href="http://www.vorbis.com/">Ogg Vorbis</a> </dt>
+			<dd>
+			    Convert WAV to OGG and MP3 to OGG for higher quality audio
+			    streams.  A bourne-shell script, depending on the vorbis-tools
+			    and <a href="http://www.mpg123.de/">mpg123</a>, for converting
+			    MP3 to OGG and visa versa is included.
 			</dd>
 			<dt> <a href="http://ffmpeg.sourceforge.net/">FFMpeg</a> </dt>
 			<dd>
@@ -65,6 +72,27 @@
 	<html>
 	    The following releases are considered to be stable.
 	</html>
+	<release tag="RELEASE_0_9_5" filebase="scilla-0_9_5">
+	    <html><![CDATA[
+		28.II.2003
+		<ul>
+		    <li>
+			Ogg Vorbis support
+		    </li>
+		    <li>
+			info packages, meta data collection classes
+		    </li>
+		    <li>
+			experimental taglibs
+		    </li>
+		    <li>
+			automatic dependency downloading in the build process
+		    <li>
+			bugfixes and cleanups
+		    </li>
+		</ul>
+	    ]]></html>
+	</release>
 	<release tag="RELEASE_0_9_4" filebase="scilla-0_9_4">
 	    <html><![CDATA[
 		22.XI.2002
@@ -76,8 +104,8 @@
 			id3v2 support for mp3 audio
 		    </li>
 		    <li>
-			simple installer, using executable jar file
-			which generates a war file
+			simple installer, using executable jar file which
+			generates a war file
 		    </li>
 		    <li>
 			some example enhancements
