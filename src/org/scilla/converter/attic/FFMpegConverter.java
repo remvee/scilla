@@ -66,7 +66,7 @@ import org.scilla.core.*;
  *     </DL>
  * </DL>
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @see <A href="http://ffmpeg.sourceforge.net/">FFMpeg Streaming
  * Multimedia System</A>
  * @author R.W. van 't Veer
@@ -76,11 +76,11 @@ public class FFMpegConverter extends Converter
 {
     static Category log = Category.getInstance(FFMpegConverter.class);
 
-    static Config config = Config.getInstance();
+    static Config config = ConfigFactory.get();
 
     /** parameter name to force the use of this converter */
     public final static String THIS_CONVERTER_PARAMETER = "ffmpeg";
-    public final static String FFMPEG_EXEC_PROPERTY = "FFMpegConverter.exec";
+    public final static String FFMPEG_EXEC_KEY = "converters.ffmpeg.exec";
 
     QueuedProcess proc = null;
     int exitValue = -1; // 0 means success
@@ -128,15 +128,23 @@ public class FFMpegConverter extends Converter
 	}
     }
 
+    private static String execLocation = null;
+    private static boolean execAvailable = false;
+
     /**
      * Determine if <CODE>ffmpeg</CODE> executable exists.
-     * @see #FFMPEG_EXEC_PROPERTY
+     * @see #FFMPEG_EXEC_KEY
      * @see org.scilla.Config
      */
     public boolean isFunctional ()
     {
-	File f = new File(config.getParameter(FFMPEG_EXEC_PROPERTY));
-	return f.exists();
+	// cache result in static to gain some speed
+	String s = config.getString(FFMPEG_EXEC_KEY);
+	if (s == null) return false;
+	if (s.equals(execLocation)) return execAvailable;
+	execLocation = s;
+	execAvailable = (new File(execLocation)).exists();
+	return execAvailable;
     }
 
     /**
@@ -165,7 +173,7 @@ public class FFMpegConverter extends Converter
     {
 	// create command line
 	Vector v = new Vector();
-	v.add(config.getParameter(FFMPEG_EXEC_PROPERTY));
+	v.add(config.getString(FFMPEG_EXEC_KEY));
 
 	// input file
 	v.add("-i");

@@ -36,16 +36,15 @@ import org.apache.log4j.Category;
  * amount of processes to run concurrently.  This process maximum is
  * taken from the scilla configuration.
  *
- * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class QueuedProcess
 {
     static Category log = Category.getInstance(QueuedProcess.class);
 
-    public static final String MAX_RUNNERS_PROPERTY = "QueuedProcess.maxRunners";
-    public static final String WRAPPER_PROPERTY = "QueuedProcess.wrapper";
+    public static final String MAX_RUNNERS_KEY = "converters.osprocess.runners.sem";
+    public static final String WRAPPER_KEY = "converters.osprocess.wrapper.exec";
 
     int exitValue = -1;
     Process proc;
@@ -54,42 +53,26 @@ public class QueuedProcess
 
     static Semaphore sem = null;
     static int maxRunners = 5;
-    static Config config = Config.getInstance();
+    static Config config = ConfigFactory.get();
     static
     {
 	// get maxRunners from scilla configuration
-	String s = config.getParameter(MAX_RUNNERS_PROPERTY);
+	String s = config.getString(MAX_RUNNERS_KEY);
 	try
 	{
 	    maxRunners = Integer.parseInt(s);
 	}
 	catch (NullPointerException npe)
 	{
-	    log.warn(MAX_RUNNERS_PROPERTY+" not availble, defaulting to: "+maxRunners);
+	    log.warn(MAX_RUNNERS_KEY+" not availble, defaulting to: "+maxRunners);
 	}
 	catch (NumberFormatException nfe)
 	{
-	    log.warn(MAX_RUNNERS_PROPERTY+" not a number, defaulting to: "+maxRunners, nfe);
+	    log.warn(MAX_RUNNERS_KEY+" not a number, defaulting to: "+maxRunners, nfe);
 	}
 
 	// initialized semaphore
 	sem = new Semaphore(maxRunners);
-    }
-
-    static Vector wrapper = null;
-    static
-    {
-	// get wrapper script from scilla configuration
-	String s = config.getParameter(WRAPPER_PROPERTY);
-	if (s != null)
-	{
-	    wrapper = new Vector();
-	    StringTokenizer st = new StringTokenizer(s);
-	    while (st.hasMoreTokens())
-	    {
-		wrapper.add(st.nextToken());
-	    }
-	}
     }
 
     /**
@@ -98,7 +81,7 @@ public class QueuedProcess
      * @param args command arguments
      * @throws IOException when execution fails
      * @see java.lang.Runtime#exec(String[])
-     * @see #MAX_RUNNERS_PROPERTY
+     * @see #MAX_RUNNERS_KEY
      */
     public QueuedProcess (String[] args)
     throws IOException
@@ -115,18 +98,31 @@ public class QueuedProcess
      * @param dir working directory
      * @throws IOException when execution fails
      * @see java.lang.Runtime#exec(String[])
-     * @see #MAX_RUNNERS_PROPERTY
+     * @see #MAX_RUNNERS_KEY
      */
     public QueuedProcess (String[] args, String[] envp, File dir)
     throws IOException
     {
+	// make sure a space exists
+	sem.decr();
+
+	// attache wrapper
+	String[] wrapper = config.getStringArray(WRAPPER_KEY, " ");
+	if (wrapper != null)
+	{
+	    String[] targs = new String[wrapper.length + args.length];
+	    System.arraycopy(wrapper, 0, targs, 0, wrapper.length);
+	    System.arraycopy(args, 0, targs, wrapper.length, args.length);
+	    args = targs;
+	}
+
+	// log execution
 	if (log.isInfoEnabled())
 	{
 	    StringBuffer sb = new StringBuffer();
 	    for (int i = 0; i < args.length; i++)
 	    {
-		sb.append(args[i]);
-		sb.append(' ');
+		sb.append(args[i]); sb.append(' ');
 	    }
 	    log.info("process: "+sb);
 
@@ -141,27 +137,6 @@ public class QueuedProcess
 		log.info("env: "+sb);
 	    }
 	    if (dir != null) log.info("dir: "+dir);
-	}
-
-	// make sure a space exists
-	sem.decr();
-
-	// attache wrapper
-	if (wrapper != null)
-	{
-	    int i = 0;
-	    String[] targs = new String[wrapper.size() + args.length];
-
-	    for (int j = 0; j < wrapper.size(); j++, i++)
-	    {
-		targs[i] = (String) wrapper.elementAt(j);
-	    }
-
-	    for (int j = 0; j < args.length; j++, i++)
-	    {
-		targs[i] = args[j];
-	    }
-	    args = targs;
 	}
 
 	// execute process

@@ -42,8 +42,9 @@
 <%
     java.util.Vector vec = new java.util.Vector();
     java.util.Vector dirVec = new java.util.Vector();
-    org.scilla.Config scillaConfig = org.scilla.Config.getInstance();
-    java.io.File dir = new java.io.File(scillaConfig.getSourceDir()+"/"+path);
+    org.scilla.Config scillaConfig = org.scilla.ConfigFactory.get();
+    String sourceDir = scillaConfig.getString(Config.SOURCE_DIR_KEY);
+    java.io.File dir = new java.io.File(sourceDir+"/"+path);
     if (dir.isDirectory())
     {
 	String[] files = dir.list();
@@ -60,7 +61,7 @@
 	    }
 	    else
 	    {
-		String n = scillaConfig.getSourceDir()+"/"+path+"/"+s;
+		String n = sourceDir+"/"+path+"/"+s;
 		java.io.File f = new java.io.File(n);
 		if (f.isDirectory())
 		{

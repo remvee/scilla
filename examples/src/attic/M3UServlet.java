@@ -10,7 +10,7 @@ import org.scilla.util.mp3.ID3v1;
 
 public class M3UServlet extends HttpServlet
 {
-    final static Config scillaConfig = Config.getInstance();
+    final static Config scillaConfig = ConfigFactory.get();
     final static String PROPERTY_FILE = "M3UServlet.properties";
     static Properties config = null;
 
@@ -52,7 +52,7 @@ public class M3UServlet extends HttpServlet
 	boolean recursive = request.getParameter("r") != null;
 
 	String urlPrefix = "";
-	String source = scillaConfig.getSourceDir();
+	String source = scillaConfig.getString(Config.SOURCE_DIR_KEY);
 	if (preset.equals("file"))
 	{
 	    urlPrefix = source+File.separator;

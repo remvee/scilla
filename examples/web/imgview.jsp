@@ -13,7 +13,9 @@
     String imgScaleEncoded = "scale=" + scale + "x" + scale;
 
     String copyrightEncoded = "";
-    String copyrightFile = Config.getInstance().getSourceDir()+'/'+file;
+    String copyrightFile =
+	    ConfigFactory.get().getString(Config.SOURCE_DIR_KEY)
+	    +'/'+file;
     copyrightFile = copyrightFile.substring(0, copyrightFile.lastIndexOf('/'));
     copyrightFile += "/copyright.txt";
     File f = new File(copyrightFile);

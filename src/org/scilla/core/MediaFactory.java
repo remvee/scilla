@@ -32,14 +32,14 @@ import org.scilla.converter.*;
 /**
  * The MediaFactory creates a runner or file object.
  *
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @author R.W. van 't Veer
  */
 public class MediaFactory
 {
     static Category log = Category.getInstance(MediaFactory.class);
 
-    static Config config = Config.getInstance();
+    static Config config = ConfigFactory.get();
 
     /**
      * Create a runner or file object for given request.
@@ -64,7 +64,7 @@ public class MediaFactory
 
         // find appropriate converter
 	Converter conv = null;
-	Class[] convs = config.getConverters();
+	Class[] convs = config.getClasses(Config.CONVERTERS_KEY);
 	for (int i = 0; i < convs.length; i++)
 	{
 	    Converter c;
@@ -78,6 +78,7 @@ public class MediaFactory
 		continue;
 	    }
 
+	    if (! c.isFunctional()) continue;
 	    if (! c.isValidInputType(req.getInputType())) continue;
 	    if (! c.isValidOutputType(req.getOutputType())) continue;
 

@@ -33,7 +33,7 @@ import org.scilla.util.*;
  * The Request class holds a scilla media object request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class Request
 {
@@ -48,7 +48,7 @@ public class Request
 
     MediaObject obj = null;
     CacheManager cache = CacheManager.getInstance();
-    Config config = Config.getInstance();
+    Config config = ConfigFactory.get();
 
     /**
      * Construct a new request object.
@@ -120,11 +120,12 @@ public class Request
     /**
      * convenience method
      * @return full path to source file
-     * @see Config#getSourceDir()
+     * @see org.scilla.Config#SOURCE_DIR_KEY
      */
     public String getInputFile ()
     {
-        return config.getSourceDir() + File.separator + source;
+        return config.getString(Config.SOURCE_DIR_KEY)
+		+ File.separator + source;
     }
 
     /**

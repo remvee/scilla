@@ -21,6 +21,7 @@
 
 package org.scilla;
 
+import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.StringTokenizer;
@@ -33,133 +34,73 @@ import org.apache.log4j.Category;
 import org.scilla.converter.*;
 
 /**
- * The scilla configuration wrapper.
+ * The scilla configuration.
  *
- * @version $Revision: 1.4 $
+ * @see org.scilla.ConfigFactory#get()
+ * @version $Revision: 1.5 $
  * @author R.W. van 't Veer
  */
-public class Config
+public interface Config
 {
-    static Category log = Category.getInstance(Config.class);
-    static { BasicConfigurator.configure(); }
+    /** key to cache directory */
+    public static final String CACHE_DIR_KEY = "cache.dir";
+    /** key to source directory */
+    public static final String SOURCE_DIR_KEY = "source.dir";
+    /** key to converter class list */
+    public static final String CONVERTERS_KEY = "converters.classes";
 
-    private static Config _instance = null;
-    public static final String PROPERTY_FILE = "org/scilla/Config.properties";
-    public static final String CACHE_DIR_PROPERTY = "Config.cacheDir";
-    public static final String SOURCE_DIR_PROPERTY = "Config.sourceDir";
-    public static final String CONVERTERS_PROPERTY = "Config.converters";
-
-    private Properties param = new Properties();
-
-    protected Config ()
-    {
-	InputStream in = null;
-	try
-	{
-	    in = this.getClass().getClassLoader().getResourceAsStream(PROPERTY_FILE);
-	    if (in != null)
-	    {
-		param.load(in);
-		log.info("properties loaded");
-	    }
-	    else
-	    {
-		log.warn("no properties loaded");
-	    }
-	}
-	catch (Exception e)
-	{
-	    e.printStackTrace();
-	}
-	finally
-	{
-	    if (in != null)
-	    {
-		try { in.close(); }
-		catch (IOException e) { e.printStackTrace(); }
-	    }
-	}
-    }
+// accessors
+    /**
+     * Enumerate all configuration keys.
+     * @return key enumeration
+     */
+    public Enumeration enumerate ();
 
     /**
-     * @return Config for this scilla instance
+     * Test if key exists in configuration.
+     * @param key handle to resource
+     * @return true if key available
      */
-    public static synchronized Config getInstance ()
-    {
-        if (_instance == null) _instance = new Config();
-        return _instance;
-
-    }
+    public boolean exists (String key);
 
     /**
-     * @param key parameter name
-     * @return value of parameter
+     * Get integer value from configuration.
+     * @param key handle to resource
+     * @return integer value associated with key
      */
-    public String getParameter (String key)
-    {
-        String value = getInstance().param.getProperty(key);
-        return value;
-    }
+    public int getInt(String key);
 
     /**
-     * convenience method
-     * @return cache directory location
-     * @see #CACHE_DIR_PROPERTY
+     * Get string value from configuration.
+     * @param key handle to resource
+     * @return string value associated with key
      */
-    public String getCacheDir ()
-    {
-	return getParameter(CACHE_DIR_PROPERTY);
-    }
+    public String getString (String key);
 
     /**
-     * convenience method
-     * @return source directory location
-     * @see #SOURCE_DIR_PROPERTY
+     * Get string array from configuration.  This method
+     * typically uses a StringTokenizer to split a string into an
+     * array of strings.
+     * @param key handle to resource
+     * @param delim string for delimiter characters
+     * @return array of strings associated with key
      */
-    public String getSourceDir ()
-    {
-	return getParameter(SOURCE_DIR_PROPERTY);
-    }
-
-    // list of converters
-    private Class[] converters = null;
+    public String[] getStringArray (String key, String delim);
 
     /**
-     * convenience method
-     * @return array of converter classes
-     * @see #CONVERTERS_PROPERTY
+     * Get class array from configuration.  This method
+     * initializers class objects associated with this key and
+     * return an array of these classes.
+     * @param key handle to resource
+     * @return array of classes associated with key
      */
-    public Class[] getConverters ()
-    {
-	if (converters == null)
-	{
-	    String s = getParameter(CONVERTERS_PROPERTY);
-	    StringTokenizer st = new StringTokenizer(s, ",:; \t\r\n");
-	    Vector v = new Vector();
-	    while (st.hasMoreTokens())
-	    {
-		String cn = null;
-		try
-		{
-		    cn = st.nextToken();
-		    Class c = Class.forName(cn);
-		    Converter cnv = (Converter) c.newInstance();
-		    if (cnv.isFunctional())
-		    {
-			v.add(Class.forName(cn));
-		    }
-		    else
-		    {
-			log.warn("getConverters: converter not functional: " + cn);
-		    }
-		}
-		catch (Throwable ex)
-		{
-		    log.warn("getConverters", ex);
-		}
-	    }
-	    converters = (Class[]) v.toArray(new Class[0]);
-	}
-	return converters;
-    }
+    public Class[] getClasses (String key);
+
+// modifiers
+    /**
+     * Set string value in configuration.
+     * @param key handle to resource
+     * @param val string value
+     */
+    public void setString (String key, String val);
 }

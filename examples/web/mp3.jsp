@@ -27,7 +27,9 @@ throws IOException
 
 %>
 <%
-    Config scillaConfig = Config.getInstance();
+    Config scillaConfig = ConfigFactory.get();
+    String source = scillaConfig.getString(Config.SOURCE_DIR_KEY);
+
     String path = "";
     if (request.getParameter("d") != null) path = request.getParameter("d");
     String urlHead = "servlet/scilla/" + path.replace(' ', '+') + "/";
@@ -40,7 +42,6 @@ throws IOException
     Vector imgVec = new Vector();
     Vector m3uVec = new Vector();
     Vector dirVec = new Vector();
-    String source = scillaConfig.getSourceDir();
     File dir = new File(source+"/"+path);
     if (dir.isDirectory())
     {

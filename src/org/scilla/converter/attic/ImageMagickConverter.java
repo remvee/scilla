@@ -120,17 +120,17 @@ import org.scilla.util.*;
  * </DL>
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class ImageMagickConverter extends Converter
 {
     static Category log = Category.getInstance(ImageMagickConverter.class);
 
-    static Config config = Config.getInstance();
+    static Config config = ConfigFactory.get();
 
     /** parameter name to force the use of this converter */
     public final static String THIS_CONVERTER_PARAMETER = "imagick";
-    public final static String CONVERT_EXEC_PROPERTY = "ImageMagickConverter.exec";
+    public final static String CONVERT_EXEC_KEY = "converters.imagick.convert.exec";
 
     QueuedProcess proc = null;
     int exitValue = -1; // 0 means success
@@ -192,16 +192,24 @@ public class ImageMagickConverter extends Converter
 	}
     }
 
+    private static String execLocation = null;
+    private static boolean execAvailable = false;
+
     /**
      * Determine if ImageMagick <CODE>convert</CODE> executable
      * exists.
-     * @see #CONVERT_EXEC_PROPERTY
+     * @see #CONVERT_EXEC_KEY
      * @see org.scilla.Config
      */
     public boolean isFunctional ()
     {
-	File f = new File(config.getParameter(CONVERT_EXEC_PROPERTY));
-	return f.exists();
+	// cache result in static to gain some speed
+	String s = config.getString(CONVERT_EXEC_KEY);
+	if (s == null) return false;
+	if (s.equals(execLocation)) return execAvailable;
+	execLocation = s;
+	execAvailable = (new File(execLocation)).exists();
+	return execAvailable;
     }
 
     /**
@@ -275,7 +283,7 @@ public class ImageMagickConverter extends Converter
     {
 	// create command line
 	Vector v = new Vector();
-	v.add(config.getParameter(CONVERT_EXEC_PROPERTY));
+	v.add(config.getString(CONVERT_EXEC_KEY));
 	v.add(inputFile);
 
 	// added conversion parameters to command line

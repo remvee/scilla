@@ -34,14 +34,14 @@ import org.scilla.util.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  * @author R.W. van 't Veer
  */
 public class CacheManager
 {
     static Category log = Category.getInstance(CacheManager.class);
 
-    static Config config = Config.getInstance();
+    static Config config = ConfigFactory.get();
 
     private static CacheManager _instance = null;
     Hashtable runners = new Hashtable();
@@ -154,20 +154,22 @@ public class CacheManager
 	return obj;
     }
 
-    final static String MAX_FN_LEN_PROPERTY = "CacheManager.maxFileNameLen";
-    static int MAX_FILENAME_LEN = 32;
+    final static String MAX_FN_LEN_KEY = "cache.filenamelen.max";
+    static int maxFilenameLen = 32;
 
     // try to set max filename len from config
     static
     {
-	String s = config.getParameter(MAX_FN_LEN_PROPERTY);
-	if (s != null) try
+	if (config.exists(MAX_FN_LEN_KEY))
 	{
-	    MAX_FILENAME_LEN = Integer.parseInt(s);
-	}
-	catch (NumberFormatException e)
-	{
-	    e.printStackTrace();
+	    try
+	    {
+		maxFilenameLen = config.getInt(MAX_FN_LEN_KEY);
+	    }
+	    catch (NumberFormatException e)
+	    {
+		log.error(e);
+	    }
 	}
     }
 
@@ -201,14 +203,14 @@ public class CacheManager
 	result = encoded;
 
 	// avoid filename/ directory clash
-	if (result.length() % (MAX_FILENAME_LEN) == 0) result.append('x');
+	if (result.length() % (maxFilenameLen) == 0) result.append('x');
 
-	// chopup, making directories using MAX_FILENAME_LEN
+	// chopup, making directories using maxFilenameLen
 	data = result.toString().toCharArray();
 	encoded = new StringBuffer();
 	for (int i = 0; i < data.length; i++)
 	{
-	    if (i % (MAX_FILENAME_LEN) == 0) encoded.append(File.separator);
+	    if (i % (maxFilenameLen) == 0) encoded.append(File.separator);
 	    encoded.append(data[i]);
 	}
 	result = encoded;
@@ -217,10 +219,10 @@ public class CacheManager
 	String str = result.toString();
 	String fn = str.substring(str.lastIndexOf(File.separator));
 	String suffix = MimeTypeFactory.getExtensionForType(req.getOutputType());
-	if (fn.length() + suffix.length() + 1 > MAX_FILENAME_LEN)
+	if (fn.length() + suffix.length() + 1 > maxFilenameLen)
 	{
 	    // insert dummy data
-	    for (int i = fn.length(); i < MAX_FILENAME_LEN; i++)
+	    for (int i = fn.length(); i < maxFilenameLen; i++)
 	    {
 		result.append('x');
 	    }
@@ -231,7 +233,8 @@ public class CacheManager
 	result.append(suffix);
 
 	// prepend cache path
-	return config.getCacheDir() + File.separator + result;
+	return config.getString(Config.CACHE_DIR_KEY)
+		+ File.separator + result;
     }
 
     void ensureCacheDirectoryFor (String fn)

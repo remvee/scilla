@@ -112,7 +112,7 @@ import org.scilla.core.*;
  * <BR>MPEG2 samplerates(kHz): 16 22.05 24 
  * <BR>bitrates(kbs): 8 16 24 32 40 48 56 64 80 96 112 128 144 160 
  *
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  * @see <A href="http://www.sulaco.org/mp3/">The LAME Project</A>
  * @author R.W. van 't Veer
  */
@@ -121,11 +121,11 @@ public class LameConverter extends Converter
 {
     static Category log = Category.getInstance(LameConverter.class);
 
-    static Config config = Config.getInstance();
+    static Config config = ConfigFactory.get();
 
     /** parameter name to force the use of this converter */
     public final static String THIS_CONVERTER_PARAMETER = "lame";
-    public final static String LAME_EXEC_PROPERTY = "LameConverter.exec";
+    public final static String LAME_EXEC_KEY = "converters.lame.exec";
 
     QueuedProcess proc = null;
     int exitValue = -1; // 0 means success
@@ -173,15 +173,23 @@ public class LameConverter extends Converter
 	}
     }
 
+    private static String execLocation = null;
+    private static boolean execAvailable = false;
+
     /**
      * Determine if <CODE>lame</CODE> executable exists.
-     * @see #LAME_EXEC_PROPERTY
+     * @see #LAME_EXEC_KEY
      * @see org.scilla.Config
      */
     public boolean isFunctional ()
     {
-	File f = new File(config.getParameter(LAME_EXEC_PROPERTY));
-	return f.exists();
+	// cache result in static to gain some speed
+	String s = config.getString(LAME_EXEC_KEY);
+	if (s == null) return false;
+	if (s.equals(execLocation)) return execAvailable;
+	execLocation = s;
+	execAvailable = (new File(execLocation)).exists();
+	return execAvailable;
     }
 
     /**
@@ -212,7 +220,7 @@ public class LameConverter extends Converter
 
 	// create command line
 	Vector v = new Vector();
-	v.add(config.getParameter(LAME_EXEC_PROPERTY));
+	v.add(config.getString(LAME_EXEC_KEY));
 
 	// added conversion parameters to command line
 	for (Iterator it = pars.iterator(); it.hasNext(); )

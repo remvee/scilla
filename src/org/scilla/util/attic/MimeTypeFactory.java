@@ -33,14 +33,12 @@ import org.scilla.Config;
 /**
  * Class for mapping filenames to mime types and visa versa.
  *
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @author R.W. van 't Veer
  */
 public class MimeTypeFactory
 {
     static Category log = Category.getInstance(MimeTypeFactory.class);
-
-    static Config config = Config.getInstance();
 
     public static final String PROPERTY_FILE = "org/scilla/util/MimeTypeFactory.properties";
     static final String PROPERTY_PREFIX = "MimeTypeExt";
