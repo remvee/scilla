@@ -13,9 +13,6 @@ For version 1.0:
     - workaround 300 byte max output filename length
 - log4j
 - junit
-- examples:
-    - error page
-    - add smarttag (mp3 info from filename)
 
 Future:
 - database interface for source (blobs?)
@@ -32,9 +29,11 @@ Future:
     - enherit ID3v1/ID3v2 info using nl.rveer.mp3.ID3
     - clips?
 - CacheManager
-    - cleanup deamon
-	- max fs size, lowmark, himark
-	- age per type (keep some types longer than others)
+    - optional cache to database (blob) to allow keeping of last access time
+	- has it's own jdbc-url to allow separate cache database
+    - cleanup deamon (requires cache to database)
+	- max cache size, lowmark, himark
+	- per type configuration
 	- expire request parameter
 - simple commandline converter
     - input/output types from Config
