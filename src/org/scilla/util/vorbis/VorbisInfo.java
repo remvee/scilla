@@ -31,7 +31,7 @@ import java.util.Set;
 
 /**
  * @author Remco van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class VorbisInfo {
     public final String PAGE_MARKER = "OggS";
@@ -84,11 +84,11 @@ public class VorbisInfo {
 	    {
 		int l = (data[pos++] & 0xff) + ((data[pos++] & 0xff) << 8)
 			+ ((data[pos++] & 0xff) << 16) + ((data[pos++] & 0xff) << 24);
-		StringBuffer sb = new StringBuffer();
+		byte[] d = new byte[l];
 		for (int i = 0; i < l; i++) {
-		    sb.append((char) data[pos++]);
+		    d[i] = data[pos++];
 		}
-		vendor = sb.toString();
+		vendor = new String(d, "UTF-8");
 	    }
 
 	    commentMap = new HashMap();
@@ -97,11 +97,11 @@ public class VorbisInfo {
 	    for (int i = 0; i < commentLen; i++) {
 		int l = (data[pos++] & 0xff) + ((data[pos++] & 0xff) << 8)
 			+ ((data[pos++] & 0xff) << 16) + ((data[pos++] & 0xff) << 24);
-		StringBuffer sb = new StringBuffer();
+		byte[] d = new byte[l];
 		for (int j = 0; j < l; j++) {
-		    sb.append((char) data[pos++]);
+		    d[j] = data[pos++];
 		}
-		String v = sb.toString();
+		String v = new String(d, "UTF-8");
 		String key = v.substring(0, v.indexOf('=')).toLowerCase();
 		String val = v.substring(v.indexOf('=') + 1);
 		commentMap.put(key, val);
