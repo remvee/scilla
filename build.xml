@@ -31,7 +31,6 @@
   <target name="prepare">
     <mkdir dir="${doc.dir}"/>
     <mkdir dir="${build.dir}"/>
-    <mkdir dir="${expand.dir}"/>
     <available property="jai.inclasspath" classname="javax.media.jai.JAI"/>
     <available property="log4j.inclasspath" classname="org.apache.log4j.Category"/>
     <delete file="${excludes.file}"/>
