@@ -7,6 +7,17 @@
     <servlet>
 	<servlet-name>scilla</servlet-name>
 	<servlet-class>org.scilla.util.Servlet</servlet-class>
+	<init-param>
+	    <param-name>scilla.source</param-name>
+	    <param-value>@source.dir@</param-value>
+	    <description>Location where media files reside</description>
+	</init-param>
+	<init-param>
+	    <param-name>scilla.cache</param-name>
+	    <param-value>@cache.dir@</param-value>
+	    <description>Location where cache files reside</description>
+	</init-param>
+	<load-on-startup>1</load-on-startup>
     </servlet>
     <servlet>
 	<servlet-name>playlist.m3u</servlet-name>

@@ -1,13 +1,6 @@
 <project name="scilla" default="compile" basedir=".">
 
-<!-- configuration -->
-  <property name="lame.exec"    value="/usr/local/bin/lame"/>
-  <property name="imagick.exec" value="/usr/local/bin/convert"/>
-  <property name="ffmpeg.exec"  value="/usr/local/bin/ffmpeg"/>
-  <property name="cache.dir"    value="NoNsEnsIcAlVaLuE"/>
-  <property name="source.dir"   value="nOnSeNSiCaLvAlUe"/>
-
-<!-- tool configuration -->
+<!-- build tool configuration -->
   <property name="ctags.exec"     value="exctags"/>
   <property name="cvs2cl.exec"    value="cvs2cl"/>
   <property name="build.compiler" value="jikes"/>
@@ -23,9 +16,6 @@
   <property name="doc.title"         value="scilla API documentation"/>
   <property name="doc.pkgnames"      value="org.scilla.*"/>
   <property name="doc.apidocurl.jdk" value="http://java.sun.com/products/jdk/1.3/docs/api/"/>
-
-<!-- the configuration template -->
-  <property name="config.propfile" value="org/scilla/Config.properties"/>
 
 
 <!-- targets -->
@@ -60,25 +50,7 @@
     </copy>
   </target>
 
-  <!-- replace tokens in config property file
-       delete file to make sure new property values are set -->
-  <target name="config" depends="prepare">
-    <delete file="${build.dir}/${config.propfile}"/>
-    <copy file="${src.dir}/${config.propfile}"
-        tofile="${build.dir}/${config.propfile}"/>
-    <replace file="${build.dir}/${config.propfile}"
-        token="@source.dir@" value="${source.dir}"/>
-    <replace file="${build.dir}/${config.propfile}"
-        token="@cache.dir@" value="${cache.dir}"/>
-    <replace file="${build.dir}/${config.propfile}"
-        token="@imagick.exec@" value="${imagick.exec}"/>
-    <replace file="${build.dir}/${config.propfile}"
-        token="@lame.exec@" value="${lame.exec}"/>
-    <replace file="${build.dir}/${config.propfile}"
-        token="@ffmpeg.exec@" value="${ffmpeg.exec}"/>
-  </target>
-
-  <target name="jar" depends="compile,config">
+  <target name="jar" depends="compile">
     <jar jarfile="${jar.file}" basedir="${build.dir}"/>
   </target>
 

@@ -110,7 +110,7 @@ import org.scilla.util.*;
  * </DL>
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ExternalConverter implements Converter
 {
@@ -167,8 +167,13 @@ public class ExternalConverter implements Converter
 		{
 		    final String val = config.getString(key);
 		    execMap.put(name, val);
-		    // blacklist it if executable does not exist
-		    if (! (new File(val)).exists())
+
+		    // blacklist it if executable not available
+		    try
+		    {
+			Runtime.getRuntime().exec(new String[] { val }).waitFor();
+		    }
+		    catch (Throwable ex)
 		    {
 			blacklistSet.add(name);
 		    }

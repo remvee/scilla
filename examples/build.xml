@@ -2,6 +2,11 @@
 
   <!-- application identifier -->
   <property name="app.name" value="scilla"/>
+  <property name="scilla.project" value=".."/>
+
+  <!-- scilla configuration -->
+  <property name="source.dir" value="${basedir}/data/source"/>
+  <property name="cache.dir"  value="${basedir}/data/cache"/>
 
   <!-- some defaults -->
   <property name="tomcat.home" value="/usr/local/tomcat"/>
@@ -10,15 +15,6 @@
 
   <!-- our own servlet -->
   <property name="src.dir"    value="src"/>
-
-  <!-- scilla configuration (defaults) -->
-  <property name="lame.exec"    value="/usr/local/bin/lame"/>
-  <property name="imagick.exec" value="/usr/local/bin/convert"/>
-  <property name="ffmpeg.exec"  value="/usr/local/bin/ffmpeg"/>
-  <property name="cache.dir"    value="${basedir}/data/cache"/>
-  <property name="source.dir"   value="${basedir}/data/source"/>
-
-  <property name="scilla.project" value=".."/>
 
   <!-- deployment hierarchy -->
   <property name="deploy.dir" value="${tomcat.home}/webapps/${app.name}"/>
@@ -46,7 +42,11 @@
 
     <!-- copy web-app descriptor -->
     <mkdir dir="${webinf.dir}"/>
-    <copy file="etc/web.xml" todir="${webinf.dir}"/>
+    <copy file="etc/web.xml" tofile="${webinf.dir}/web.xml"/>
+    <replace file="${webinf.dir}/web.xml"
+	    token="@source.dir@" value="${source.dir}"/>
+    <replace file="${webinf.dir}/web.xml"
+	    token="@cache.dir@" value="${cache.dir}"/>
 
     <!-- copy all JSP and HTML files -->
     <mkdir  dir="${deploy.dir}"/>
@@ -63,7 +63,7 @@
     <!-- create classes dir for helper classes -->
     <mkdir dir="${build.dir}"/>
 
-    <!-- create cache dir for scilla -->
+    <!-- create scilla cache directory -->
     <mkdir dir="${cache.dir}"/>
 
     <available property="apidoc.done" file="${apidoc.dir}"/>
@@ -89,12 +89,6 @@
 
   <target name="scilla" depends="prepare">
     <ant dir="${scilla.project}" target="compile"/>
-    <ant dir="${scilla.project}" target="config">
-	<property name="source.dir" value="${source.dir}"/>
-	<property name="cache.dir" value="${cache.dir}"/>
-	<property name="imagick.exec" value="${imagick.exec}"/>
-	<property name="lame.exec" value="${lame.exec}"/>
-    </ant>
   </target>
 
   <target name="changelog">

@@ -32,7 +32,7 @@ import java.io.IOException;
 /**
  * The scilla configuration implementation using property files.
  *
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * @author R.W. van 't Veer
  */
 public class ConfigPropertiesImpl implements Config
@@ -163,6 +163,8 @@ public class ConfigPropertiesImpl implements Config
 // modifiers
     public void setString (String key, String val)
     {
+	log.debug("setString: "+key+"="+val);
+
 	// see if we cache some array
 	for (int i = 0; i < cache.length; i++)
 	{

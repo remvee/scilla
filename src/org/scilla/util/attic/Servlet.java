@@ -27,6 +27,7 @@ import java.util.Date;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
 import org.scilla.*;
@@ -35,51 +36,35 @@ import org.scilla.util.mp3.*;
 /**
  * This servlet handles media requests.
  *
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  * @author R.W. van 't Veer
  */
 public class Servlet extends HttpServlet
 {
     private static final Logger log = LoggerFactory.get(Servlet.class);
 
-    private void addStreamHeaders (Request req, HttpServletResponse response)
+    /** name of scilla media source directory servlet parameter */
+    public static final String SOURCE_PARAMETER = "scilla.source";
+    /** name of scilla media cache directory servlet parameter */
+    public static final String CACHE_PARAMETER = "scilla.cache";
+
+    /**
+     * Initialize scilla.
+     */
+    public void init (ServletConfig config)
+    throws ServletException
     {
-	try
-	{
-	    ID3v1 id3 = new ID3v1(new File(req.getInputFile()));
-	    String title = "";
-	    if (id3.getArtist() != null && id3.getArtist().length() != 0)
-	    {
-		title += id3.getArtist() + " - ";
-	    }
-	    if (id3.getAlbum() != null && id3.getAlbum().length() != 0)
-	    {
-		title += id3.getAlbum() + " - ";
-	    }
-	    if (id3.getTitle() != null && id3.getTitle().length() != 0)
-	    {
-		title += id3.getTitle();
-	    }
-	    if (title.endsWith(" - "))
-	    {
-		title = title.substring(0, title.lastIndexOf(" - "));
-	    }
-	    if (title.length() == 0)
-	    {
-		title = req.getInputFile();
-		title = title.substring(title.lastIndexOf(File.separator)+1);
-		title = title.substring(0, title.lastIndexOf('.'));
-	    }
+	String source = config.getInitParameter(SOURCE_PARAMETER);
+	String cache = config.getInitParameter(CACHE_PARAMETER);
 
-	    response.setHeader("icy-name", title);
-	    response.setHeader("x-audiocast-name", title);
+	if (source == null)
+	    throw new ServletException(SOURCE_PARAMETER+" parameter is null");
+	if (cache == null)
+	    throw new ServletException(CACHE_PARAMETER+" parameter is null");
 
-	    log.debug("addStreamHeaders: "+title);
-	}
-	catch (Throwable t)
-	{
-	    log.warn("addStreamHeaders", t);
-	}
+	Config scillaConfig = ConfigProvider.get();
+	scillaConfig.setString(Config.SOURCE_DIR_KEY, source);
+	scillaConfig.setString(Config.CACHE_DIR_KEY, cache);
     }
 
     /**
@@ -179,5 +164,51 @@ public class Servlet extends HttpServlet
 	}
 
 	return 0L;
+    }
+
+    /**
+     * Add MP3 info to stream headers using "<TT>icy-name</TT>" and
+     * "<TT>x-audiocast-name</TT>".
+     * @param req scilla request object
+     * @param response servlet response object
+     */
+    private void addStreamHeaders (Request req, HttpServletResponse response)
+    {
+	try
+	{
+	    ID3v1 id3 = new ID3v1(new File(req.getInputFile()));
+	    String title = "";
+	    if (id3.getArtist() != null && id3.getArtist().length() != 0)
+	    {
+		title += id3.getArtist() + " - ";
+	    }
+	    if (id3.getAlbum() != null && id3.getAlbum().length() != 0)
+	    {
+		title += id3.getAlbum() + " - ";
+	    }
+	    if (id3.getTitle() != null && id3.getTitle().length() != 0)
+	    {
+		title += id3.getTitle();
+	    }
+	    if (title.endsWith(" - "))
+	    {
+		title = title.substring(0, title.lastIndexOf(" - "));
+	    }
+	    if (title.length() == 0)
+	    {
+		title = req.getInputFile();
+		title = title.substring(title.lastIndexOf(File.separator)+1);
+		title = title.substring(0, title.lastIndexOf('.'));
+	    }
+
+	    response.setHeader("icy-name", title);
+	    response.setHeader("x-audiocast-name", title);
+
+	    log.debug("addStreamHeaders: "+title);
+	}
+	catch (Throwable t)
+	{
+	    log.warn("addStreamHeaders", t);
+	}
     }
 }
