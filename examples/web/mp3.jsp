@@ -186,49 +186,34 @@ throws IOException
 	out.print("<BODY" + (background == null ? " BGCOLOR=WHITE>"
 		: " BACKGROUND=\""+background+"\">"));
 %>
-	<TABLE>
+	<TABLE cellpadding=10>
 	    <TR>
 <%
 	Enumeration e1 = dirVec.elements();
 	Enumeration e2 = m3uVec.elements();
 	if (e1.hasMoreElements() || e2.hasMoreElements())
 	{
-	    int num = 1;
 %>
 		<TD align="left" valign="top">
-		    <UL>
 <%
-	    for (; e1.hasMoreElements(); num++)
+	    while (e1.hasMoreElements())
 	    {
 		String s = (String) e1.nextElement();
 		String sEncoded = (path + "/" + s).replace(' ', '+');
 %>
-			<LI>
-			    <A href="mp3.jsp?d=<%= sEncoded %>"><%= s %></A>/
-			</LI>
+		    <BR><A href="mp3.jsp?d=<%= sEncoded %>"><%= s %></A>/
 <%
 	    }
-	    for (; e2.hasMoreElements(); num++)
+	    while (e2.hasMoreElements())
 	    {
 		String s = (String) e2.nextElement();
 %>
-			<LI>
-			    <%=s.substring(0, s.lastIndexOf('.'))%>
+		    <BR><%=s.substring(0, s.lastIndexOf('.'))%>
 <%
 		streamLinks(request, out, path+"/"+s);
-%>
-			</LI>
-<%
-	    }
-	    if (num != 1)
-	    {
-%>
-		    </UL>
-<%
 	    }
 %>
 		</TD>
-		<TD>&nbsp;&nbsp;&nbsp;</TD>
 <%
 	}
 	if (vec.size() > 0)
