@@ -34,7 +34,7 @@ import org.scilla.util.MimeType;
 /**
  * Image info.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @author R.W. van 't Veer
  */
 public class ImageInfo extends Info {
@@ -267,4 +267,13 @@ public class ImageInfo extends Info {
     private static boolean tkLoaded = false;
     /** mediatracker to track image loading */
     private final static MediaTracker tracker = new MediaTracker(new Component() {});
+
+    /** debug */
+    public static void main (String[] args) {
+	for (int i = 0; i < args.length; i++) {
+	    String fn = args[i];
+	    ImageInfo ii = new ImageInfo(fn);
+	    System.out.println(fn+": "+ii);
+	}
+    }
 }
