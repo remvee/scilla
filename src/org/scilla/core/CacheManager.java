@@ -32,12 +32,12 @@ import org.scilla.util.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  * @author R.W. van 't Veer
  */
 public class CacheManager
 {
-    private static final Logger log = LoggerFactory.getLogger(CacheManager.class);
+    private static final Logger log = LoggerFactory.get(CacheManager.class);
     private static final Config config = ConfigProvider.get();
 
     private static CacheManager _instance = null;

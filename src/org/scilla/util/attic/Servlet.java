@@ -35,14 +35,14 @@ import org.scilla.util.mp3.*;
 /**
  * This servlet handles media requests.
  *
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  * @author R.W. van 't Veer
  */
 public class Servlet extends HttpServlet
 {
-    static Logger log = LoggerFactory.getLogger(Servlet.class);
+    private static final Logger log = LoggerFactory.get(Servlet.class);
 
-    void addStreamHeaders (Request req, HttpServletResponse response)
+    private void addStreamHeaders (Request req, HttpServletResponse response)
     {
 	try
 	{

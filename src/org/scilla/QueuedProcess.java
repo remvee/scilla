@@ -35,11 +35,11 @@ import java.util.StringTokenizer;
  * taken from the scilla configuration.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class QueuedProcess
 {
-    private static final Logger log = LoggerFactory.getLogger(QueuedProcess.class);
+    private static final Logger log = LoggerFactory.get(QueuedProcess.class);
     private static final Config config = ConfigProvider.get();
 
     public static final String MAX_RUNNERS_KEY = "converters.osprocess.runners.sem";

@@ -27,12 +27,12 @@ import java.io.IOException;
 /**
  * The scilla configuration provider.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @author R.W. van 't Veer
  */
 public class ConfigProvider
 {
-    static final Logger log = LoggerFactory.getLogger(ConfigProvider.class);
+    static final Logger log = LoggerFactory.get(ConfigProvider.class);
 
     /** list of configuration implementations */
     public static final String[] configImpls = { "org.scilla.ConfigPropertiesImpl" };

@@ -33,11 +33,11 @@ import org.scilla.util.*;
  * The Request class holds a scilla media object request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class Request
 {
-    private final static Logger log = LoggerFactory.getLogger(Request.class);
+    private final static Logger log = LoggerFactory.get(Request.class);
     private final static Config config = ConfigProvider.get();
     private final static CacheManager cache = CacheManager.getInstance();
 

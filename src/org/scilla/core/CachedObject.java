@@ -34,18 +34,22 @@ import org.scilla.*;
  * finished or not.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class CachedObject implements MediaObject
 {
-    static Logger log = LoggerFactory.getLogger(CachedObject.class);
+    private static final Logger log = LoggerFactory.get(CachedObject.class);
+    private static final CacheManager cache = CacheManager.getInstance();
 
-    final static int BUFFER_SIZE = 4096;
-    final static int WAIT_FOR_FILE_TIMEOUT = 100;
-    final static int WAIT_FOR_READ_TIMEOUT = 100;
+    /** buffer size */
+    public static final int BUFFER_SIZE = 4096;
+    /** milis to wait in wait for file loop */
+    public static final int WAIT_FOR_FILE_TIMEOUT = 100;
+    /** milis to wait for nieuw data in read loop */
+    public static final int WAIT_FOR_READ_TIMEOUT = 100;
 
-    String filename;
-    CacheManager cache = CacheManager.getInstance();
+    // output file name
+    private String filename;
 
     /**
      * Create media object.

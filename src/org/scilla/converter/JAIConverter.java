@@ -38,11 +38,11 @@ import org.scilla.util.*;
  * parameter.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class JAIConverter implements Converter
 {
-    static Logger log = LoggerFactory.getLogger(JAIConverter.class);
+    static Logger log = LoggerFactory.get(JAIConverter.class);
 
     /** parameter name to force the use of this converter */
     public final static String THIS_CONVERTER_PARAMETER = "jai";

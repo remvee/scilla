@@ -34,19 +34,22 @@ import org.scilla.converter.*;
  * A runner object is a media object currently being converted.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class RunnerObject implements MediaObject
 {
-    static Logger log = LoggerFactory.getLogger(RunnerObject.class);
+    private static final Logger log = LoggerFactory.get(RunnerObject.class);
+    private static final CacheManager cache = CacheManager.getInstance();
 
-    final static int BUFFER_SIZE = 4096;
-    final static int WAIT_FOR_FILE_TIMEOUT = 100;
-    final static int WAIT_FOR_READ_TIMEOUT = 100;
+    /** buffer size */
+    public static final int BUFFER_SIZE = 4096;
+    /** milis to wait in wait for file loop */
+    public static final int WAIT_FOR_FILE_TIMEOUT = 100;
+    /** milis to wait for nieuw data in read loop */
+    public static final int WAIT_FOR_READ_TIMEOUT = 100;
 
-    Converter conv;
-    CacheManager cache = CacheManager.getInstance();
-    boolean deleteOutput = true;
+    private Converter conv;
+    private boolean deleteOutput = true;
 
     /**
      * Create media object.

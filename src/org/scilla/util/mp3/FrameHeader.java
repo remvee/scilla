@@ -33,11 +33,11 @@ import org.scilla.LoggerFactory;
  * Read only access to MP3 frame header information.
  * @see <a href="http://www.mp3-tech.org/programmer/frame_header.html">MP3'Tech - Frame header</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class FrameHeader
 {
-    static Logger log = LoggerFactory.getLogger(FrameHeader.class);
+    private static final Logger log = LoggerFactory.get(FrameHeader.class);
 
 /// constants
 ///
@@ -527,4 +527,4 @@ public class FrameHeader
 }
 
 
-/* end of $Id: FrameHeader.java,v 1.7 2001/11/07 08:20:54 remco Exp $ */
+/* end of $Id: FrameHeader.java,v 1.8 2001/11/23 13:37:46 remco Exp $ */

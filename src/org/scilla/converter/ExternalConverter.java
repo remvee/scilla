@@ -110,11 +110,11 @@ import org.scilla.util.*;
  * </DL>
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ExternalConverter implements Converter
 {
-    private static final Logger log = LoggerFactory.getLogger(ExternalConverter.class);
+    private static final Logger log = LoggerFactory.get(ExternalConverter.class);
     private static final Config config = ConfigProvider.get();
 
     /** config key prefix for converter definitions */

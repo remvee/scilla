@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
 /**
  * The scilla logger factory.
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @author R.W. van 't Veer
  */
 public class LoggerFactory
@@ -95,7 +95,7 @@ public class LoggerFactory
      * Get logger for class.
      * @return logger object
      */
-    public static synchronized Logger getLogger (Class clazz)
+    public static synchronized Logger get (Class clazz)
     {
 	if (! configuredFlag) LoggerFactory.configure();
 

@@ -32,12 +32,12 @@ import java.io.IOException;
 /**
  * The scilla configuration implementation using property files.
  *
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * @author R.W. van 't Veer
  */
 public class ConfigPropertiesImpl implements Config
 {
-    private static final Logger log = LoggerFactory.getLogger(ConfigPropertiesImpl.class);
+    private static final Logger log = LoggerFactory.get(ConfigPropertiesImpl.class);
 
     /** name of configuration file */
     public static final String PROPERTY_FILE = "org/scilla/Config.properties";
