@@ -1,8 +1,5 @@
 For version 1.0:
-- cleanup Config code
-- add LoggerDummyImpl
-    - provides empty methods and isEnable false stuff
-- make work with orion
+- remove tomcat dependency, make work with orion
 - JAIConverter
     - sync parameters with imagick so they will be interchangable.
       Maybe we want to define parameter sets as kind of interface?
