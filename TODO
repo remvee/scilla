@@ -1,0 +1,56 @@
+- DOCUMENT DOCUMENT DOCUMENT!!
+- DOCUMENT DOCUMENT DOCUMENT!!
+- DOCUMENT DOCUMENT DOCUMENT!!
+
+- implement content-length
+- write INSTALL.txt
+- JAIConverter
+    - sync parameters with imagick so they will be interchangable.
+      Maybe we want to define parameter sets as kind of interface?
+- JMFConverter
+    - sync parameters with lame so they will be interchangable for mp3
+      conversions.  Interface?
+- QueuedProcess
+    - log stdout, stderr
+- Converter: handle command failure
+    - let thread test for successful exit
+    - if not successful set flag which can be tested in RunnerObject
+	when no file appears and converter nolonger alive
+- log4j
+- Publish class for generation of static websites, include main for
+  scripting.
+
+Ideas:
+- type transformation by extension (shorter notation!)
+
+Future:
+- database interface for source (blobs?)
+- request info
+    - cached! (need a database for speed?)
+    - types
+	- mp3: format and id3
+	- image: type, format, size..
+- title streaming using icy-name and x-audiocast-name
+- gimp converter
+- referer protection
+- crc url protection
+- LameConverter:
+    - enherit ID3v1/ID3v2 info using nl.rveer.mp3.ID3
+    - allow wav input?
+    - clips?
+- CacheManager
+    - cleaner deamon
+	- max fs size, lowmark, himark
+	- age per type (keep some types longer than others)
+	- expire request parameter
+- simple commandline converter
+    - input/output types from Config
+    - parameter list from Config
+    - uses a format string from config to construct command line
+    - should be able to replace lame (apart from id3 enheritance) and
+      imagick converters
+- pipes
+- netpbm converter (needs pipes)
+- sox converter (handy with lame and pipes)
+- texi2html converter (multipage output, hmm interesting)
+- docbook converter (hmm)

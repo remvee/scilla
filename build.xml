@@ -1,0 +1,96 @@
+<project name="scilla" default="compile" basedir=".">
+
+<!-- configuration -->
+  <property name="lame.exec"    value="/usr/local/bin/lame"/>
+  <property name="imagick.exec" value="/usr/local/bin/convert"/>
+  <property name="cache.dir"    value="NoNsEnsIcAlVaLuE"/>
+  <property name="source.dir"   value="nOnSeNSiCaLvAlUe"/>
+
+<!-- tool configuration -->
+  <property name="ctags.exec"     value="exctags"/>
+  <property name="cvs2cl.exec"    value="cvs2cl"/>
+  <property name="build.compiler" value="jikes"/>
+
+<!-- building sites -->
+  <property name="src.dir"   value="src"/>
+  <property name="build.dir" value="build"/>
+  <property name="jar.file"  value="scilla.jar"/>
+
+<!-- for documentation building -->
+  <property name="doc.dir"      value="doc"/>
+  <property name="doc.title"    value="scilla API documentation"/>
+  <property name="doc.pkgnames" value="nl.rveer.*"/>
+
+<!-- the configuration template -->
+  <property name="config.propfile" value="org/scilla/Config.properties"/>
+
+
+<!-- targets -->
+  <target name="prepare">
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${doc.dir}"/>
+    <available classname="javax.media.jai.JAI" property="jai.present"/>
+  </target>
+
+  <target name="compile" depends="prepare,compile.all,compile.nojai">
+    <copy todir="${build.dir}">
+      <fileset dir="${src.dir}">
+	<include name="**/*.properties"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="compile.nojai" unless="jai.present">
+    <javac srcdir="${src.dir}" destdir="${build.dir}" excludes="**/JAI*"/>
+  </target>
+
+  <target name="compile.all" if="jai.present">
+    <javac srcdir="${src.dir}" destdir="${build.dir}"/>
+  </target>
+
+  <!-- replace tokens in config property file
+       delete file to make sure new property values are set -->
+  <target name="config" depends="prepare">
+    <delete file="${build.dir}/${config.propfile}"/>
+    <copy file="${src.dir}/${config.propfile}"
+        tofile="${build.dir}/${config.propfile}"/>
+    <replace file="${build.dir}/${config.propfile}"
+        token="@source.dir@" value="${source.dir}"/>
+    <replace file="${build.dir}/${config.propfile}"
+        token="@cache.dir@" value="${cache.dir}"/>
+    <replace file="${build.dir}/${config.propfile}"
+        token="@imagick.exec@" value="${imagick.exec}"/>
+    <replace file="${build.dir}/${config.propfile}"
+        token="@lame.exec@" value="${lame.exec}"/>
+  </target>
+
+  <target name="jar" depends="compile,config">
+    <jar jarfile="${jar.file}" basedir="${build.dir}"/>
+  </target>
+
+  <target name="doc" depends="prepare">
+    <javadoc sourcepath="${src.dir}" destdir="${doc.dir}"
+	windowtitle="${doc.title}" packagenames="${doc.pkgnames}"/>
+  </target>
+
+  <target name="ctags">
+    <exec executable="${ctags.exec}">
+      <arg value="-R"/>
+      <arg value="${src.dir}"/>
+    </exec>
+  </target>
+
+  <target name="changelog">
+    <exec executable="${cvs2cl.exec}">
+      <arg value="-P"/>
+    </exec>
+  </target>
+
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+    <delete dir="${doc.dir}"/>
+    <delete file="${jar.file}"/>
+    <delete file="tags"/>
+  </target>
+
+</project>

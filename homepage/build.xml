@@ -1,0 +1,63 @@
+<project name="MServ Homepage" default="dist" basedir=".">
+
+  <property name="build.dir" value="build"/>
+
+  <property name="cvsroot"        value="/home/remco/cvsroot"/>
+  <property name="cvsprefix"      value="projects"/>
+  <property name="scilla.project" value="projects/scilla"/>
+
+
+  <target name="prepare">
+    <mkdir dir="${build.dir}"/>
+  </target>
+
+
+  <target name="dist" depends="prepare,changelog,snapshot,doc">
+    <filter token="today"        value="${TODAY}"/>
+    <filter token="snapshot.zip" value="${snapshot.zip}"/>
+    <filter token="snapshot.tgz" value="${snapshot.tgz}"/>
+    <copy todir="${build.dir}" filtering="true">
+      <fileset dir="web"/>
+    </copy>
+  </target>
+
+
+  <target name="checkout" depends="prepare">
+    <cvs cvsRoot="${cvsroot}" dest="${build.dir}" package="${scilla.project}"/>
+  </target>
+
+
+  <target name="timestamp">
+    <tstamp/>
+    <property name="snapshot.zip"   value="scilla-${DSTAMP}.zip"/>
+    <property name="snapshot.tar"   value="scilla-${DSTAMP}.tar"/>
+    <property name="snapshot.tgz"   value="scilla-${DSTAMP}.tar.gz"/>
+  </target>
+
+
+  <target name="snapshot" depends="checkout,timestamp">
+    <zip zipfile="${build.dir}/${snapshot.zip}"
+	basedir="${build.dir}/${cvsprefix}" excludes="**/CVS"/>
+    <tar tarfile="${build.dir}/${snapshot.tar}"
+	basedir="${build.dir}/${cvsprefix}" excludes="**/CVS"/>
+    <gzip src="${build.dir}/${snapshot.tar}"
+	zipfile="${build.dir}/${snapshot.tgz}"/>
+  </target>
+
+
+  <target name="doc" depends="checkout">
+    <ant dir="${build.dir}/${scilla.project}" target="doc"/>
+  </target>
+
+
+  <target name="changelog" depends="checkout">
+    <ant dir="${build.dir}/${scilla.project}" target="changelog"/>
+  </target>
+
+
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+  </target>
+
+
+</project>

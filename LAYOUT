@@ -1,0 +1,30 @@
+Request handling diagram
+------------------------
+Config                                 Main  .  Servlet
+                                              \|/
+MimeTypeFactory                         RequestFactory
+                                               |
+                                            Request
+                                               |
+                                         CacheManager
+                                              /|
+                                  MediaFactory
+                                              \|
+                                          MediaObject
+                                              /|\
+                FileObject  .  RunnerObject  .  CachingObject  .  CachedObject
+                                     |
+                                 Converter
+                                    /|\
+ ImageMagickConverter  .  LameConverter  .  JAIConverter  .  JmfConverter
+                      \/
+		 QueuedProcess
+
+Exceptions:
+-----------
+ScillaException
+    ScillaNoInputException
+    ScillaInputIOException
+    ScillaNoOutputException
+    ScillaOutputIOException
+    ScillaNoConverterException
