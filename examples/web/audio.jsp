@@ -65,7 +65,9 @@
 						<div class="artist"><c:out value="${dir.artist}"/></div>
 					    </c:if>
 					    <c:if test="${dir.numOfPerformers == 1}">
-						<div class="performer"><c:out value="${dir.performer}"/></div>
+						<c:forTokens var="perf" items="${dir.performer}" delims="/">
+						    <div class="performer"><c:out value="${perf}"/></div>
+						</c:forTokens>
 					    </c:if>
 					    <c:if test="${dir.numOfAlbums == 1}">
 						<div class="album"><c:out value="${dir.album}"/></div>
