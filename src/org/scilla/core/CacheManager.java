@@ -32,7 +32,7 @@ import org.scilla.util.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  * @author R.W. van 't Veer
  */
 public class CacheManager
@@ -134,7 +134,6 @@ public class CacheManager
 		    // configure for caching
 		    ensureCacheDirectoryFor(outfilename);
 		    runner.setOutputFile(outfilename);
-		    runner.setDeleteOutput(false);
 
 		    // add runner to list and start converter
 		    runner.start();

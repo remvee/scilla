@@ -34,7 +34,7 @@ import org.scilla.converter.*;
  * A runner object is a media object currently being converted.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class RunnerObject implements MediaObject
 {
@@ -49,7 +49,6 @@ public class RunnerObject implements MediaObject
     public static final int WAIT_FOR_READ_TIMEOUT = 100;
 
     private Converter conv;
-    private boolean deleteOutput = true;
 
     /**
      * Create media object.
@@ -70,7 +69,7 @@ public class RunnerObject implements MediaObject
     public void start ()
     {
 	// are we caching this?
-	if (! deleteOutput) cache.addRunner(conv.getOutputFile(), this);
+	cache.addRunner(conv.getOutputFile(), this);
 
 	// start converter thread
 	final Converter conv_ = conv;
@@ -99,7 +98,7 @@ public class RunnerObject implements MediaObject
 	{
 	    String fn = conv.getOutputFile();
 	    cache.removeRunner(fn);
-	    if (deleteOutput || ! exitSuccess())
+	    if (! exitSuccess())
 	    {
 		(new File(fn)).delete();
 	    }
@@ -137,13 +136,6 @@ public class RunnerObject implements MediaObject
      * @see #write(java.io.OutputStream)
      */
     public void setOutputFile (String fname) { conv.setOutputFile(fname); }
-
-    /**
-     * Don't call this method after write().
-     * @param flag true if output should be deleted when conversion is
-     * finished
-     */
-    public void setDeleteOutput (boolean flag) { deleteOutput = flag; }
 
     /**
      * @return -1 because file length currently unknown
