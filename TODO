@@ -1,14 +1,8 @@
 For version 1.0:
 - add LoggerDummyImpl
     - provides empty methods and isEnable false stuff
-- could Config provide all access to classloader resources?
-- examples:
-    - admin.jsp
-	- only from localhost
-	- all classes depending on Config should listen for
-	  changes
+- cleanup Config code
 - make work with orion
-- review threading mess
 - JAIConverter
     - sync parameters with imagick so they will be interchangable.
       Maybe we want to define parameter sets as kind of interface?
