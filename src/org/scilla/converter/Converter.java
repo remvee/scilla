@@ -32,7 +32,7 @@ import org.scilla.core.*;
  * Base for converter classes.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public abstract class Converter extends Thread
 {
@@ -145,7 +145,7 @@ public abstract class Converter extends Thread
     }
 
     /** @param pars conversion parameters */
-    public void setParameters (Vector pars) { pars = pars; }
+    public void setParameters (Vector pars) { this.pars = pars; }
     /** @return conversion parameters */
     public Vector getParameters () { return pars; }
     /** @param fname output filename */
