@@ -4,6 +4,14 @@ For version 1.0:
 	- stream mono originals as mono stream
     - playlist.m3u
 	- leaks file descriptors?
+    - do not depend on external directory to function
+- taglib
+    - put tld in META-INF
+    - img:
+	- use accept headers to determine image type?
+	    - IE handles transparent gif but not png
+	- one "trans" attribute instead of attribute per
+	  transformation parameter to allow ordered actions?
 - JAIConverter
     - sync parameters with imagick so they will be interchangable.
       Maybe we want to define parameter sets as kind of interface?
