@@ -42,6 +42,9 @@ public class PlaylistServlet extends HttpServlet
 	    encoding = stripParameter(encoding, RECURS_PARAM);
 	}
 
+	// cleanup encoding
+	if (encoding.equals("?")) encoding = "";
+
 	// determine output type (m3u, pls..)
 	String type = request.getServletPath();
 	type = type.substring(type.lastIndexOf('.')+1);
