@@ -12,6 +12,11 @@
     }
     String urlHead = "scilla/" + path.replace(' ', '+') + "/";
 
+    String enctype = "mp3";
+    if (request.getParameter("t") != null) {
+	enctype = request.getParameter("t");
+    }
+
     String background = null;
     AudioList audioList = new AudioList();
     List imgVec = new Vector();
@@ -60,7 +65,7 @@
 	if (audioList.size() + imgVec.size() + m3uVec.size() + htmVec.size() == 0
 		    && dirVec.size() == 1) {
 	    String s = (path + "/"+dirVec.get(0)).replace(' ', '+');
-	    response.sendRedirect("mp3.jsp?d="+s);
+	    response.sendRedirect("mp3.jsp?t="+enctype+"&d="+s);
 	}
 
 	// redirect to index page if only html files here
@@ -130,7 +135,7 @@
 			    }
 %>
 			    <TD align="left">
-				<A href="mp3.jsp?d=<%= sEnc %>"><%= s %></A>/&nbsp;
+				<A href="mp3.jsp?t=<%= enctype %>&d=<%= sEnc %>"><%= s %></A>/&nbsp;
 			    </TD>
 			    <TD align="right">
 				<A href="<%= streamLink(request, path+"/"+p, true) %>"><scilla:img src="images/speaker.png" transform="scale(14x14)" border="0" alt="Play"/></A>
@@ -411,7 +416,7 @@
 	String remote = request.getRemoteHost();
 	String encoding = "";
 	if (! (remote.equals("localhost") || remote.equals("127.0.0.1"))) {
-	    if (request.getParameter("ogg") != null) {
+	    if ("ogg".equals(request.getParameter("t"))) {
 		encoding = "&t=ogg&bitrate=24&maxbitrate=56";
 	    } else {
 		encoding = "&t=mp3&resample=16&bitrate=24&maxbitrate=56";
