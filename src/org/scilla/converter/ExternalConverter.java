@@ -114,11 +114,11 @@ import org.scilla.util.*;
  * </DL>
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class ExternalConverter implements Converter {
     private static final Log log = LogFactory.getLog(ExternalConverter.class);
-    private static final Config config = ConfigProvider.get();
+    private static final Config config = Config.getInstance();
 
     /** config key prefix for converter definitions */
     public static final String CONVERTER_PREFIX = "converters.external";
@@ -155,7 +155,7 @@ public class ExternalConverter implements Converter {
     private static Set blacklistSet = new HashSet();
     static
     {
-	for (Iterator it = config.keys().iterator(); it.hasNext();) {
+	for (Iterator it = config.keySet().iterator(); it.hasNext();) {
             String key = (String) it.next();
             if (key.startsWith(CONVERTER_PREFIX)) {
                 String tail = key.substring(CONVERTER_PREFIX.length()+1);

@@ -38,14 +38,14 @@ import org.scilla.util.*;
  * kind of request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class RequestFactory {
     /** logger */
     private static final Log log = LogFactory.getLog(RequestFactory.class);
 
     /** scilla configuration object */
-    private final static Config config = ConfigProvider.get();
+    private static final Config config = Config.getInstance();
 
     /**
      * Interpret HTTP request to create a scilla request.

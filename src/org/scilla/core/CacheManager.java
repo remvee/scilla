@@ -38,14 +38,14 @@ import org.scilla.util.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.32 $
+ * @version $Revision: 1.33 $
  * @author R.W. van 't Veer
  */
 public class CacheManager implements RunnerChangeListener {
     /** instance of logger */
     private static final Log log = LogFactory.getLog(CacheManager.class);
     /** instance of global configuration */
-    private static final Config config = ConfigProvider.get();
+    private static final Config config = Config.getInstance();
 
     /** singleton instance of this class */
     private static CacheManager _instance = null;
@@ -206,7 +206,7 @@ public class CacheManager implements RunnerChangeListener {
     // try to set max filename len from config
     static
     {
-        if (config.exists(MAX_FN_LEN_KEY)) {
+        if (config.containsKey(MAX_FN_LEN_KEY)) {
             try {
                 maxFilenameLen = config.getInt(MAX_FN_LEN_KEY);
             } catch (NumberFormatException e) {

@@ -53,4 +53,10 @@
 	<env-entry-type>java.lang.String</env-entry-type>
     </env-entry>
 
+    <!-- env-entry>
+	<env-entry-name>scilla/cache.dir</env-entry-name>
+	<env-entry-value>/tmp</env-entry-value>
+	<env-entry-type>java.lang.String</env-entry-type>
+    </env-entry -->
+
 </web-app>

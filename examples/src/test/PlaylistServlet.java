@@ -10,12 +10,9 @@ import javax.servlet.ServletException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.scilla.Config;
-import org.scilla.ConfigProvider;
 import org.scilla.info.*;
 
 public class PlaylistServlet extends HttpServlet {
-    private final static Config scillaConfig = ConfigProvider.get();
     private final static Log log = LogFactory.getLog(PlaylistServlet.class);
 
     public final static String PATH_PARAM = "d";

@@ -38,11 +38,11 @@ import org.scilla.util.Semaphore;
  * taken from the scilla configuration.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class QueuedProcess {
     private static final Log log = LogFactory.getLog(QueuedProcess.class);
-    private static final Config config = ConfigProvider.get();
+    private static final Config config = Config.getInstance();
 
     public static final String MAX_RUNNERS_KEY = "converters.osprocess.runners.sem";
     public static final String WRAPPER_KEY = "converters.osprocess.wrapper.exec";
@@ -93,7 +93,7 @@ public class QueuedProcess {
     public QueuedProcess (String[] args, String[] envp, File dir)
     throws IOException {
         // attache wrapper
-        String[] wrapper = config.getStringArray(WRAPPER_KEY, " ");
+        String[] wrapper = config.getStringArray(WRAPPER_KEY);
         if (wrapper != null) {
             String[] targs = new String[wrapper.length + args.length];
             System.arraycopy(wrapper, 0, targs, 0, wrapper.length);

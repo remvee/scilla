@@ -38,7 +38,7 @@ import org.scilla.util.*;
 /**
  * This servlet stream requests.
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @author R.W. van 't Veer
  */
 public class StreamServlet extends HttpServlet {
@@ -52,20 +52,6 @@ public class StreamServlet extends HttpServlet {
     private int mp3Samplerate = 16;
     // TODO make configurable!
     private int mp3MaxBitrate = 56;
-
-    /**
-     * Initialize scilla.
-     */
-    public void init (ServletConfig config)
-    throws ServletException {
-        Config scillaConfig = ConfigProvider.get();
-        Enumeration en = config.getInitParameterNames();
-        while (en.hasMoreElements()) {
-            String key = (String) en.nextElement();
-            String val = config.getInitParameter(key);
-            scillaConfig.setString(key, val);
-        }
-    }
 
     /**
      * Handle stream request via servlet interface.
