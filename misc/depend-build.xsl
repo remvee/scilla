@@ -24,7 +24,10 @@
 		    <unzip src="${{download.dir}}/{$zip}" dest="${{extract.dir}}/{$name}"/>
 		    <xsl:choose>
 			<xsl:when test="@runtime = 'true'">
-			    <copy file="${{extract.dir}}/{$name}/{$jar}" todir="${{runtime.lib.dir}}"/>
+			    <xsl:for-each select="jar">
+				<xsl:variable name="jar" select="."/>
+				<copy file="${{extract.dir}}/{$name}/{$jar}" todir="${{runtime.lib.dir}}"/>
+			    </xsl:for-each>
 			</xsl:when>
 			<xsl:otherwise>
 			    <copy file="${{extract.dir}}/{$name}/{$jar}" todir="${{lib.dir}}"/>
