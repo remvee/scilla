@@ -1,7 +1,6 @@
 For version 1.0:
 - examples: 
     - get rid of usebean stuff in audio.jsp and imglist.jsp
-- taglib
     - put tld in META-INF
     - image and playlist; use info objects instead of beans
 - InfoFactory
@@ -10,7 +9,6 @@ For version 1.0:
 - ImageInfo
     - add support for GIF comments and maybe other types (JPEG
       already implemented)
-    - JPEG APP1 Exif
 - org.scilla.info.AudioInfo
     - handle shn files
 - org.scilla.converter.ExternalConverter.java
