@@ -21,7 +21,7 @@ import org.scilla.info.*;
  * This image tag creates an <tt>img</tt> HTML tag to an
  * optionally transformed image with the proper <tt>width</tt>
  * and <tt>height</tt> attributes set.
- * @version $Id: ImageTag.java,v 1.14 2003/03/19 23:49:08 remco Exp $
+ * @version $Id: ImageTag.java,v 1.15 2003/03/20 10:48:19 remco Exp $
  * @author R.W. van 't Veer
  */
 public class ImageTag extends BodyTagSupport {
@@ -305,7 +305,12 @@ public class ImageTag extends BodyTagSupport {
 	out.append(pageRequest.getContextPath());
 	out.append(SERVLET_MAPPING);
 	out.append(name != null ? ImageServlet.SCILLA_SOURCE_CTX : ImageServlet.APPLICATION_CTX);
-	out.append(getSrc());
+	String fname = getSrc();
+	// strip leading slash, already in context spec
+	while (fname.startsWith("/")) {
+	    fname = fname.substring(1);
+	}
+	out.append(fname);
 
 	// translate property to query string
 	Iterator it = getRequestParameters().iterator();
