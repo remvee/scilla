@@ -34,19 +34,17 @@ import org.scilla.*;
  * finished or not.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class CachedObject implements MediaObject
 {
     private static final Logger log = LoggerFactory.get(CachedObject.class);
-    private static final CacheManager cache = CacheManager.getInstance();
 
-    /** buffer size */
-    public static final int BUFFER_SIZE = 4096;
-    /** milis to wait in wait for file loop */
-
-    // output file name
+    /** output file name */
     private String filename;
+    /** output producer */
+    private RunnerObject runner = null;
+
 
     /**
      * Construct media object for cached object.
@@ -57,12 +55,21 @@ public class CachedObject implements MediaObject
 	this.filename = filename;
     }
 
+    /**
+     * Construct media object for cached object.
+     * @param filename full name of result file
+     * @param runner still running output producer
+     */
+    public CachedObject (String filename, RunnerObject runner)
+    {
+	this.filename = filename;
+	this.runner = runner;
+    }
+
+
     public InputStream getStream ()
     throws ScillaException
     {
-	RunnerObject runner = cache.getRunner(filename);
-	log.debug("write: runner="+runner);
-
 	return new MediaStream(filename, runner);
     }
 
@@ -71,7 +78,7 @@ public class CachedObject implements MediaObject
      */
     public long getLength ()
     {
-	if (cache.getRunner(filename) != null) return -1;
+	if (runner != null && !runner.hasFinished()) return -1;
 
 	File f = new File(filename);
 	if (log.isDebugEnabled()) log.debug("length="+f.length());

@@ -24,6 +24,7 @@ package org.scilla.core;
 import java.io.File;
 import java.util.Iterator;
 import java.util.Hashtable;
+import java.util.Map;
 
 import org.scilla.*;
 import org.scilla.util.*;
@@ -32,16 +33,15 @@ import org.scilla.util.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  * @author R.W. van 't Veer
  */
-public class CacheManager
+public class CacheManager implements RunnerChangeListener
 {
     private static final Logger log = LoggerFactory.get(CacheManager.class);
     private static final Config config = ConfigProvider.get();
 
     private static CacheManager _instance = null;
-    private Hashtable runners = new Hashtable();
 
     protected CacheManager ()
     {
@@ -58,40 +58,6 @@ public class CacheManager
     }
 
     /**
-     * Query runner list.
-     * @param filename the name of the outputfile
-     * @return RunnerObject for this outputfile or null if no runner
-     * available.
-     * @see org.scilla.core.CachedObject
-     */
-    RunnerObject getRunner (String filename)
-    {
-	return (RunnerObject) runners.get(filename);
-    }
-
-    /**
-     * Insert into runner list.
-     * @param filename the name of the outputfile
-     * @param obj the runner object
-     */
-    void addRunner (String filename, RunnerObject obj)
-    {
-	runners.put(filename, obj);
-    }
-
-    /**
-     * Delete from runner list.
-     * @param filename the name of the outputfile
-     */
-    void removeRunner (String filename)
-    {
-	runners.remove(filename);
-    }
-
-    // synchronization object for get method
-    private static Object getMonitor = new Object();
-
-    /**
      * Get object from cache.  The CacheManager will lookup a
      * equivalent object in cache.  When no cached object is available
      * an new conversion will be started.
@@ -104,49 +70,61 @@ public class CacheManager
     {
 	MediaObject obj = null;
 
-	String infilename = req.getInputFile();
-	String outfilename = getCacheFilename(req);
-	File infile = new File(infilename);
-	File outfile = new File(outfilename);
+	String ofn = getCacheFilename(req);
+	File ifile = new File(req.getInputFile());
+	File ofile = new File(ofn);
 
-	// need synchronization for runner list
-	synchronized (getMonitor)
-	{
-	    // already have runner
-	    if (getRunner(outfilename) != null)
-	    {
-		obj = new CachedObject(outfilename);
-	    }
-	    // source exists, output in cache and source not newer than cache
-	    else if (infile.exists() && outfile.exists()
-		    && infile.lastModified() < outfile.lastModified())
-	    {
-		obj = new CachedObject(outfilename);
-	    }
-	    else
-	    {
-		// create new MediaObject
-		obj = MediaFactory.createObject(req);
-		if (obj instanceof RunnerObject)
-		{
-		    RunnerObject runner = (RunnerObject) obj;
+	// does source really exist
+	if (!ifile.exists()) {
+	    throw new ScillaNoInputException();
+	}
+	// conversion still running?
+	obj = (RunnerObject) runners.get(ofn);
+	if (obj != null) {
+	    log.debug("existing runner: "+obj);
+	    obj = new CachedObject(ofn, (RunnerObject) obj);
+	    log.debug("get="+obj);
+	    return obj;
+	}
+	// output in cache and source not newer than cache
+	if (ofile.exists() && ifile.lastModified() < ofile.lastModified()) {
+	    obj = new CachedObject(ofn);
+	    log.debug("get="+obj);
+	    return obj;
+	}
+	// create new MediaObject
+	obj = MediaFactory.createObject(req, ofn);
+	if (obj instanceof RunnerObject) {
+	    RunnerObject ro = (RunnerObject) obj;
 
-		    // configure for caching
-		    ensureCacheDirectoryFor(outfilename);
-		    runner.setOutputFile(outfilename);
+	    // make sure output file can be writen
+	    ensureCacheDirectoryFor(ofn);
 
-		    // add runner to list and start converter
-		    runner.start();
-		}
-	    }
+	    // register change listener
+	    runners.put(ofn, ro);
+	    ro.addRunnerChangeListener(this);
+
+	    // add runner to list and start converter
+	    ro.start();
+
+	    log.debug("get="+obj);
+	    return obj;
 	}
 
-	log.debug("get="+obj);
-	return obj;
+	log.error("get: could get proper media object");
+	return null;
     }
 
-    final static String MAX_FN_LEN_KEY = "cache.filenamelen.max";
-    static int maxFilenameLen = 32;
+    public void runnerChange (RunnerObject ro, int code) {
+	log.debug("runnerChange: "+ro+", "+code);
+	if (code == RUNNER_FINISHED) {
+	    runners.remove(ro.getOutputFile());
+	}
+    }
+    private Map runners = new Hashtable();
+
+    public final static String MAX_FN_LEN_KEY = "cache.filenamelen.max";
+    public static int maxFilenameLen = 32;
 
     // try to set max filename len from config
     static

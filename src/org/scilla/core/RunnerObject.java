@@ -22,10 +22,11 @@
 package org.scilla.core;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 import org.scilla.*;
 import org.scilla.converter.*;
@@ -34,19 +35,11 @@ import org.scilla.converter.*;
  * A runner object is a media object currently being converted.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class RunnerObject implements MediaObject
 {
     private static final Logger log = LoggerFactory.get(RunnerObject.class);
-    private static final CacheManager cache = CacheManager.getInstance();
-
-    /** buffer size */
-    public static final int BUFFER_SIZE = 4096;
-    /** milis to wait in wait for file loop */
-    public static final int WAIT_FOR_FILE_TIMEOUT = 100;
-    /** milis to wait for nieuw data in read loop */
-    public static final int WAIT_FOR_READ_TIMEOUT = 100;
 
     private Converter conv;
 
@@ -60,53 +53,45 @@ public class RunnerObject implements MediaObject
     }
 
     /**
-     * A wrapper for Converter.start().  This runner will be added to
-     * CacheManager runner list.  The write method will remove it upon
-     * completion.
+     * Start converter in the background.
      * @see org.scilla.converter.Converter#start()
-     * @see org.scilla.core.CacheManager#addRunner(String,RunnerObject)
      */
     public void start ()
     {
-	// are we caching this?
-	cache.addRunner(conv.getOutputFile(), this);
-
 	// start converter thread
 	final Converter conv_ = conv;
+	final RunnerObject runner_ = this;
 	Thread convThread = new Thread()
 	{
 	    public void run ()
 	    {
 		conv_.convert();
+		runner_.fireChangeEvent(RunnerChangeListener.RUNNER_FINISHED);
 	    }
 	};
 	convThread.start();
     }
 
     /**
-     * Determine if converter still running.  If so try to remove
-     * runner from the CacheManager runner list.
      * @return true if converter has finished
-     * @see org.scilla.core.CacheManager#removeRunner(String)
      */
     public boolean hasFinished ()
     {
-	boolean flag = conv.hasFinished();
+	if (finishedFlag) {
+	    return true;
+	}
 
-	// remove me runner list when we are finished
-	if (flag)
-	{
+	if (conv.hasFinished()) {
+	    finishedFlag = true;
+
 	    String fn = conv.getOutputFile();
-	    cache.removeRunner(fn);
-	    if (! exitSuccess())
-	    {
+	    if (! exitSuccess()) {
 		(new File(fn)).delete();
 	    }
 	}
-
-
-	return flag;
+	return finishedFlag;
     }
+    private boolean finishedFlag = false;
 
     /**
      * A wrapper for Converter.exitSuccess().
@@ -129,13 +114,12 @@ public class RunnerObject implements MediaObject
     }
 
     /**
-     * Change result file location.
-     * Don't call this method after getStream().
-     * TODO: illegalstate exception
-     * @param fname output filename
-     * @see #write(java.io.OutputStream)
+     * @return file this runner write to
      */
-    public void setOutputFile (String fname) { conv.setOutputFile(fname); }
+    public String getOutputFile ()
+    {
+	return conv.getOutputFile();
+    }
 
     /**
      * @return -1 because file length currently unknown
@@ -147,5 +131,19 @@ public class RunnerObject implements MediaObject
     {
 	String filename = conv.getOutputFile();
 	return new MediaStream(filename, this);
+    }
+
+    public void addRunnerChangeListener (RunnerChangeListener listener)
+    {
+	listeners.add(listener);
+    }
+    private List listeners = new Vector();
+
+    public void fireChangeEvent (int code)
+    {
+	for (Iterator it = listeners.iterator(); it.hasNext();) {
+	    RunnerChangeListener listener = (RunnerChangeListener) it.next();
+	    listener.runnerChange(this, code);
+	}
     }
 }

@@ -30,7 +30,7 @@ import org.scilla.converter.*;
 /**
  * The MediaFactory creates a runner or file object.
  *
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  * @author R.W. van 't Veer
  */
 public class MediaFactory
@@ -44,9 +44,10 @@ public class MediaFactory
     /**
      * Create a runner or file object for given request.
      * @param req media object request
+     * @param ofn output file name
      * @return runner or file media object
      */
-    public static MediaObject createObject (Request req)
+    public static MediaObject createObject (Request req, String ofn)
     throws ScillaException
     {
 	// see if source exists
@@ -88,6 +89,7 @@ public class MediaFactory
 
 	// configure converter
 	conv.setRequest(req);
+	conv.setOutputFile(ofn);
 
 	// log creation of converter
 	if (log.isDebugEnabled())
