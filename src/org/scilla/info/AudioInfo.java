@@ -34,10 +34,11 @@ import org.scilla.util.vorbis.*;
 /**
  * Audio info.
  *
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  * @author R.W. van 't Veer
  */
 public class AudioInfo extends Info {
+    public final static String BITS = "bits";
     public final static String BITRATE = "bitrate";
     public final static String SAMPLERATE = "samplerate";
     public final static String CHANNELS = "channels";
@@ -62,6 +63,8 @@ public class AudioInfo extends Info {
     public final static String TRKNUM = "trknum";
 
     public final static String CODEC_VORBIS = "OGG Vorbis Audio";
+    public final static String CODEC_WAV_MSPCM = "Wave Audio, Microsoft PCM";
+    public final static String CODEC_WAV_UNKNOWN = "Wave Audio, Unknown";
 
     public AudioInfo (String fname) {
 	String type = MimeType.getTypeFromFilename(fname);
@@ -69,6 +72,8 @@ public class AudioInfo extends Info {
 	    setupMPEG(fname);
 	} else if (type.endsWith("/ogg-vorbis")) {
 	    setupVORBIS(fname);
+	} else if (type.endsWith("/x-wav")) {
+	    setupWAV(fname);
 	}
     }
 
@@ -317,6 +322,69 @@ public class AudioInfo extends Info {
 	} finally {
 	    if (in != null) {
 		try { in.close(); } catch (IOException ex) { /* ignore */ }
+	    }
+	}
+    }
+
+    /**
+     * Determine meta data from a WAV file.
+     * @param fname filename
+     */
+    private void setupWAV (String fname) {
+	// from /etc/magic:
+	//# Microsoft WAVE format (*.wav)
+	//	0	string		RIFF		RIFF (little-endian) data
+	//	>8	string		WAVE		\b, WAVE audio
+	//	>>20	leshort		1		\b, Microsoft PCM
+	//	>>22	leshort		=1		\b, mono
+	//	>>22	leshort		=2		\b, stereo
+	//	>>22	leshort		>2		\b, %d channels
+	//	>>24	lelong		>0		%d Hz
+	//	>>>34	leshort		>0		\b, %d bit
+	FileInputStream in = null;
+	try {
+	    in = new FileInputStream(fname);
+	    byte[] d = new byte[36];
+	    if (in.read(d) == 36 &&
+		    d[0] == (byte) 'R' && d[1] == (byte) 'I' &&
+		    d[2] == (byte) 'F' && d[3] == (byte) 'F' &&
+		    d[8] == (byte) 'W' && d[9] == (byte) 'A' &&
+		    d[10] == (byte) 'V' && d[11] == (byte) 'E') {
+		switch (d[20]) {
+		    case 1:
+			int channels = ((d[23] & 0xff) << 8) + (d[22] & 0xff);
+			long samplerate = ((d[27] & 0xff) << 24)
+				+ ((d[26] & 0xff) << 16)
+				+ ((d[25] & 0xff) << 8)
+				+ (d[24] & 0xff);
+			int bits = ((d[35] & 0xff) << 8) + (d[34] & 0xff);
+
+			setInt(CHANNELS, channels);
+			setInt(SAMPLERATE, (int) samplerate);
+			setInt(BITS, bits);
+
+			// calculate clip length
+			long fLength = (new File(fname)).length();
+			long samples = fLength / (bits / 8);
+			setInt(LENGTH, (int) (samples / samplerate) / channels);
+
+			setString(CODEC, CODEC_WAV_MSPCM);
+			break;
+		    default:
+			setString(CODEC, CODEC_WAV_UNKNOWN);
+		}
+	    } else {
+		setString(CODEC, "corrupted WAV file");
+	    }
+	} catch (Throwable ex) {
+	    // ignore
+	} finally {
+	    if (in != null) {
+		try {
+		    in.close();
+		} catch (IOException ex) {
+		    // ignore
+		}
 	    }
 	}
     }
