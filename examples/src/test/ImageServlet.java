@@ -55,15 +55,18 @@ public class ImageServlet extends HttpServlet {
     public long getLastModified (HttpServletRequest request) {
         Request req = null;
         try {
-            req = RequestFactory.createFromHttpServletRequest(request);
-            long t = req.lastModified();
+            req = createFromHttpServletRequest(request);
+            long t = (new File(req.getOutputFile())).lastModified();
 
             if (log.isDebugEnabled()) {
                 log.debug("getLastModified="+(new Date(t)));
 	    }
-            return req.lastModified();
-        } catch (ScillaException ex) {
-            // ignore
+
+            return t;
+        } catch (Exception ex) {
+            if (log.isDebugEnabled()) {
+                log.debug("ignoring", ex);
+	    }
         }
 
         return 0L;
