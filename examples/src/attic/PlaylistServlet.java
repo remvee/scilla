@@ -19,7 +19,7 @@ public class PlaylistServlet extends HttpServlet {
     final static String PATH_PARAM = "d";
     final static String RECURS_PARAM = "r";
     final static String OUTPUT_TYPE_PARAM = "t";
-    final static String DEFAULT_OUTPUT_TYPE = "mp3";
+    final static String DEFAULT_OUTPUT_TYPE = "ogg";
     final static String SCILLA_SERVLET = "stream";
 
     public void doGet (HttpServletRequest request, HttpServletResponse response)
