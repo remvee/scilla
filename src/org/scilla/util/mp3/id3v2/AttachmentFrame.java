@@ -29,7 +29,7 @@ import java.util.*;
  * <TT>GEOB</TT>).
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class AttachmentFrame extends Frame {
     String mimeType;
@@ -54,7 +54,6 @@ public class AttachmentFrame extends Frame {
 
         // encoding for description
         int i = 0, j = 0;
-        ByteArrayOutputStream out;
         boolean isUnicode = false;
         switch (frameData[i++]) {
         case 0:

@@ -25,7 +25,6 @@ import java.awt.Component;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Toolkit;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +34,7 @@ import org.scilla.util.MimeType;
 /**
  * Image info.
  *
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @author R.W. van 't Veer
  */
 public class ImageInfo extends Info {

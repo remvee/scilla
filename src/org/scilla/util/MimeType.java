@@ -30,15 +30,13 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.scilla.Config;
-
 /**
  * Class for mapping filenames to mime types and visa versa.
  * Configuration is read from a properties file.  Please note the
  * order of the properties is important; from two types with the
  * same extensions the first will be returned by
  * <tt>getTypeFromFilename</tt>.
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  * @author R.W. van 't Veer
  */
 public class MimeType {

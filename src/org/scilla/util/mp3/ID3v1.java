@@ -29,7 +29,7 @@ import java.io.RandomAccessFile;
  * Access to ID3v1 (or v1.1) tag in MP3 file.
  * @see <a href="http://www.id3.org/id3v1.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ID3v1 {
     /// constants
@@ -355,13 +355,6 @@ public class ID3v1 {
         return b.toString();
     }
 
-    private String trimNullPadding (String s) {
-        int i = s.indexOf('\0');
-        i = i != -1 ? i : s.length();
-        return s.substring(0, i);
-    }
-
-
     /// debugging
     ///
 
@@ -461,4 +454,4 @@ public class ID3v1 {
 }
 
 
-/* end of $Id: ID3v1.java,v 1.5 2002/11/30 15:14:39 remco Exp $ */
+/* end of $Id: ID3v1.java,v 1.6 2003/02/20 10:49:47 remco Exp $ */

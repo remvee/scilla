@@ -22,7 +22,6 @@
 package org.scilla.core;
 
 import java.io.File;
-import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,7 +32,7 @@ import org.scilla.converter.*;
 /**
  * The MediaFactory creates a runner or file object.
  *
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  * @author R.W. van 't Veer
  */
 public class MediaFactory {

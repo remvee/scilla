@@ -22,10 +22,7 @@
 package org.scilla.core;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,7 +34,7 @@ import org.scilla.*;
  * finished or not.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class CachedObject implements MediaObject {
     private static final Log log = LogFactory.getLog(CachedObject.class);

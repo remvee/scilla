@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.File;
-import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,7 +38,7 @@ import org.scilla.util.Semaphore;
  * taken from the scilla configuration.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class QueuedProcess {
     private static final Log log = LogFactory.getLog(QueuedProcess.class);

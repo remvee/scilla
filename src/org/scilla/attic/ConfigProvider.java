@@ -21,16 +21,13 @@
 
 package org.scilla;
 
-import java.io.InputStream;
-import java.io.IOException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
  * The scilla configuration provider.
  *
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @author R.W. van 't Veer
  */
 public class ConfigProvider {

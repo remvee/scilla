@@ -38,7 +38,7 @@ import org.scilla.util.*;
  * kind of request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class RequestFactory {
     /** logger */
@@ -57,12 +57,10 @@ public class RequestFactory {
     public static Request createFromHttpServletRequest (HttpServletRequest req)
     throws ScillaException {
         // source file
-        String source = config.getString(Config.SOURCE_DIR_KEY) +
-		File.separator + req.getPathInfo();
+        String source = config.getString(Config.SOURCE_DIR_KEY) + File.separator + req.getPathInfo();
         if (source.indexOf("/../") != -1) {
             throw new ScillaIllegalRequestException();
         }
-	String sourceType = null;
 
 	// does source file carry output suffix?
         List pars = new Vector();
@@ -80,7 +78,6 @@ public class RequestFactory {
 		throw new ScillaException("can't find source");
 	    }
 	}
-
 
         // source mime type
         String type = MimeType.getTypeFromFilename(source);
