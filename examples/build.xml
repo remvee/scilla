@@ -1,102 +1,112 @@
 <project name="Scilla Examples" default="all" basedir=".">
 
-  <!-- application identifier -->
-  <property name="app.name"       value="scilla"/>
-  <property name="war.file"       value="scilla.war"/>
-  <property name="scilla.project" value=".."/>
+    <!-- application identifier -->
+    <property name="app.name" value="scilla"/>
+    <property name="war.file" value="scilla.war"/>
+    <property name="scilla.project" value=".."/>
 
-  <!-- scilla configuration -->
-  <property name="source.dir" value="${basedir}/data/source"/>
-  <property name="cache.dir"  value="${basedir}/data/cache"/>
+    <!-- build tool configuration -->
+    <property name="cvs2cl.exec" value="cvs2cl"/>
+    <property name="build.compiler" value="jikes"/>
 
-  <!-- build tool configuration -->
-  <property name="cvs2cl.exec"    value="cvs2cl"/>
-  <property name="build.compiler" value="jikes"/>
+    <!-- deployment hierarchy -->
+    <property name="deploy.dir" value="${basedir}/deploy"/>
+    <property name="webinf.dir" value="${deploy.dir}/WEB-INF"/>
+    <property name="classes.dir" value="${webinf.dir}/classes"/>
+    <property name="lib.dir" value="${webinf.dir}/lib"/>
+    <property name="apidoc.dir" value="${deploy.dir}/doc"/>
 
-  <!-- deployment hierarchy -->
-  <property name="deploy.dir"  value="${basedir}/deploy"/>
-  <property name="webinf.dir"  value="${deploy.dir}/WEB-INF"/>
-  <property name="classes.dir" value="${webinf.dir}/classes"/>
-  <property name="lib.dir"     value="${webinf.dir}/lib"/>
-  <property name="apidoc.dir"  value="${deploy.dir}/doc"/>
-
-  <!-- example compilation -->
-  <property name="src.dir"    value="src"/>
-  <property name="scilla.jar" value="${lib.dir}/scilla.jar"/>
+    <!-- example compilation -->
+    <property name="src.dir" value="src"/>
+    <property name="scilla.jar" value="${lib.dir}/scilla.jar"/>
 
 
 <!-- targets -->
 
 
-  <target name="all" depends="prepare,scilla,compile,apidoc">
-    <echo>FIN</echo>
-  </target>
+    <target name="all" depends="prepare,scilla,compile,apidoc">
+        <echo>FIN</echo>
+    </target>
 
 
-  <target name="war" depends="all">
-    <jar jarfile="${war.file}" basedir="${deploy.dir}"/>
-  </target>
+    <target name="war" depends="all">
+        <jar jarfile="${war.file}" basedir="${deploy.dir}"/>
+    </target>
 
 
-  <target name="clean">
-    <delete dir="${deploy.dir}"/>
-    <delete dir="${cache.dir}"/>
-  </target>
+    <target name="clean">
+        <delete dir="${deploy.dir}"/>
+        <delete dir="${build.dir}"/>
+	<delete file="${war.file}"/>
+	<delete file="${installer.jar}"/>
+    </target>
 
 
-  <target name="prepare">
+    <target name="prepare">
 
-    <!-- copy all JSP and HTML files -->
-    <mkdir  dir="${deploy.dir}"/>
-    <copy todir="${deploy.dir}">
-      <fileset dir="web" excludes="**/*.swp"/>
-    </copy>
+        <!-- copy all JSP and HTML files -->
+        <mkdir  dir="${deploy.dir}"/>
+        <copy todir="${deploy.dir}">
+            <fileset dir="web" excludes="**/*.swp"/>
+        </copy>
 
-    <!-- copy web-app descriptor -->
-    <mkdir dir="${webinf.dir}"/>
-    <copy file="etc/web.xml" tofile="${webinf.dir}/web.xml"/>
-    <replace file="${webinf.dir}/web.xml"
-	    token="@source.dir@" value="${source.dir}"/>
-    <replace file="${webinf.dir}/web.xml"
-	    token="@cache.dir@" value="${cache.dir}"/>
+        <!-- copy web-app descriptor -->
+        <mkdir dir="${webinf.dir}"/>
+        <copy file="etc/web.xml" tofile="${webinf.dir}/web.xml"/>
 
-    <!-- copy the libraries we depend on -->
-    <mkdir  dir="${lib.dir}"/>
-    <copy todir="${lib.dir}">
-      <fileset dir="lib"/>
-    </copy>
+        <!-- copy the libraries we depend on -->
+        <mkdir  dir="${lib.dir}"/>
+        <copy todir="${lib.dir}">
+            <fileset dir="lib"/>
+        </copy>
 
-    <!-- create classes dir for helper classes -->
-    <mkdir dir="${classes.dir}"/>
+        <!-- create classes dir for helper classes -->
+        <mkdir dir="${classes.dir}"/>
 
-    <!-- create scilla cache directory -->
-    <mkdir dir="${cache.dir}"/>
+        <!-- create installer build directory -->
+        <mkdir dir="${build.dir}"/>
 
-    <available property="apidoc.done" file="${apidoc.dir}"/>
-  </target>
+	<!-- make sure apidoc only build one time -->
+        <available property="apidoc.done" file="${apidoc.dir}"/>
+    </target>
 
 
-  <target name="compile" depends="prepare">
-    <javac srcdir="${src.dir}" destdir="${classes.dir}" classpath="${scilla.jar}"/>
-    <copy todir="${classes.dir}">
-      <fileset dir="${src.dir}">
-	<include name="**/*.properties"/>
-      </fileset>
-    </copy>
-  </target>
+    <target name="compile" depends="prepare">
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpath="${scilla.jar}"/>
+        <copy todir="${classes.dir}">
+            <fileset dir="${src.dir}">
+                <include name="**/*.properties"/>
+            </fileset>
+        </copy>
+    </target>
 
 
-  <target name="apidoc" depends="prepare" unless="apidoc.done">
-    <ant dir="${scilla.project}" target="apidoc">
-	<property name="apidoc.dir" value="${apidoc.dir}"/>
-    </ant>
-  </target>
+    <target name="apidoc" depends="prepare" unless="apidoc.done">
+        <ant dir="${scilla.project}" target="apidoc">
+            <property name="apidoc.dir" value="${apidoc.dir}"/>
+        </ant>
+    </target>
 
 
-  <target name="scilla" depends="prepare">
-    <ant dir="${scilla.project}" target="jar">
-	<property name="jar.file" value="${scilla.jar}"/>
-    </ant>
-  </target>
+    <target name="scilla" depends="prepare">
+        <ant dir="${scilla.project}" target="jar">
+	    <property name="jar.file" value="${scilla.jar}"/>
+        </ant>
+    </target>
+
+    <property name="installer.class" value="Configure.class"/>
+    <property name="installer.jar" value="scilla-install.jar"/>
+    <property name="build.dir" value="build"/>
+    <property name="data.jar" value="${build.dir}/data.jar"/>
+    <property name="data.dir" value="data/source"/>
+    <target name="data" depends="prepare">
+        <jar jarfile="${data.jar}" basedir="${data.dir}"/>
+    </target>
+    <target name="installer" depends="compile,war,data">
+	<copy file="${classes.dir}/${installer.class}" todir="${build.dir}"/>
+	<copy file="${war.file}" todir="${build.dir}"/>
+	<jar jarfile="${installer.jar}" manifest="etc/manifest.txt" basedir="${build.dir}"/>
+    </target>
+
 
 </project>
