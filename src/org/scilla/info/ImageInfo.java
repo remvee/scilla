@@ -35,7 +35,7 @@ import org.scilla.util.MimeType;
 /**
  * Image info.
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @author R.W. van 't Veer
  */
 public class ImageInfo extends Info {
@@ -47,12 +47,13 @@ public class ImageInfo extends Info {
     public final static String CODEC_BMP_OS2 = "BMP OS/2";
     public final static String CODEC_BMP_WIN3x = "BMP Windows 3.x";
     public final static String CODEC_JPEG = "JPEG";
+    public final static String CODEC_UNKNOWN = "unknown";
     public final static String COLORMODE = "colormode";
-    public final static String CM_GRAYSCALE = "cm_grayscale";
-    public final static String CM_RGB = "cm_rgb";
-    public final static String CM_INDEXED = "cm_indexed";
-    public final static String CM_UNKNOWN = "cm_unknown";
-    public final static String ALPHACHANNEL = "alphachannel";
+    public final static String CM_GRAYSCALE = "grayscale";
+    public final static String CM_RGB = "RGB";
+    public final static String CM_INDEXED = "indexed";
+    public final static String CM_UNKNOWN = "unknown";
+    public final static String ALPHACHANNEL = "alpha channel";
     public final static String BITS = "bits";
 
     public ImageInfo (String fname) {
@@ -64,6 +65,8 @@ public class ImageInfo extends Info {
 	    setupGIF(fname);
 	} else if (type.endsWith("/bmp")) {
 	    setupBMP(fname);
+	} else if (type.endsWith("/jpeg")) {
+	    setupJPEG(fname);
 	} else {
 	    setupOther(fname);
 	}
@@ -356,6 +359,118 @@ public class ImageInfo extends Info {
     }
 
     /**
+     * Determine dimensions from a JPEG
+     * @param fname filename
+     */
+    private void setupJPEG (String fname) {
+	FileInputStream in = null;
+	try {
+	    in = new FileInputStream(fname);
+
+	    // JPEG marker
+	    if (jpegFirstMarker(in) != JPEG_SOI) {
+		setString(CODEC, "corrupted JPEG file");
+		return;
+	    }
+
+	    for (;;) {
+		int marker = jpegNextMarker(in);
+		switch (marker) {
+		    case JPEG_SOF0:	// Baseline
+		    case JPEG_SOF1:	// Extended sequential, Huffman
+		    case JPEG_SOF2:	// Progressive, Huffman
+		    case JPEG_SOF3:	// Lossless, Huffman
+		    case JPEG_SOF5:	// Differential sequential, Huffman
+		    case JPEG_SOF6:	// Differential progressive, Huffman
+		    case JPEG_SOF7:	// Differential lossless, Huffman
+		    case JPEG_SOF9:	// Extended sequential, arithmetic
+		    case JPEG_SOF10:	// Progressive, arithmetic
+		    case JPEG_SOF11:	// Lossless, arithmetic
+		    case JPEG_SOF13:	// Differential sequential, arithmetic
+		    case JPEG_SOF14:	// Differential progressive, arithmetic
+		    case JPEG_SOF15:	// Differential lossless, arithmetic
+			{
+			    int length = jpegRead2Bytes(in);
+			    int dataPrecision = in.read();
+			    int imageHeight = jpegRead2Bytes(in);
+			    int imageWidth = jpegRead2Bytes(in);
+			    int numComponents = in.read();
+			    if (length != (8 + numComponents * 3)) {
+				setString(CODEC, "corrupted JPEG file");
+				return;
+			    }
+			    setString(CODEC, CODEC_JPEG);
+			    setInt(WIDTH, imageWidth);
+			    setInt(HEIGHT, imageHeight);
+			    setInt(BITS, dataPrecision);
+			    return;
+			}
+		    case JPEG_EOI:	// in case it's a tables-only JPEG stream
+		    case JPEG_SOS:	// stop before hitting compressed data
+			return;
+		    case JPEG_COM:	// comment
+		    case JPEG_APP12:	// some digital camera use app12 for textual information
+			break;
+		}
+	    }
+	} catch (Throwable ex) {
+	    // ignore
+	} finally {
+	    if (in != null) {
+		try {
+		    in.close();
+		} catch (IOException ex) {
+		    // ignore
+		}
+	    }
+	}
+    }
+    private final int JPEG_SOF0 = 0xC0;		// Start Of Frame N
+    private final int JPEG_SOF1 = 0xC1;		// N indicates which compression process
+    private final int JPEG_SOF2 = 0xC2;		// Only SOF0-SOF2 are now in common use
+    private final int JPEG_SOF3 = 0xC3;
+    private final int JPEG_SOF5 = 0xC5;		// NB: codes C4 and CC are NOT SOF markers
+    private final int JPEG_SOF6 = 0xC6;
+    private final int JPEG_SOF7 = 0xC7;
+    private final int JPEG_SOF9 = 0xC9;
+    private final int JPEG_SOF10 = 0xCA;
+    private final int JPEG_SOF11 = 0xCB;
+    private final int JPEG_SOF13 = 0xCD;
+    private final int JPEG_SOF14 = 0xCE;
+    private final int JPEG_SOF15 = 0xCF;
+    private final int JPEG_SOI = 0xD8;		// Start Of Image (beginning of datastream)
+    private final int JPEG_EOI = 0xD9;		// End Of Image (end of datastream)
+    private final int JPEG_SOS = 0xDA;		// Start Of Scan (begins compressed data)
+    private final int JPEG_APP0 = 0xE0;		// Application-specific marker, type N
+    private final int JPEG_APP12 = 0xEC;	// (we don't bother to list all 16 APPn's)
+    private final int JPEG_COM = 0xFE;		// COMment
+    private int jpegFirstMarker (InputStream in)
+    throws IOException {
+	int c1 = in.read();
+	int c2 = in.read();
+	return c1 == 0xff ? c2 : -1;
+    }
+    private int jpegNextMarker (InputStream in)
+    throws IOException {
+	int skipped = 0;
+	int c = in.read();
+	while (c != 0xff) {
+	    skipped++;
+	    c = in.read();
+	}
+	do {
+	    c = in.read();
+	} while (c == 0xff);
+	return c;
+    }
+    private int jpegRead2Bytes (InputStream in)
+    throws IOException {
+	int c1 = in.read();
+	int c2 = in.read();
+	return (c1 << 8) + c2;
+    }
+
+    /**
      * Use <tt>java.awt.Toolkit</tt> to determine image dimensions.
      * @param fname filename
      */
@@ -386,11 +501,6 @@ public class ImageInfo extends Info {
 
 	    setInt(WIDTH, img.getWidth(null));
 	    setInt(HEIGHT, img.getHeight(null));
-
-	    String type = MimeType.getTypeFromFilename(fname);
-	    if ("image/jpeg".equals(type)) {
-		setString(CODEC, CODEC_JPEG);
-	    }
 	} catch (Throwable ex) {
 	    // ignore
 	}
