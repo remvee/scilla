@@ -13,12 +13,13 @@
 
     <!-- a downloadable release from a cvs tag -->
     <xsl:template match="release">
-	<p>
+	<div class="release">
 	    <xsl:variable name="filebase" select="@filebase"/>
 	    <a href="{$filebase}.zip"><xsl:value-of select="@filebase"/>.zip</a>
-	    <br />
-	    <xsl:value-of select="html" disable-output-escaping="yes"/>
-	</p>
+	    <div class="releasemessage">
+		<xsl:value-of select="html" disable-output-escaping="yes"/>
+	    </div>
+	</div>
     </xsl:template>
 
     <!-- the first @max entries of external changelog file -->
@@ -37,7 +38,7 @@
 		    Last <xsl:value-of select="@max"/> changelog messages.
 		</xsl:otherwise>
 	    </xsl:choose>
-	    <ul>
+	    <ul class="logitems">
 		<xsl:for-each select="document($file)/changelog/entry">
 		    <xsl:if test="position() &lt;= $max">
 			<xsl:apply-templates select="."/>
@@ -49,16 +50,16 @@
 
     <!-- changelog entries -->
     <xsl:template match="entry">
-	<li>
+	<li class="logitem">
 	    <xsl:value-of select="date"/><xsl:text> </xsl:text><xsl:value-of select="time"/>
 	    by <xsl:value-of select="author"/>
 
-	    <div>
+	    <div class="logmessage">
 		<xsl:for-each select="./msg"><xsl:value-of select="."/></xsl:for-each>
 	    </div>
-	    <ul>
+	    <ul class="logfiles">
 		<xsl:for-each select="./file/name">
-		    <li><xsl:value-of select="."/></li>
+		    <li class="logfile"><xsl:value-of select="."/></li>
 		</xsl:for-each>
 	    </ul>
 	</li>
@@ -70,29 +71,40 @@
 	<html>
 	    <head>
 		<title><xsl:value-of select="/homepage/title"/></title>
+		<link type="text/css" rel="stylesheet" href="css/style.css"/>
 	    </head>
 
 	    <body>
-		<h1><xsl:value-of select="/homepage/title"/></h1>
-		<xsl:apply-templates select="/homepage/description"/>
+		<div class="header">
+		    <h1><xsl:value-of select="/homepage/title"/></h1>
+		</div>
 
-		<!-- menu -->
-		<ul>
+		<div class="description">
+		    <xsl:apply-templates select="/homepage/description"/>
+		</div>
+
+		<div class="menu">
+		    <ul class="menu">
+			<xsl:for-each select="/homepage/section">
+			    <xsl:variable name="anchor"><xsl:number/></xsl:variable>
+			    <li class="menu">
+				<a name="_{$anchor}" href="#{$anchor}"><xsl:value-of select="title"/></a>
+			    </li>
+			</xsl:for-each>
+		    </ul>
+		</div>
+
+		<div class="sections">
 		    <xsl:for-each select="/homepage/section">
 			<xsl:variable name="anchor"><xsl:number/></xsl:variable>
-			<li><a name="_{$anchor}" href="#{$anchor}"><xsl:value-of select="title"/></a></li>
+			<div class="section">
+			    <h2><a name="{$anchor}" href="#_{$anchor}"><xsl:value-of select="title"/></a></h2>
+			    <xsl:apply-templates select="."/>
+			</div>
 		    </xsl:for-each>
-		</ul>
-		<hr/>
+		</div>
 
-		<xsl:for-each select="/homepage/section">
-		    <xsl:variable name="anchor"><xsl:number/></xsl:variable>
-		    <h2><a name="{$anchor}" href="#_{$anchor}"><xsl:value-of select="title"/></a></h2>
-		    <xsl:apply-templates select="."/>
-		</xsl:for-each>
-		<hr/>
-
-		<div align="right">
+		<div class="footer">
 		    <xsl:apply-templates select="/homepage/date"/>
 		</div>
 	    </body>

@@ -1,6 +1,7 @@
-<project name="MServ Homepage" default="dist" basedir=".">
+<project name="Scilla Homepage" default="dist" basedir=".">
 
     <property name="build.dir" value="build"/>
+    <property name="web.dir" value="web"/>
 
     <property name="cvsroot"        value="/home/remco/cvsroot"/>
     <property name="cvsprefix"      value="projects"/>
@@ -29,6 +30,9 @@
 
     <target name="prepare">
         <mkdir dir="${build.dir}"/>
+	<copy todir="${build.dir}">
+	    <fileset dir="${web.dir}"/>
+	</copy>
     </target>
 
 
