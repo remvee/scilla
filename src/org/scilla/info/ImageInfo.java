@@ -34,7 +34,7 @@ import org.scilla.util.MimeType;
 /**
  * Image info.
  *
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  * @author R.W. van 't Veer
  */
 public class ImageInfo extends Info {
@@ -55,8 +55,6 @@ public class ImageInfo extends Info {
     public final static String ALPHACHANNEL = "alpha channel";
     public final static String BITS = "bits";
     public final static String COMMENT = "comment";
-
-    private Exif exif = null;
 
     public ImageInfo (String fname) {
 	super(fname);
@@ -442,7 +440,6 @@ public class ImageInfo extends Info {
 		}
 	    }
 	} catch (Throwable ex) {
-	    ex.printStackTrace();
 	    // ignore
 	} finally {
 	    if (in != null) {
@@ -454,26 +451,24 @@ public class ImageInfo extends Info {
 	    }
 	}
     }
-    private final int JPEG_SOF0 = 0xC0;		// Start Of Frame N
-    private final int JPEG_SOF1 = 0xC1;		// N indicates which compression process
-    private final int JPEG_SOF2 = 0xC2;		// Only SOF0-SOF2 are now in common use
-    private final int JPEG_SOF3 = 0xC3;
-    private final int JPEG_SOF5 = 0xC5;		// NB: codes C4 and CC are NOT SOF markers
-    private final int JPEG_SOF6 = 0xC6;
-    private final int JPEG_SOF7 = 0xC7;
-    private final int JPEG_SOF9 = 0xC9;
-    private final int JPEG_SOF10 = 0xCA;
-    private final int JPEG_SOF11 = 0xCB;
-    private final int JPEG_SOF13 = 0xCD;
-    private final int JPEG_SOF14 = 0xCE;
-    private final int JPEG_SOF15 = 0xCF;
-    private final int JPEG_SOI = 0xD8;		// Start Of Image (beginning of datastream)
-    private final int JPEG_EOI = 0xD9;		// End Of Image (end of datastream)
-    private final int JPEG_SOS = 0xDA;		// Start Of Scan (begins compressed data)
-    private final int JPEG_APP0 = 0xE0;		// Application-specific marker, type N
-    private final int JPEG_APP1 = 0xE1;		// EXIF marker
-    private final int JPEG_APP12 = 0xEC;	// (we don't bother to list all 16 APPn's)
-    private final int JPEG_COM = 0xFE;		// COMment
+    private final static int JPEG_SOF0 = 0xC0;		// Start Of Frame N
+    private final static int JPEG_SOF1 = 0xC1;		// N indicates which compression process
+    private final static int JPEG_SOF2 = 0xC2;		// Only SOF0-SOF2 are now in common use
+    private final static int JPEG_SOF3 = 0xC3;
+    private final static int JPEG_SOF5 = 0xC5;		// NB: codes C4 and CC are NOT SOF markers
+    private final static int JPEG_SOF6 = 0xC6;
+    private final static int JPEG_SOF7 = 0xC7;
+    private final static int JPEG_SOF9 = 0xC9;
+    private final static int JPEG_SOF10 = 0xCA;
+    private final static int JPEG_SOF11 = 0xCB;
+    private final static int JPEG_SOF13 = 0xCD;
+    private final static int JPEG_SOF14 = 0xCE;
+    private final static int JPEG_SOF15 = 0xCF;
+    private final static int JPEG_SOI = 0xD8;		// Start Of Image (beginning of datastream)
+    private final static int JPEG_EOI = 0xD9;		// End Of Image (end of datastream)
+    private final static int JPEG_SOS = 0xDA;		// Start Of Scan (begins compressed data)
+    private final static int JPEG_APP1 = 0xE1;		// EXIF marker
+    private final static int JPEG_COM = 0xFE;		// COMment
     private int jpegFirstMarker (InputStream in)
     throws IOException {
 	int c1 = in.read();
@@ -510,29 +505,6 @@ public class ImageInfo extends Info {
 	int c1 = in.read();
 	int c2 = in.read();
 	return (c1 << 8) + c2;
-    }
-    private String jpegExif (InputStream in)
-    throws IOException {
-	int l = jpegRead2Bytes(in);
-	if (l < 2) {
-	    throw new IOException("Erroneous JPEG marker length");
-	}
-        l -= 2;
-
-        StringBuffer out = new StringBuffer();
-        int i = 0;
-        for (; i < l; i++) {
-            int c = in.read();
-            if (c == 0 || c == -1) {
-                break;
-            }
-            out.append((char) c);
-        }
-        for (i++; i < l; i++) {
-            /* discard */ in.read();
-        }
-
-        return out.toString();
     }
 
     /**
