@@ -1,8 +1,14 @@
 <dependencies>
-  <package name="commons-logging" packaged="true">
+  <package name="commons-logging" packaged="true" runtime="true">
     <class>org.apache.commons.logging.Log</class>
     <baseurl>http://jakarta.apache.org/builds/jakarta-commons/release/commons-logging/v1.0.2</baseurl>
     <zip>commons-logging-1.0.2.zip</zip>
     <jar>commons-logging-1.0.2/commons-logging.jar</jar>
+  </package>
+  <package name="servlet" packaged="true">
+    <class>javax.servlet.Servlet</class>
+    <baseurl>http://dl.sourceforge.net/sourceforge/jetty</baseurl>
+    <zip>Jetty-4.2.4.zip</zip>
+    <jar>Jetty-4.2.4/lib/javax.servlet.jar</jar>
   </package>
 </dependencies>

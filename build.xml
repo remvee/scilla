@@ -26,7 +26,7 @@
         <pathelement location="${build.dir}"/>
         <pathelement path="${classpath}"/>
         <fileset dir="${lib.dir}">
-            <include name="*.jar"/>
+            <include name="**/*.jar"/>
         </fileset>
     </path>
 
@@ -105,11 +105,11 @@
     <target name="examples" depends="jar"
 	    description="build examples war-file">
         <mkdir dir="${examples.lib.dir}"/>
-        <copy file="${jar.file}" todir="${examples.lib.dir}"/>
+        <mkdir dir="${examples.lib.dir}/runtime"/>
+        <copy file="${jar.file}" todir="${examples.lib.dir}/runtime"/>
         <copy todir="${examples.lib.dir}">
             <fileset dir="${lib.dir}">
-		<include name="*.jar"/>
-		<include name="**/*.xml"/>
+		<include name="**/*.jar"/>
             </fileset>
         </copy>
         <ant dir="examples" target="war"/>
