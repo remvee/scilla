@@ -23,6 +23,9 @@ package org.scilla.core;
 
 import java.io.*;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.scilla.*;
 
 /**
@@ -31,10 +34,10 @@ import org.scilla.*;
  * has finished.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class MediaStream extends InputStream {
-    private static final Logger log = LoggerFactory.get(MediaStream.class);
+    private static final Log log = LogFactory.getLog(MediaStream.class);
 
     /** milis to wait in wait for file loop */
     public static final int WAIT_FOR_FILE_TIMEOUT = 100;

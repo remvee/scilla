@@ -26,14 +26,11 @@ import java.io.RandomAccessFile;
 import java.io.IOException;
 import java.io.EOFException;
 
-import org.scilla.Logger;
-import org.scilla.LoggerFactory;
-
 /**
  * Read only access to MP3 frame header information.
  * @see <a href="http://www.mp3-tech.org/programmer/frame_header.html">MP3'Tech - Frame header</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class FrameHeader {
     /// constants
@@ -584,4 +581,4 @@ public class FrameHeader {
 }
 
 
-/* end of $Id: FrameHeader.java,v 1.10 2002/11/30 15:14:39 remco Exp $ */
+/* end of $Id: FrameHeader.java,v 1.11 2003/01/02 22:13:09 remco Exp $ */

@@ -28,6 +28,9 @@ import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
 import java.awt.image.renderable.ParameterBlock;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.scilla.*;
 import org.scilla.core.*;
 import org.scilla.util.*;
@@ -38,10 +41,10 @@ import org.scilla.util.*;
  * parameter.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class JAIConverter implements Converter {
-    static Logger log = LoggerFactory.get(JAIConverter.class);
+    static Log log = LogFactory.getLog(JAIConverter.class);
 
     /** parameter name to force the use of this converter */
     public final static String THIS_CONVERTER_PARAMETER = "jai";

@@ -28,6 +28,9 @@ import java.io.InputStream;
 import java.io.File;
 import java.net.URL;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.scilla.core.*;
 import org.scilla.util.*;
 
@@ -35,10 +38,10 @@ import org.scilla.util.*;
  * The Request class holds a scilla media object request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class Request {
-    private final static Logger log = LoggerFactory.get(Request.class);
+    private final static Log log = LogFactory.getLog(Request.class);
     private final static Config config = ConfigProvider.get();
     private final static CacheManager cache = CacheManager.getInstance();
 

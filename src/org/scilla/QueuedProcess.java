@@ -28,16 +28,19 @@ import java.io.IOException;
 import java.io.File;
 import java.util.StringTokenizer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Execute a OS process.  A semaphore is used to allow only a defined
  * amount of processes to run concurrently.  This process maximum is
  * taken from the scilla configuration.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class QueuedProcess {
-    private static final Logger log = LoggerFactory.get(QueuedProcess.class);
+    private static final Log log = LogFactory.getLog(QueuedProcess.class);
     private static final Config config = ConfigProvider.get();
 
     public static final String MAX_RUNNERS_KEY = "converters.osprocess.runners.sem";
@@ -45,8 +48,8 @@ public class QueuedProcess {
 
     private int exitValue = -1;
     private Process proc;
-    private OutputLogger stdout;
-    private OutputLogger stderr;
+    private OutputLog stdout;
+    private OutputLog stderr;
 
     private static Semaphore sem = null;
     private static int maxRunners = 5;
@@ -135,9 +138,9 @@ public class QueuedProcess {
         }
 
         // redirect stdout and stderr
-        stdout = new OutputLogger(proc.getInputStream());
+        stdout = new OutputLog(proc.getInputStream());
         stdout.start();
-        stderr = new OutputLogger(proc.getErrorStream());
+        stderr = new OutputLog(proc.getErrorStream());
         stderr.start();
     }
 
@@ -203,11 +206,11 @@ class Semaphore {
 /**
  * simple output logging thread
  */
-class OutputLogger extends Thread {
+class OutputLog extends Thread {
     InputStream in;
     String data;
 
-    public OutputLogger (InputStream in) {
+    public OutputLog (InputStream in) {
         this.in = in;
     }
 

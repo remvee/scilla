@@ -24,17 +24,20 @@ package org.scilla.core;
 import java.io.File;
 import java.util.Iterator;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.scilla.*;
 import org.scilla.converter.*;
 
 /**
  * The MediaFactory creates a runner or file object.
  *
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  * @author R.W. van 't Veer
  */
 public class MediaFactory {
-    private static final Logger log = LoggerFactory.get(MediaFactory.class);
+    private static final Log log = LogFactory.getLog(MediaFactory.class);
     private static final Config config = ConfigProvider.get();
 
     /** config key to converter class list */

@@ -5,16 +5,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.scilla.Config;
 import org.scilla.ConfigProvider;
-import org.scilla.Logger;
-import org.scilla.LoggerFactory;
 import org.scilla.util.mp3.*;
 
 public class PlaylistServlet extends HttpServlet
 {
     final static Config scillaConfig = ConfigProvider.get();
-    final static Logger log = LoggerFactory.get(PlaylistServlet.class);
+    final static Log log = LogFactory.getLog(PlaylistServlet.class);
 
     final static String PATH_PARAM = "d"; // MUST NOT BE IN USE BY SCILLA!!
     final static String RECURS_PARAM = "r"; // MUST NOT BE IN USE BY SCILLA!!

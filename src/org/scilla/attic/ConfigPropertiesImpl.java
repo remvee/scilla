@@ -31,14 +31,17 @@ import java.util.StringTokenizer;
 import java.io.InputStream;
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * The scilla configuration implementation using property files.
  *
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  * @author R.W. van 't Veer
  */
 public class ConfigPropertiesImpl implements Config {
-    private static final Logger log = LoggerFactory.get(ConfigPropertiesImpl.class);
+    private static final Log log = LogFactory.getLog(ConfigPropertiesImpl.class);
 
     /** name of configuration file */
     public static final String PROPERTY_FILE = "org/scilla/Config.properties";

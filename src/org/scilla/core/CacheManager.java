@@ -28,6 +28,9 @@ import java.util.Iterator;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.scilla.*;
 import org.scilla.util.*;
 
@@ -35,12 +38,12 @@ import org.scilla.util.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.29 $
+ * @version $Revision: 1.30 $
  * @author R.W. van 't Veer
  */
 public class CacheManager implements RunnerChangeListener {
     /** instance of logger */
-    private static final Logger log = LoggerFactory.get(CacheManager.class);
+    private static final Log log = LogFactory.getLog(CacheManager.class);
     /** instance of global configuration */
     private static final Config config = ConfigProvider.get();
 

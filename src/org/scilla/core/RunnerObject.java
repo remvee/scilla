@@ -28,6 +28,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.scilla.*;
 import org.scilla.converter.*;
 
@@ -35,10 +38,10 @@ import org.scilla.converter.*;
  * A runner object is a media object currently being converted.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class RunnerObject implements MediaObject {
-    private static final Logger log = LoggerFactory.get(RunnerObject.class);
+    private static final Log log = LogFactory.getLog(RunnerObject.class);
 
     private Converter conv;
 

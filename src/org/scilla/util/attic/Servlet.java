@@ -28,17 +28,20 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.scilla.*;
 import org.scilla.util.mp3.*;
 
 /**
  * This servlet handles media requests.
  *
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  * @author R.W. van 't Veer
  */
 public class Servlet extends HttpServlet {
-    private static final Logger log = LoggerFactory.get(Servlet.class);
+    private static final Log log = LogFactory.getLog(Servlet.class);
 
     private static final int BUFFER_SIZE = 4096;
 

@@ -26,18 +26,19 @@ import java.util.Properties;
 import java.io.InputStream;
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.scilla.Config;
-import org.scilla.Logger;
-import org.scilla.LoggerFactory;
 
 /**
  * Class for mapping filenames to mime types and visa versa.
  * TODO ugly handling of <tt>param</tt> element..
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * @author R.W. van 't Veer
  */
 public class MimeType {
-    private static final Logger log = LoggerFactory.get(MimeType.class);
+    private static final Log log = LogFactory.getLog(MimeType.class);
 
     /** name of property file to hold mime types */
     public static final String PROPERTY_FILE = "org/scilla/util/MimeType.properties";

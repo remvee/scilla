@@ -32,6 +32,9 @@ import java.util.StringTokenizer;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.scilla.*;
 import org.scilla.core.*;
 import org.scilla.util.*;
@@ -111,10 +114,10 @@ import org.scilla.util.*;
  * </DL>
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class ExternalConverter implements Converter {
-    private static final Logger log = LoggerFactory.get(ExternalConverter.class);
+    private static final Log log = LogFactory.getLog(ExternalConverter.class);
     private static final Config config = ConfigProvider.get();
 
     /** config key prefix for converter definitions */

@@ -24,14 +24,17 @@ package org.scilla;
 import java.io.InputStream;
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * The scilla configuration provider.
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @author R.W. van 't Veer
  */
 public class ConfigProvider {
-    static final Logger log = LoggerFactory.get(ConfigProvider.class);
+    static final Log log = LogFactory.getLog(ConfigProvider.class);
 
     /** list of configuration implementations */
     public static final String[] configImpls = { "org.scilla.ConfigPropertiesImpl" };

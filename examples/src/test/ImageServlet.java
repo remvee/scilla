@@ -8,12 +8,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.scilla.*;
 import org.scilla.core.*;
 import org.scilla.util.*;
 
 public class ImageServlet extends HttpServlet {
-    private static final Logger log = LoggerFactory.get(ImageServlet.class);
+    private static final Log log = LogFactory.getLog(ImageServlet.class);
     private static final int BUFFER_SIZE = 4096;
 
     public void doGet (HttpServletRequest request, HttpServletResponse response)
