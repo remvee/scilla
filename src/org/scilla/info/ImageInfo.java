@@ -34,7 +34,7 @@ import org.scilla.util.MimeType;
 /**
  * Image info.
  *
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  * @author R.W. van 't Veer
  */
 public class ImageInfo extends Info {
@@ -55,6 +55,8 @@ public class ImageInfo extends Info {
     public final static String ALPHACHANNEL = "alpha channel";
     public final static String BITS = "bits";
     public final static String COMMENT = "comment";
+
+    private Exif exif = null;
 
     public ImageInfo (String fname) {
 	super(fname);
@@ -417,17 +419,26 @@ public class ImageInfo extends Info {
 		    case JPEG_SOS:	// stop before hitting compressed data
 			return;
 		    case JPEG_COM:	// comment
-                        setString(COMMENT, jpegVariable(in));
+                        setString(COMMENT, new String(jpegReadFrame(in)));
                         break;
-		    case JPEG_APP12:	// some digital camera use app12 for textual information
-                        jpegVariable(in);
-                        break;
+		    case JPEG_APP1:	// exif?
+			{
+			    byte[] d = jpegReadFrame(in);
+			    if (d[0] == 'E' && d[1] == 'x' && d[2] == 'i' && d[3] == 'f' &&
+				    d[4] == 0 && d[5] == 0) {
+				byte[] e = new byte[d.length - 6];
+				System.arraycopy(d, 6, e, 0, e.length);
+				putAll(new Exif(e));
+			    }
+			}
+			break;
 		    default:
-			jpegVariable(in);
+			jpegReadFrame(in);
                         break;
 		}
 	    }
 	} catch (Throwable ex) {
+	    ex.printStackTrace();
 	    // ignore
 	} finally {
 	    if (in != null) {
@@ -456,6 +467,7 @@ public class ImageInfo extends Info {
     private final int JPEG_EOI = 0xD9;		// End Of Image (end of datastream)
     private final int JPEG_SOS = 0xDA;		// Start Of Scan (begins compressed data)
     private final int JPEG_APP0 = 0xE0;		// Application-specific marker, type N
+    private final int JPEG_APP1 = 0xE1;		// EXIF marker
     private final int JPEG_APP12 = 0xEC;	// (we don't bother to list all 16 APPn's)
     private final int JPEG_COM = 0xFE;		// COMment
     private int jpegFirstMarker (InputStream in)
@@ -475,7 +487,27 @@ public class ImageInfo extends Info {
 	} while (c == 0xff);
 	return c;
     }
-    private String jpegVariable (InputStream in)
+    private byte[] jpegReadFrame (InputStream in)
+    throws IOException {
+	int l = jpegRead2Bytes(in);
+	if (l < 2) {
+	    throw new IOException("Erroneous JPEG marker length");
+	}
+        l -= 2;
+
+	byte[] r = new byte[l];
+	for (int n = 0, m = 0; (m = in.read(r, n, l - n)) != -1 && n < l; n += m)
+	    ;
+
+        return r;
+    }
+    private int jpegRead2Bytes (InputStream in)
+    throws IOException {
+	int c1 = in.read();
+	int c2 = in.read();
+	return (c1 << 8) + c2;
+    }
+    private String jpegExif (InputStream in)
     throws IOException {
 	int l = jpegRead2Bytes(in);
 	if (l < 2) {
@@ -497,12 +529,6 @@ public class ImageInfo extends Info {
         }
 
         return out.toString();
-    }
-    private int jpegRead2Bytes (InputStream in)
-    throws IOException {
-	int c1 = in.read();
-	int c2 = in.read();
-	return (c1 << 8) + c2;
     }
 
     /**
