@@ -14,6 +14,7 @@
   <!-- scilla configuration (defaults) -->
   <property name="lame.exec"    value="/usr/local/bin/lame"/>
   <property name="imagick.exec" value="/usr/local/bin/convert"/>
+  <property name="ffmpeg.exec"  value="/usr/local/bin/ffmpeg"/>
   <property name="cache.dir"    value="${basedir}/data/cache"/>
   <property name="source.dir"   value="${basedir}/data/source"/>
 

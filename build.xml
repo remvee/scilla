@@ -3,6 +3,7 @@
 <!-- configuration -->
   <property name="lame.exec"    value="/usr/local/bin/lame"/>
   <property name="imagick.exec" value="/usr/local/bin/convert"/>
+  <property name="ffmpeg.exec"  value="/usr/local/bin/ffmpeg"/>
   <property name="cache.dir"    value="NoNsEnsIcAlVaLuE"/>
   <property name="source.dir"   value="nOnSeNSiCaLvAlUe"/>
 
@@ -62,6 +63,8 @@
         token="@imagick.exec@" value="${imagick.exec}"/>
     <replace file="${build.dir}/${config.propfile}"
         token="@lame.exec@" value="${lame.exec}"/>
+    <replace file="${build.dir}/${config.propfile}"
+        token="@ffmpeg.exec@" value="${ffmpeg.exec}"/>
   </target>
 
   <target name="jar" depends="compile,config">

@@ -26,12 +26,13 @@ import java.util.Iterator;
 import java.util.Hashtable;
 
 import org.scilla.*;
+import org.scilla.util.*;
 
 /**
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * @author R.W. van 't Veer
  */
 public class CacheManager
@@ -183,9 +184,10 @@ public class CacheManager
 	}
 	result = encoded;
 
-	// chopup, making directories using MAX_FILENAME_LEN
 	// avoid filename/ directory clash
 	if (result.length() % (MAX_FILENAME_LEN) == 0) result.append('x');
+
+	// chopup, making directories using MAX_FILENAME_LEN
 	data = result.toString().toCharArray();
 	encoded = new StringBuffer();
 	for (int i = 0; i < data.length; i++)
@@ -195,6 +197,22 @@ public class CacheManager
 	}
 	result = encoded;
 
+	// append suffix to fool simple OS converters
+	String str = result.toString();
+	String fn = str.substring(str.lastIndexOf(File.separator));
+	String suffix = MimeTypeFactory.getExtensionForType(req.getOutputType());
+	if (fn.length() + suffix.length() + 1 > MAX_FILENAME_LEN)
+	{
+	    // insert dummy data
+	    for (int i = fn.length(); i < MAX_FILENAME_LEN; i++)
+	    {
+		result.append('x');
+	    }
+	    result.append(File.separator);
+	    result.append('x');
+	}
+	result.append('.');
+	result.append(suffix);
 
 	// prepend cache path
 	return Config.getCacheDir() + File.separator + result;
