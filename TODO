@@ -1,17 +1,15 @@
 For version 1.0:
 - examples:
-    - mp3.jsp
-	- stream mono originals as mono stream
     - playlist.m3u
 	- leaks file descriptors?
-    - do not depend on external directory to function
 - taglib
     - put tld in META-INF
-    - img:
-	- use accept headers to determine image type?
-	    - IE handles transparent gif but not png
 - org.scilla.util.mp3.FrameHeader
     - try to read beyond big id3v2 tags
+- org.scilla.util.vorbis.VorbisInfo
+    - don't fail on determining length of incomplete file
+- org.scilla.info.AudioInfo
+    - handle wav and shn files
 - JAIConverter
     - sync parameters with imagick so they will be interchangable.
       Maybe we want to define parameter sets as kind of interface?
@@ -24,18 +22,9 @@ Future:
 - netpbm converters (needs pipes)
 - sox converter (handy with lame and pipes)
 - junit
-- database interface for source (blobs?)
-- request info
-    - cached! (need a database for speed?)
-    - types
-	- mp3: format and id3
-	- image: type, format, size..
-    - taglibs for accessing request info?
 - RequestFactory:
     - command line
     - xml for a ant task
-- title streaming using icy-name and x-audiocast-name (need request
-  info)
 - CacheManager
     - optional cache to database (blob) to allow keeping of last access time
 	- has it's own jdbc-url to allow separate cache database
