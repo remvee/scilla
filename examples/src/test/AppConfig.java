@@ -16,7 +16,7 @@ public class AppConfig {
 	if (sourceDir == null) {
 	    Context ctx = new InitialContext();
 	    Context env = (Context) ctx.lookup("java:comp/env");
-	    sourceDir = (String) env.lookup("example/source/directory");
+	    sourceDir = (String) env.lookup("examples/source/directory");
 	}
 	return sourceDir;
     }
