@@ -30,7 +30,7 @@ import java.io.EOFException;
  * Read only access to MP3 frame header information.
  * @see <a href="http://www.mp3-tech.org/programmer/frame_header.html">MP3'Tech - Frame header</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class FrameHeader {
     public static final int MPEG_VERSION_2_5 = 0;
@@ -81,8 +81,6 @@ public class FrameHeader {
 
     protected RandomAccessFile mp3File; // protected for XingInfo
     private long fileLength;
-
-    private int maxSearch = 32*1024; // max bytes to search for frame
 
     // values from header
     private int mpegVersion;
@@ -444,15 +442,9 @@ public class FrameHeader {
 
         // forward to next header
 	int header = 0;
-	{
-	    int i;
-	    for (i = 0; i < maxSearch && (header & 0xffe00000) != 0xffe00000; i++) {
-		header <<= 8;
-		header |= mp3File.readByte() & 0xff;
-	    }
-	    if (i == maxSearch) {
-		throw new Mp3Exception("no sync frame found");
-	    }
+	for (int i = 0; (header & 0xffe00000) != 0xffe00000; i++) {
+	    header <<= 8;
+	    header |= mp3File.readByte() & 0xff;
 	}
 
         // read header
@@ -581,4 +573,4 @@ public class FrameHeader {
 }
 
 
-/* end of $Id: FrameHeader.java,v 1.12 2003/03/19 16:46:03 remco Exp $ */
+/* end of $Id: FrameHeader.java,v 1.13 2003/03/19 16:50:13 remco Exp $ */
