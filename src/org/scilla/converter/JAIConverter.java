@@ -41,7 +41,7 @@ import org.scilla.util.*;
  * parameter.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class JAIConverter implements Converter {
     private static Log log = LogFactory.getLog(JAIConverter.class);
@@ -77,12 +77,12 @@ public class JAIConverter implements Converter {
     volatile boolean started = false;
 
     static final String[] inputTypeList = new String[] {
-	"image/gif", "image/jpeg", "image/png", "image/tiff",
+	"image/gif", "image/jpeg", "image/pjpeg", "image/png", "image/tiff",
 	"image/x-ms-bmp", "image/x-portable-anymap",
 	"image/x-portable-graymap"
     };
     static final String[] outputTypeList = new String[] {
-	"image/jpeg", "image/png", "image/tiff",
+	"image/jpeg", "image/pjpeg", "image/png", "image/tiff",
 	"image/x-ms-bmp", "image/x-portable-anymap",
 	"image/x-portable-graymap"
     };
