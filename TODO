@@ -1,4 +1,5 @@
 For version 1.0:
+- no input yields null pointer exception in servlet
 - make work with orion
 - make synchronized part of CacheManager.get smaller
 - write INSTALL INSTALL.html (referenced by homepage)
