@@ -41,7 +41,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * The scilla configuration class.
  *
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  * @author R.W. van 't Veer
  */
 public class Config extends HashMap {
@@ -184,29 +184,31 @@ public class Config extends HashMap {
      * @param key handle to resource
      * @return array of classes associated with key
      */
-    public Class[] getClassArray (String key) {
+    public Class[] getClassArray(String key) {
         if (classArrays.containsKey(key)) {
             return (Class[]) classArrays.get(key);
         }
 
-	String[] v = getStringArray(key);
+        String[] v = getStringArray(key);
         if (v == null) {
             return null;
-	}
+        }
 
-	List l = new Vector();
-	for (int i = 0; i < v.length; i++) {
-	    String cn = v[i];
+        List l = new Vector();
+        for (int i = 0; i < v.length; i++) {
+            String cn = v[i];
             try {
                 l.add(Class.forName(cn));
             } catch (ClassNotFoundException ex) {
-                log.warn("getClasses("+key+"): "+cn+": "+ex);
+                log.warn("getClasses(" + key + "): " + cn + ": " + ex);
+            } catch (NoClassDefFoundError ex) {
+                log.warn("getClasses(" + key + "): " + cn + ": " + ex);
             }
-	}
+        }
         Class[] val = (Class[]) l.toArray(new Class[l.size()]);
 
-	classArrays.put(key, val);
-	return val;
+        classArrays.put(key, val);
+        return val;
     }
     private Map classArrays = new HashMap();
 }
