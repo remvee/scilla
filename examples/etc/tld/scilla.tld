@@ -34,12 +34,12 @@
 	    <rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
-	    <name>class</name>
+	    <name>style</name>
 	    <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
-	    <name>style</name>
+	    <name>styleclass</name>
 	    <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
 	</attribute>
