@@ -19,7 +19,7 @@
  * MA 02111-1307, USA.
  */
 
-package org.scilla.util.mp3;
+package org.scilla.util.mp3.id3v2;
 
 import java.io.*;
 import java.util.*;
@@ -30,9 +30,9 @@ import java.util.*;
  * language and identifier like <TT>COMM</TT> and <TT>USLT</TT>.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
-class TextFrame extends Frame
+public class TextFrame extends Frame
 {
     String encoding;
     String text;

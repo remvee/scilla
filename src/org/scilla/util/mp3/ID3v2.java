@@ -24,12 +24,14 @@ package org.scilla.util.mp3;
 import java.io.*;
 import java.util.*;
 
+import org.scilla.util.mp3.id3v2.*;
+
 /**
  * Representation of a ID3v2 tag.
  *
  * @see <a href="http://www.id3.org/id3v2.3.0.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ID3v2
 {
@@ -103,13 +105,13 @@ public class ID3v2
 	    {
 		frame = new TextFrame(tagData, bytesRead, minor);
 	    }
-	    else if (! id.equals("WXXX") && id.startsWith("W"))
-	    {
-		frame = new TextFrame(tagData, bytesRead, minor);
-	    }
 	    else if (id.equals("COMM") || id.equals("USLT"))
 	    {
 		frame = new TextFrame(tagData, bytesRead, minor, TextFrame.LANGUAGE);
+	    }
+	    else if (id.startsWith("W"))
+	    {
+		frame = new LinkFrame(tagData, bytesRead, minor);
 	    }
 	    else
 	    {
@@ -117,7 +119,7 @@ public class ID3v2
 	    }
 
 	    frames.add(frame);
-	    bytesRead += frame.frameLength;
+	    bytesRead += frame.getLength();
 	}
 
 	// tag successfully read
@@ -141,7 +143,7 @@ public class ID3v2
 	while (it.hasNext())
 	{
 	    Frame f = (Frame) it.next();
-	    if (f.frameId.equals(id)) return f;
+	    if (f.getID().equals(id)) return f;
 	}
 	return null;
     }
@@ -153,7 +155,7 @@ public class ID3v2
 	while (it.hasNext())
 	{
 	    Frame f = (Frame) it.next();
-	    if (f.frameId.equals(id)) result.add(f);
+	    if (f.getID().equals(id)) result.add(f);
 	}
 	return result;
     }

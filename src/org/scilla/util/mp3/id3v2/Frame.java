@@ -19,7 +19,7 @@
  * MA 02111-1307, USA.
  */
 
-package org.scilla.util.mp3;
+package org.scilla.util.mp3.id3v2;
 
 import java.io.*;
 import java.util.*;
@@ -28,9 +28,9 @@ import java.util.*;
  * Basic representation of a frame.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
-class Frame
+public class Frame
 {
     /* length of frame */
     int frameLength = 0;
@@ -93,6 +93,9 @@ class Frame
 	frameData = new byte[frameSize];
 	System.arraycopy(data, i, frameData, 0, frameSize);
     }
+
+    public int getLength () { return frameLength; }
+    public String getID () { return frameId; }
 
     public String toString ()
     {
