@@ -22,7 +22,14 @@
 		<target name="{$name}" depends="{$name}.prepare" unless="{$name}.inclasspath">
 		    <antcall target="{$name}.download"/>
 		    <unzip src="${{download.dir}}/{$zip}" dest="${{extract.dir}}/{$name}"/>
-		    <copy file="${{extract.dir}}/{$name}/{$jar}" todir="${{lib.dir}}"/>
+		    <xsl:choose>
+			<xsl:when test="@runtime = 'true'">
+			    <copy file="${{extract.dir}}/{$name}/{$jar}" todir="${{runtime.lib.dir}}"/>
+			</xsl:when>
+			<xsl:otherwise>
+			    <copy file="${{extract.dir}}/{$name}/{$jar}" todir="${{lib.dir}}"/>
+			</xsl:otherwise>
+		    </xsl:choose>
 		</target>
 	    </xsl:when>
 	    <xsl:otherwise>
@@ -38,6 +45,14 @@
 		<target name="{$name}" depends="{$name}.prepare" unless="{$name}.inclasspath">
 		    <antcall target="{$name}.download"/>
 		    <copy file="${{download.dir}}/{$jar}" todir="${{lib.dir}}"/>
+		    <xsl:choose>
+			<xsl:when test="@runtime = 'true'">
+			    <copy file="${{download.dir}}/{$jar}" todir="${{runtime.lib.dir}}"/>
+			</xsl:when>
+			<xsl:otherwise>
+			    <copy file="${{download.dir}}/{$jar}" todir="${{lib.dir}}"/>
+			</xsl:otherwise>
+		    </xsl:choose>
 		</target>
 	    </xsl:otherwise>
 	</xsl:choose>
@@ -49,6 +64,7 @@
 	    <property name="download.dir" value="${{work.dir}}"/>
 	    <property name="extract.dir" value="${{work.dir}}"/>
 	    <property name="lib.dir" value="lib"/>
+	    <property name="runtime.lib.dir" value="lib/runtime"/>
 	    <path id="build.classpath">
 		<pathelement path="${{classpath}}"/>
 		<fileset dir="${{lib.dir}}">
