@@ -1,6 +1,6 @@
 For version 1.0:
 - examples: 
-    - cleanup filenames with // inside before calling InfoFactory
+    - get rid of usebean stuff in audio.jsp and imglist.jsp
 - taglib
     - put tld in META-INF
     - image and playlist; use info objects instead of beans
