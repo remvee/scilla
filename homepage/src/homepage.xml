@@ -1,13 +1,13 @@
 <homepage>
     <title>Scilla - media server</title>
     <location>http://www.xs4all.nl/~rwvtveer/scilla</location>
-    <date>$Date: 2003/01/04 13:49:10 $</date>
+    <date>$Date: 2003/01/05 14:31:38 $</date>
     <description>
 	<html><![CDATA[
 	    <p>
 		Scilla answers media file requests and takes conversion
 		parameters for various media converters.  Manipulated media
-		files can be cached for future requests.  Scilla is designed to
+		files will be cached for future requests.  Scilla is designed to
 		take requests using the servlet API.  a HttpServlet is included,
 		it maps path-info to a file and passes request parameters to
 		converters.
@@ -21,12 +21,12 @@
 	    <ul>
 		<li> caching mechanism </li>
 		<li> real-time; by following files being generated </li>
-		<li> pluggable converters; currently implemented in development version:
+		<li> pluggable converters; currently implemented:
 		    <dl>
 			<dt> <a href="http://www.imagemagick.org/">ImageMagick</a> </dt>
 			<dd>
 			    Allows conversions between various image types. Supports
-			    most of the options available for <CODE>convert</CODE>.
+			    most of the options available for <code>convert</code>.
 			</dd>
 			<dt> <a href="http://www.sulaco.org/mp3/">Lame</a> </dt>
 			<dd>
@@ -58,11 +58,6 @@
     <section>
 	<title>News</title>
 	<changelog file="../build/projects/scilla/ChangeLog.xml" max="15" dist="projects/scilla/ChangeLog.html"/>
-	<html><![CDATA[
-	    <p>
-		You can find the full ChangeLog <a href="projects/scilla/ChangeLog.html">here</a>.
-	    </p>
-	]]></html>
     </section>
 
     <section>
@@ -154,8 +149,8 @@
 	<title>Documentation</title>
 	<html><![CDATA[
 	    <p>
-		A <a href="projects/scilla/INSTALL.html">Installation guide</a>
-		is included.    The source code is well documented using
+		An <a href="projects/scilla/INSTALL.html">installation guide</a>
+		is included.    The source code is documented using
 		<a href="projects/scilla/doc/apidoc/index.html">javadoc</a>..
 	    </p>
 	]]></html>
