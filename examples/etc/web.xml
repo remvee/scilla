@@ -8,5 +8,9 @@
 	<servlet-name>sservlet</servlet-name>
 	<servlet-class>SServlet</servlet-class>
     </servlet>
+    <servlet>
+	<servlet-name>playlist.m3u</servlet-name>
+	<servlet-class>M3UServlet</servlet-class>
+    </servlet>
 
 </web-app>

@@ -7,11 +7,11 @@ throws IOException
     String pathEncoded = URLEncoder.encode(path);
     if (request.getRemoteHost().equals("localhost"))
     {
-	out.println("<A href=\"m3u.jsp?f=file&d="+pathEncoded+"\">Play</A>");
+	out.println("<A href=\"servlet/playlist.m3u?f=file&d="+pathEncoded+"\">Play</A>");
     }
     else
     {
-	out.println("<A href=\"m3u.jsp?f=modem&d="+pathEncoded+"\">Play</A>");
+	out.println("<A href=\"servlet/playlist.m3u?f=modem&d="+pathEncoded+"\">Play</A>");
     }
 }
 
