@@ -73,6 +73,12 @@
             <fileset dir="lib"/>
         </copy>
 
+        <!-- copy the tld's -->
+        <mkdir dir="${webinf.dir}"/>
+        <copy todir="${webinf.dir}">
+            <fileset dir="etc/tld"/>
+        </copy>
+
         <!-- create classes dir for helper classes -->
         <mkdir dir="${classes.dir}"/>
 
