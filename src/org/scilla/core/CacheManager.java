@@ -31,7 +31,7 @@ import org.scilla.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @author R.W. van 't Veer
  */
 public class CacheManager
@@ -69,7 +69,6 @@ public class CacheManager
      * Insert into runner list.
      * @param filename the name of the outputfile
      * @param obj the runner object
-     * @see org.scilla.core.CachingObject
      */
     void addRunner (String filename, RunnerObject obj)
     {
@@ -79,7 +78,6 @@ public class CacheManager
     /**
      * Delete from runner list.
      * @param filename the name of the outputfile
-     * @see org.scilla.core.CachingObject
      */
     void removeRunner (String filename)
     {
