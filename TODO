@@ -1,7 +1,7 @@
 For version 1.0:
+- cleanup Config code
 - add LoggerDummyImpl
     - provides empty methods and isEnable false stuff
-- cleanup Config code
 - make work with orion
 - JAIConverter
     - sync parameters with imagick so they will be interchangable.
