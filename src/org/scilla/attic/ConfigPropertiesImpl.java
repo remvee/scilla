@@ -32,7 +32,7 @@ import java.io.IOException;
 /**
  * The scilla configuration implemation using property files.
  *
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @author R.W. van 't Veer
  */
 public class ConfigPropertiesImpl implements Config
@@ -51,7 +51,7 @@ public class ConfigPropertiesImpl implements Config
 	prop.load(in);
     }
 
-    public Enumeration enumerate ()
+    public Enumeration keys ()
     {
 	return prop.propertyNames();
     }

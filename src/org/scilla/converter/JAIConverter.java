@@ -23,7 +23,6 @@ package org.scilla.converter;
 
 import java.io.FileOutputStream;
 import java.util.Iterator;
-import java.util.Vector;
 
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
@@ -39,53 +38,48 @@ import org.scilla.util.*;
  * parameter.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
-public class JAIConverter extends Converter
+public class JAIConverter implements Converter
 {
     static Logger log = LoggerFactory.getLogger(JAIConverter.class);
 
     /** parameter name to force the use of this converter */
     public final static String THIS_CONVERTER_PARAMETER = "jai";
 
-    String errorMessage = null;
-    int exitValue = 0; // 0 means success
+    Request request = null;
+    String outputFile = null;
 
-    /**
-     * Create a JAI converter object.
-     */
-    public JAIConverter ()
-    {
-	super();
-	inputTypeList = new String[] {
-		"image/gif", "image/jpeg", "image/png", "image/tiff",
-		"image/x-ms-bmp", "image/x-portable-anymap",
-		"image/x-portable-graymap"
-	};
-	outputTypeList = new String[] {
-		"image/jpeg", "image/png", "image/tiff",
-		"image/x-ms-bmp", "image/x-portable-anymap",
-		"image/x-portable-graymap"
-	};
+    volatile String errorMessage = null;
+    volatile int exitValue = 0; // 0 means success
+    volatile boolean finished = false;
+    volatile boolean started = false;
 
-	parameterList = new String[] {
-		THIS_CONVERTER_PARAMETER, Request.OUTPUT_TYPE_PARAMETER,
-		"scale"
-	};
-    }
+    static final String[] inputTypeList = new String[] {
+	    "image/gif", "image/jpeg", "image/png", "image/tiff",
+	    "image/x-ms-bmp", "image/x-portable-anymap",
+	    "image/x-portable-graymap"
+    };
+    static final String[] outputTypeList = new String[] {
+	    "image/jpeg", "image/png", "image/tiff",
+	    "image/x-ms-bmp", "image/x-portable-anymap",
+	    "image/x-portable-graymap"
+    };
+    static final String[] parameterList = new String[] {
+	    THIS_CONVERTER_PARAMETER, Request.OUTPUT_TYPE_PARAMETER,
+	    "scale"
+    };
 
-    /**
-     * Start conversion.
-     */
     public void convert ()
     {
+	started = true;
 	try
 	{
 	    // lets hope JAI will recognized the input type
-	    PlanarImage img = JAI.create("fileload", inputFile);
+	    PlanarImage img = JAI.create("fileload", request.getInputFile());
 
 	    // loop through parameters
-	    for (Iterator it = pars.iterator(); it.hasNext(); )
+	    for (Iterator it = request.getParameters().iterator(); it.hasNext(); )
 	    {
 		RequestParameter rp = (RequestParameter) it.next();
 
@@ -104,7 +98,7 @@ public class JAIConverter extends Converter
 	    }
 
 	    // recode to output format
-	    String type = MimeType.getExtensionForType(outputType);
+	    String type = MimeType.getExtensionForType(request.getOutputType());
 	    FileOutputStream out = new FileOutputStream(outputFile);
 	    JAI.create("encode", img, out, type, null);
 	}
@@ -113,44 +107,89 @@ public class JAIConverter extends Converter
 	    exitValue = 1;
 	    errorMessage = e.getMessage();
 	}
+	finished = true;
     }
 
-    /**
-     * See if JAI class is available.
-     * @see javax.media.jai.JAI
-     */
-    public boolean isFunctional ()
-    {
-	boolean f = false;
-	try
-	{
-	    Class c = Class.forName("javax.media.jai.JAI");
-	    f = true;
-	}
-	catch (ClassNotFoundException ex)
-	{
-	    /* bummer.. */
-	}
-
-	return f;
-    }
-
-    /**
-     * @return true if exit successfull
-     */
     public boolean exitSuccess ()
     {
-	if (isAlive()) throw new IllegalStateException();
+	if (! finished) throw new IllegalStateException();
 	return exitValue == 0;
     }
 
-    /**
-     * @return error message
-     */
     public String getErrorMessage ()
     {
-	if (isAlive()) throw new IllegalStateException();
+	if (! finished) throw new IllegalStateException();
 	return errorMessage;
+    }
+
+    public void setOutputFile (String fn)
+    {
+	if (started) throw new IllegalStateException();
+	outputFile = fn;
+    }
+
+    public String getOutputFile ()
+    {
+	return outputFile;
+    }
+
+    public boolean hasFinished ()
+    {
+	return finished;
+    }
+
+    public boolean canConvert (Request req)
+    {
+	boolean flag;
+
+	// can handle input?
+	final String inType = req.getInputType();
+	flag = false;
+	for (int i = 0; i < inputTypeList.length; i++)
+	{
+	    if (inType.equals(inputTypeList[i]))
+	    {
+		flag = true;
+		break;
+	    }
+	}
+	if (! flag) return false;
+
+	// can handle output?
+	final String outType = req.getOutputType();
+	flag = false;
+	for (int i = 0; i < outputTypeList.length; i++)
+	{
+	    if (outType.equals(outputTypeList[i]))
+	    {
+		flag = true;
+		break;
+	    }
+	}
+	if (! flag) return false;
+
+	// supports all parameters?
+	Iterator it = req.getParameterKeys().iterator();
+	flag = false;
+	while (it.hasNext())
+	{
+	    String key = (String) it.next();
+	    for (int i = 0; i < parameterList.length; i++)
+	    {
+		if (key.equals(parameterList[i]))
+		{
+		    flag = true;
+		}
+	    }
+	    if (! flag) return false;
+	}
+
+	return true;
+    }
+
+    public void setRequest (Request req)
+    {
+	request = req;
     }
 
     /**

@@ -30,7 +30,7 @@ import org.scilla.converter.*;
 /**
  * The MediaFactory creates a runner or file object.
  *
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  * @author R.W. van 't Veer
  */
 public class MediaFactory
@@ -38,6 +38,9 @@ public class MediaFactory
     static Logger log = LoggerFactory.getLogger(MediaFactory.class);
 
     static Config config = ConfigFactory.get();
+
+    /** config key to converter class list */
+    public static final String CONVERTERS_KEY = "converters.classes";
 
     /**
      * Create a runner or file object for given request.
@@ -62,7 +65,7 @@ public class MediaFactory
 
         // find appropriate converter
 	Converter conv = null;
-	Class[] convs = config.getClasses(Config.CONVERTERS_KEY);
+	Class[] convs = config.getClasses(CONVERTERS_KEY);
 	for (int i = 0; i < convs.length; i++)
 	{
 	    Converter c;
@@ -76,23 +79,7 @@ public class MediaFactory
 		continue;
 	    }
 
-	    if (! c.isFunctional()) continue;
-	    if (! c.isValidInputType(req.getInputType())) continue;
-	    if (! c.isValidOutputType(req.getOutputType())) continue;
-
-	    // supports all parameters?
-	    boolean hasAll = true;
-	    Iterator it = req.getParameters().iterator();
-	    while (it.hasNext())
-	    {
-		RequestParameter rp = (RequestParameter) it.next();
-		if (!c.hasParameter(rp.key))
-		{
-		    hasAll = false;
-		    break;
-		}
-	    }
-	    if (hasAll)
+	    if (c.canConvert(req))
 	    {
 		conv = c;
 		break;
@@ -101,10 +88,7 @@ public class MediaFactory
 	if (conv == null) throw new ScillaNoConverterException();
 
 	// configure converter
-	conv.setInputFile(req.getInputFile());
-	conv.setInputType(req.getInputType());
-	conv.setOutputType(req.getOutputType());
-	conv.setParameters(req.getParameters());
+	conv.setRequest(req);
 
 	// log creation of converter
 	if (log.isDebugEnabled())

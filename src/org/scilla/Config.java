@@ -27,7 +27,7 @@ import java.util.Enumeration;
  * The scilla configuration interface.
  *
  * @see org.scilla.ConfigFactory#get()
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  * @author R.W. van 't Veer
  */
 public interface Config
@@ -36,15 +36,13 @@ public interface Config
     public static final String CACHE_DIR_KEY = "cache.dir";
     /** key to source directory */
     public static final String SOURCE_DIR_KEY = "source.dir";
-    /** key to converter class list */
-    public static final String CONVERTERS_KEY = "converters.classes";
 
 // accessors
     /**
      * Enumerate all configuration keys.
      * @return key enumeration
      */
-    public Enumeration enumerate ();
+    public Enumeration keys ();
 
     /**
      * Test if key exists in configuration.

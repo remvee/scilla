@@ -29,151 +29,53 @@ import org.scilla.*;
 import org.scilla.core.*;
 
 /**
- * Base for converter classes.
+ * Converter interface.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
-public abstract class Converter extends Thread
+public interface Converter
 {
-    static Logger log = LoggerFactory.getLogger(Converter.class);
-
-    static final String TEMP_PREFIX = "scilla";
-
-    /** list of allowed input types */
-    public String[] inputTypeList = null;
-    /** list of possible output types */
-    public String[] outputTypeList = null;
-    /** list of possible conversion parameters */
-    public String[] parameterList = null;
-
-    String outputFile;
-    String inputFile;
-    String outputType;
-    String inputType;
-    Vector pars;
-
-    static final int CONFIGURED_STATE = 0;
-    static final int RUNNING_STATE = 1;
-    static final int FINISHED_STATE = 2;
-
-    volatile int state = CONFIGURED_STATE;
-
     /**
-     * Create a converter.
+     * start conversion
      */
-    public Converter ()
-    {
-	// generate "save" temp filename: tmpdir/scillaHASHCODE
-	StringBuffer b = new StringBuffer();
-	b.append(System.getProperty("java.io.tmpdir"));
-	b.append(File.separator);
-	b.append(TEMP_PREFIX);
-	int h = this.hashCode();
-	// avoid - sign
-	b.append("" + (h < 0 ? "0" : "1") + (h < 0 ? -h : h));
-	outputFile = b.toString();
-    }
-
-    /**
-     * Runner.
-     */
-    public void run ()
-    {
-	state = RUNNING_STATE;
-	convert();
-	state = FINISHED_STATE;
-    }
-
-    /** the conversion operation.  This method will be called by the
-     * run() method.
-     * @see #run()
-     */
-    public abstract void convert ();
-
-    /**
-     * Test if convert is functional.  This method tries to determine
-     * if the converter is able to run by testing the existence of
-     * classes or executables it relies on.
-     * @return true if converter is properly configurated
-     */
-    public abstract boolean isFunctional ();
+    public void convert ();
 
     /**
      * @return true if converter exit status is successfull
      */
-    public abstract boolean exitSuccess ();
+    public boolean exitSuccess ();
 
     /**
      * @return error message
      */
-    public abstract String getErrorMessage ();
+    public String getErrorMessage ();
+
+    /**
+     * @return output filename
+     */
+    public String getOutputFile ();
+
+    /**
+     * @param fn output filename
+     */
+    public void setOutputFile (String fn);
 
     /**
      * @return true if converter has finished
      */
-    public boolean hasFinished ()
-    {
-	return state == FINISHED_STATE;
-    }
+    public boolean hasFinished ();
 
     /**
-     * @param type mime type of input file
-     * @return true if converter can handle this input type
+     * Determine if converter can handle request.
+     * @param req request to be handled
+     * @return true if converter can handle this quest
      */
-    public boolean isValidInputType (String type)
-    {
-	for (int i = 0; i < inputTypeList.length; i++)
-	{
-	    if (type.equals(inputTypeList[i])) return true;
-	}
-	return false;
-    }
+    public boolean canConvert (Request req);
 
     /**
-     * @param type mime type of output file
-     * @return true if converter can handle this output type
+     * Set convertion details.
+     * @param req request to be handled
      */
-    public boolean isValidOutputType (String type)
-    {
-	for (int i = 0; i < outputTypeList.length; i++)
-	{
-	    if (type.equals(outputTypeList[i])) return true;
-	}
-	return false;
-    }
-
-    /**
-     * @param name parameter name
-     * @return true if converter accepts this parameter
-     */
-    public boolean hasParameter (String name)
-    {
-	for (int i = 0; i < parameterList.length; i++)
-	{
-	    if (name.equals(parameterList[i])) return true;
-	}
-	return false;
-    }
-
-    /** @param pars conversion parameters */
-    public void setParameters (Vector pars) { this.pars = pars; }
-    /** @return conversion parameters */
-    public Vector getParameters () { return pars; }
-    /** @param fname output filename */
-    public void setOutputFile (String fname) { outputFile = fname; }
-    /** @return output filename */
-    public String getOutputFile () { return outputFile; }
-    /** @param fname input filename */
-    public void setInputFile (String fname) { inputFile = fname; }
-    /** @return input filename */
-    public String getInputFile () { return inputFile; }
-    /** @param type output mime type */
-    public void setOutputType (String type) { outputType = type; }
-    /** @return output mime type */
-    public String getOutputType () { return outputType; }
-    /** @param type input mime type */
-    public void setInputType (String type) { inputType = type; }
-    /** @return input mime type */
-    public String getInputType () { return inputType; }
+    public void setRequest (Request req);
 }

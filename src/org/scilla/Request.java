@@ -33,7 +33,7 @@ import org.scilla.util.*;
  * The Request class holds a scilla media object request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class Request
 {
@@ -157,6 +157,21 @@ public class Request
      * @return request paramaters
      */
     public Vector getParameters () { return param; }
+
+    /**
+     * @return request paramaters keys
+     */
+    public Vector getParameterKeys ()
+    {
+	Vector v = new Vector();
+	Iterator it = param.iterator();
+	while (it.hasNext())
+	{
+	    RequestParameter rp = (RequestParameter) it.next();
+	    v.add(rp.key);
+	}
+	return v;
+    }
 
     /**
      * @param key parameter identifier

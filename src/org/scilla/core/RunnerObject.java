@@ -34,7 +34,7 @@ import org.scilla.converter.*;
  * A runner object is a media object currently being converted.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class RunnerObject implements MediaObject
 {
@@ -70,7 +70,15 @@ public class RunnerObject implements MediaObject
 	if (! deleteOutput) cache.addRunner(conv.getOutputFile(), this);
 
 	// start converter thread
-	conv.start();
+	final Converter conv_ = conv;
+	Thread convThread = new Thread()
+	{
+	    public void run ()
+	    {
+		conv_.convert();
+	    }
+	};
+	convThread.start();
     }
 
     /**
