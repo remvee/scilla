@@ -35,7 +35,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Handle (partial) content requests.
  *
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @author R.W. van 't Veer
  */
 public class PartialContentHandler {
@@ -48,6 +48,8 @@ public class PartialContentHandler {
     public static final String BYTE_RANGE = "bytes=";
     /** name of range response header */
     public static final String CONTENT_RANGE_HEADER = "Content-Range";
+    /** bytes-unit for content-range header */
+    public static final String BYTES_UNIT = "bytes";
 
     /**
      * Process servlet request.  Determine if request is a
@@ -94,7 +96,7 @@ public class PartialContentHandler {
 
                     // notify receiver this is partial content
                     response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
-                    String contentRange = offset + "-" + endpoint + "/" + len;
+                    String contentRange = BYTES_UNIT + " " + offset + "-" + endpoint + "/" + len;
                     response.setHeader(CONTENT_RANGE_HEADER, contentRange);
                     log.debug("send range header: " + CONTENT_RANGE_HEADER
                             + ": " + contentRange);
