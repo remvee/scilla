@@ -137,10 +137,10 @@ public class PlaylistServlet extends HttpServlet {
 	}
     }
 
-    String getTrackTitle (File track) {
+    private String getTrackTitle (File track) {
 	String title = "";
 	try {
-	    AudioInfo info = (AudioInfo) InfoFactory.get(track.getCanonicalPath());
+	    AudioInfo info = (AudioInfo) InfoFactory.get(track.getPath());
 
 	    if (info.getArtist() != null && info.getArtist().length() != 0) {
 		title += info.getArtist() + " - ";
@@ -168,10 +168,10 @@ public class PlaylistServlet extends HttpServlet {
 	return title;
     }
 
-    int getTrackLength (File track) {
+    private int getTrackLength (File track) {
 	int length = -1;
 	try {
-	    AudioInfo info = (AudioInfo) InfoFactory.get(track.getCanonicalPath());
+	    AudioInfo info = (AudioInfo) InfoFactory.get(track.getPath());
 	    length = info.getLength();
 	} catch (Throwable ex) {
 	    // ignore
@@ -179,7 +179,7 @@ public class PlaylistServlet extends HttpServlet {
 	return length;
     }
 
-    String stripParameter (String in, String param) {
+    private String stripParameter (String in, String param) {
 	int a = in.indexOf(param+"=");
 	if (a != -1) {
 	    int b = in.indexOf('&', a);
@@ -195,27 +195,27 @@ public class PlaylistServlet extends HttpServlet {
 	return in;
     }
 
-    boolean isPlayable (String fn) {
+    private boolean isPlayable (String fn) {
 	return fn.toLowerCase().endsWith(".mp3")
 		|| fn.toLowerCase().endsWith(".ogg")
 		|| fn.toLowerCase().endsWith(".wav");
     }
 
-    Vector find (String source, String dn) {
+    private List find (String source, String dn) {
 	File dir = new File(source+File.separator+dn);
-	Vector vec = new Vector();
+	List l = new ArrayList();
 	String[] files = dir.list();
 	for (int i = 0; i < files.length; i++) {
 	    String fn = dn+File.separator+files[i];
 	    File f = new File(source+File.separator+fn);
 	    if (f.isDirectory()) {
-		vec.addAll(find(source, fn));
+		l.addAll(find(source, fn));
 	    } else if (isPlayable(fn)) {
-		vec.add(fn);
+		l.add(fn);
 	    }
 	}
 
-	return vec;
+	return l;
     }
 
     private String pathInfoEncode (String fname) {
