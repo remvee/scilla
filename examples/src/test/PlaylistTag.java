@@ -2,13 +2,12 @@ package test;
 
 import java.net.URLEncoder;
 
+import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.*;
+import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.scilla.info.*;
 
 public class PlaylistTag extends TagSupport {
     /** logger */
@@ -20,11 +19,11 @@ public class PlaylistTag extends TagSupport {
 
     public int doStartTag ()
     throws JspException {
-	Object obj = pageContext.findAttribute(id);
-
+	// build playlist url
 	String url = "playlist.m3u?d=";
 
 	// handle location
+	Object obj = pageContext.findAttribute(id);
 	if (obj instanceof DirectoryBean) {
 	    url += URLEncoder.encode(((DirectoryBean)obj).getPath());
 	} else if (obj instanceof TrackBean) {
@@ -39,8 +38,7 @@ public class PlaylistTag extends TagSupport {
 	}
 
 	// place var attribute in page context
-	// TODO: make context configurable
-	pageContext.setAttribute(var, url);
+	pageContext.setAttribute(var, url, getScopeInt());
 
         return SKIP_BODY;
     }
@@ -68,4 +66,28 @@ public class PlaylistTag extends TagSupport {
 	return (new Boolean(recursive)).toString();
     }
     private boolean recursive = false;;
+
+
+    public void setScope (String v) {
+	scope = v;
+    }
+    public String getScope () {
+	return scope;
+    }
+    private String scope;
+
+    public int getScopeInt ()
+    throws JspException {
+	if (scope == null || "page".equalsIgnoreCase(scope)) {
+	    return PageContext.PAGE_SCOPE;
+	} else if ("request".equalsIgnoreCase(scope)) {
+	    return PageContext.REQUEST_SCOPE;
+	} else if ("session".equalsIgnoreCase(scope)) {
+	    return PageContext.SESSION_SCOPE;
+	} else if ("application".equalsIgnoreCase(scope)) {
+	    return PageContext.APPLICATION_SCOPE;
+	}
+
+	throw new JspException("unexpected value for scope attribute: " + scope);
+    }
 }

@@ -9,8 +9,10 @@
 
     <tag>
 	<name>img</name>
+
 	<tagclass>test.ImageTag</tagclass>
 	<bodycontent>jsp</bodycontent>
+
 	<attribute>
 	    <name>src</name>
 	    <required>true</required>
@@ -52,8 +54,10 @@
 
     <tag>
 	<name>par</name>
+
 	<tagclass>test.ParameterTag</tagclass>
 	<bodycontent>empty</bodycontent>
+
 	<attribute>
 	    <name>key</name>
 	    <required>true</required>
@@ -68,8 +72,10 @@
 
     <tag>
 	<name>playlist</name>
+
 	<tagclass>test.PlaylistTag</tagclass>
 	<bodycontent>empty</bodycontent>
+
 	<attribute>
 	    <name>id</name>
 	    <required>true</required>
@@ -84,6 +90,11 @@
 	    <name>recursive</name>
 	    <required>false</required>
 	    <rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+	    <name>scope</name>
+	    <required>false</required>
+	    <rtexprvalue>false</rtexprvalue>
 	</attribute>
     </tag>
 </taglib>
