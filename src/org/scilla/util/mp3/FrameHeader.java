@@ -32,7 +32,7 @@ import org.apache.log4j.Category;
  * Read only access to MP3 frame header information.
  * @see <a href="http://www.mp3-tech.org/programmer/frame_header.html">MP3'Tech - Frame header</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class FrameHeader
 {
@@ -67,22 +67,22 @@ public class FrameHeader
     static int[][] bitRateTable =
     {
 	// V1,L1 V1,L2 V1,L3 V2,L1 V2,L2,L3
-	{   0,    0,    0,    0,       0 },
-	{  32,   32,   32,   32,       8 },
-	{  64,   48,   40,   48,      16 },
-	{  96,   56,   48,   56,      24 },
-	{ 128,   64,   56,   64,      32 },
-	{ 160,   80,   64,   80,      40 },
-	{ 192,   96,   80,   96,      48 },
-	{ 224,  112,   96,  112,      56 },
-	{ 256,  128,  112,  128,      64 },
-	{ 288,  160,  128,  144,      80 },
-	{ 320,  192,  160,  160,      96 },
-	{ 352,  224,  192,  176,     112 },
-	{ 384,  256,  224,  192,     128 },
-	{ 416,  320,  256,  224,     144 },
-	{ 448,  384,  320,  256,     160 },
-	{  -1,   -1,   -1,   -1,      -1 },
+	{   0,    0,    0,    0,     0 },
+	{  32,   32,   32,   32,     8 },
+	{  64,   48,   40,   48,    16 },
+	{  96,   56,   48,   56,    24 },
+	{ 128,   64,   56,   64,    32 },
+	{ 160,   80,   64,   80,    40 },
+	{ 192,   96,   80,   96,    48 },
+	{ 224,  112,   96,  112,    56 },
+	{ 256,  128,  112,  128,    64 },
+	{ 288,  160,  128,  144,    80 },
+	{ 320,  192,  160,  160,    96 },
+	{ 352,  224,  192,  176,   112 },
+	{ 384,  256,  224,  192,   128 },
+	{ 416,  320,  256,  224,   144 },
+	{ 448,  384,  320,  256,   160 },
+	{  -1,   -1,   -1,   -1,    -1 },
     };
 
     final static int[][] sampleRateTable =
@@ -104,28 +104,28 @@ public class FrameHeader
     int maxSearch = 32*1024; // max bytes to search for frame
 
     // values from header
-    int         mpegVersion;
-    int         layer;
+    int     mpegVersion;
+    int     layer;
     boolean errorProtection;
-    int         bitRateIndex;
-    int         sampleRateIndex;
+    int     bitRateIndex;
+    int     sampleRateIndex;
     boolean paddingBit;
     boolean privateBit;
-    int         channelMode;
-    int         modeExtension;
+    int     channelMode;
+    int     modeExtension;
     boolean copyrightBit;
     boolean originalBit;
-    int         emphasis;
+    int     emphasis;
 
     // calculated values
-    int    bitRate;
-    int    sampleRate;
+    int  bitRate;
+    int  sampleRate;
     long frameSize;
 
     // VBR info
-    int         length                 = -1;
-    int         averageBitRate = -1;
-    int         roundBitRate     = -1;
+    int length         = -1;
+    int averageBitRate = -1;
+    int roundBitRate   = -1;
     boolean vbrFlag;
 
 
@@ -343,14 +343,14 @@ public class FrameHeader
 
 	// find closest valid bitrate
 	int column =
-		 isMpegVersion1()    && isLayerI()     ? 0 :
-		(isMpegVersion1()    && isLayerII()    ? 1 :
-		(isMpegVersion1()    && isLayerIII() ? 2 :
-		(isMpegVersion2()    && isLayerI()     ? 3 :
-		(isMpegVersion25() && isLayerI()     ? 3 :
-		(isMpegVersion2()    && isLayerII()    ? 4 :
-		(isMpegVersion25() && isLayerII()    ? 4 :
-		(isMpegVersion2()    && isLayerIII() ? 4 :
+		 isMpegVersion1()  && isLayerI()   ? 0 :
+		(isMpegVersion1()  && isLayerII()  ? 1 :
+		(isMpegVersion1()  && isLayerIII() ? 2 :
+		(isMpegVersion2()  && isLayerI()   ? 3 :
+		(isMpegVersion25() && isLayerI()   ? 3 :
+		(isMpegVersion2()  && isLayerII()  ? 4 :
+		(isMpegVersion25() && isLayerII()  ? 4 :
+		(isMpegVersion2()  && isLayerIII() ? 4 :
 		(isMpegVersion25() && isLayerIII() ? 4 : -1
 		))))))));
 
@@ -526,4 +526,4 @@ public class FrameHeader
 }
 
 
-/* end of $Id: FrameHeader.java,v 1.5 2001/11/02 11:18:13 remco Exp $ */
+/* end of $Id: FrameHeader.java,v 1.6 2001/11/02 11:28:06 remco Exp $ */
