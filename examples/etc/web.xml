@@ -12,6 +12,11 @@
 	    <param-value>@source.dir@</param-value>
 	    <description>Location where media files reside</description>
 	</init-param>
+	<!-- init-param>
+	    <param-name>converters.osprocess.wrapper.exec</param-name>
+	    <param-value>nice -5</param-value>
+	    <description>Executable to execute executables</description>
+	</init-param -->
 	<load-on-startup>1</load-on-startup>
     </servlet>
 
