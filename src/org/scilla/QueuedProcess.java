@@ -35,7 +35,7 @@ import java.util.StringTokenizer;
  *
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class QueuedProcess
 {
@@ -133,10 +133,10 @@ public class QueuedProcess
 	// redirect stdout and stderr
 	OutputLogger stdout = new OutputLogger(
 		args[0]+".stdout", proc.getInputStream());
-	stdout.run();
+	stdout.start();
 	OutputLogger stderr = new OutputLogger(
 		args[0]+".stderr", proc.getErrorStream());
-	stderr.run();
+	stderr.start();
     }
 
     /**
