@@ -7,19 +7,16 @@
     <servlet>
 	<servlet-name>image</servlet-name>
 	<servlet-class>test.ImageServlet</servlet-class>
-	<load-on-startup>3</load-on-startup>
     </servlet>
 
     <servlet>
 	<servlet-name>stream</servlet-name>
 	<servlet-class>test.StreamServlet</servlet-class>
-	<load-on-startup>2</load-on-startup>
     </servlet>
 
     <servlet>
 	<servlet-name>playlist</servlet-name>
 	<servlet-class>test.PlaylistServlet</servlet-class>
-	<load-on-startup>2</load-on-startup>
     </servlet>
 
     <servlet-mapping>
