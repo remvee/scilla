@@ -73,7 +73,7 @@ public class M3UServlet extends HttpServlet
     }
 
     final static String modemEncoding =
-	    "?outputtype=mp3&mode=m&resample=16&vbr=1&vbrquality=6&maxbitrate=56";
+	    "?outputtype=mp3&mode=m&resample=16&bitrate=24";
     final static String isdnEncoding =
 	    "?outputtype=mp3&preset=voice";
 
