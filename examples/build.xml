@@ -71,7 +71,7 @@
     </target>
 
 
-    <target name="compile" depends="prepare">
+    <target name="compile" depends="prepare,scilla">
         <javac srcdir="${src.dir}" destdir="${classes.dir}" classpath="${scilla.jar}"/>
         <copy todir="${classes.dir}">
             <fileset dir="${src.dir}">
