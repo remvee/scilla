@@ -64,7 +64,7 @@ import org.scilla.core.*;
  *     </DL>
  * </DL>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @see <A href="http://ffmpeg.sourceforge.net/">FFMpeg Streaming
  * Multimedia System</A>
  * @author R.W. van 't Veer
@@ -75,6 +75,9 @@ public class FFMpegConverter extends Converter
     /** parameter name to force the use of this converter */
     public final static String THIS_CONVERTER_PARAMETER = "ffmpeg";
     public final static String FFMPEG_EXEC_PROPERTY = "FFMpegConverter.exec";
+
+    QueuedProcess proc = null;
+    int exitValue = -1; // 0 means success
 
     /**
      * Create a FFMpeg converter object.
@@ -110,8 +113,8 @@ public class FFMpegConverter extends Converter
 	// run system command
 	try
 	{
-	    QueuedProcess proc = new QueuedProcess(cmdLine);
-	    /* discard */ proc.exitValue();
+	    proc = new QueuedProcess(cmdLine);
+	    exitValue = proc.exitValue();
 	}
 	catch (Exception e)
 	{
@@ -128,6 +131,24 @@ public class FFMpegConverter extends Converter
     {
 	File f = new File(Config.getParameter(FFMPEG_EXEC_PROPERTY));
 	return f.exists();
+    }
+
+    /**
+     * @return true if exit successfull
+     */
+    public boolean exitSuccess ()
+    {
+	if (proc == null || isAlive()) throw new IllegalStateException();
+	return exitValue == 0;
+    }
+
+    /**
+     * @return error message
+     */
+    public String getErrorMessage ()
+    {
+	if (proc == null || isAlive()) throw new IllegalStateException();
+	return proc.getErrorLog();
     }
 
     /**
@@ -261,16 +282,6 @@ public class FFMpegConverter extends Converter
 
 	// and the output file
 	v.add(outputFile);
-
-{
-    java.util.Enumeration e = v.elements();
-    System.err.print("ffmpeg:");
-    while (e.hasMoreElements())
-    {
-	System.err.print(" " + e.nextElement());
-    }
-    System.err.println("");
-}
 
 	return (String[]) v.toArray(new String[0]);
     }

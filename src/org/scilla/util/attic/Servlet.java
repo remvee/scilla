@@ -33,7 +33,7 @@ import org.scilla.*;
 /**
  * This servlet handles media requests.
  *
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @author R.W. van 't Veer
  */
 public class Servlet extends HttpServlet
@@ -59,9 +59,13 @@ public class Servlet extends HttpServlet
 	}
 	catch (ScillaNoOutputException ex)
 	{
-	    response.sendError(
-		    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-		    ex.getMessage()+": "+req);
+	    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+		    ex.getMessage());
+	}
+	catch (ScillaConversionFailedException ex)
+	{
+	    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+		    ex.getMessage());
 	}
 	catch (ScillaOutputIOException ex)
 	{
@@ -70,25 +74,22 @@ public class Servlet extends HttpServlet
 	catch (ScillaNoInputException ex)
 	{
 	    response.sendError(HttpServletResponse.SC_NOT_FOUND,
-		    ex.getMessage()+": "+req);
+		    ex.getMessage());
 	}
 	catch (ScillaInputIOException ex)
 	{
-	    response.sendError(
-		    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-		    ex.getMessage()+": "+req);
+	    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+		    ex.getMessage());
 	}
 	catch (ScillaNoConverterException ex)
 	{
-	    response.sendError(
-		    HttpServletResponse.SC_NOT_IMPLEMENTED,
-		    ex.getMessage()+": "+req);
+	    response.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED,
+		    ex.getMessage());
 	}
 	catch (ScillaIllegalRequestException ex)
 	{
-	    response.sendError(
-		    HttpServletResponse.SC_FORBIDDEN,
-		    ex.getMessage()+": "+req);
+	    response.sendError(HttpServletResponse.SC_FORBIDDEN,
+		    ex.getMessage());
 	}
 	catch (ScillaException ex)
 	{

@@ -10,11 +10,6 @@ For version 1.0:
       conversions.  Interface?
 - log4j
 - junit
-- Converter: handle command failure
-    - let thread test for successful exit
-    - if not successful set flag which can be tested in RunnerObject
-	when no file appears and converter nolonger alive.  Delete
-	result file if it exists.
 - examples:
     - default to mp3 filename if no ID3v1 exists
 	- servlet icecast header

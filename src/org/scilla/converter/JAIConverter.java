@@ -39,12 +39,15 @@ import org.scilla.util.*;
  * parameter.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class JAIConverter extends Converter
 {
     /** parameter name to force the use of this converter */
     public final static String THIS_CONVERTER_PARAMETER = "jai";
+
+    String errorMessage = null;
+    int exitValue = 0; // 0 means success
 
     /**
      * Create a JAI converter object.
@@ -105,7 +108,8 @@ public class JAIConverter extends Converter
 	}
 	catch (Exception e)
 	{
-	    e.printStackTrace();
+	    exitValue = 1;
+	    errorMessage = e.getMessage();
 	}
     }
 
@@ -127,6 +131,24 @@ public class JAIConverter extends Converter
 	}
 
 	return f;
+    }
+
+    /**
+     * @return true if exit successfull
+     */
+    public boolean exitSuccess ()
+    {
+	if (isAlive()) throw new IllegalStateException();
+	return exitValue == 0;
+    }
+
+    /**
+     * @return error message
+     */
+    public String getErrorMessage ()
+    {
+	if (isAlive()) throw new IllegalStateException();
+	return errorMessage;
     }
 
     /**

@@ -110,7 +110,7 @@ import org.scilla.core.*;
  * <BR>MPEG2 samplerates(kHz): 16 22.05 24 
  * <BR>bitrates(kbs): 8 16 24 32 40 48 56 64 80 96 112 128 144 160 
  *
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * @see <A href="http://www.sulaco.org/mp3/">The LAME Project</A>
  * @author R.W. van 't Veer
  */
@@ -120,6 +120,9 @@ public class LameConverter extends Converter
     /** parameter name to force the use of this converter */
     public final static String THIS_CONVERTER_PARAMETER = "lame";
     public final static String LAME_EXEC_PROPERTY = "LameConverter.exec";
+
+    QueuedProcess proc = null;
+    int exitValue = -1; // 0 means success
 
     /**
      * Create a Lame converter object.
@@ -153,8 +156,8 @@ public class LameConverter extends Converter
 	// run system command
 	try
 	{
-	    QueuedProcess proc = new QueuedProcess(cmdLine);
-	    /* discard */ proc.exitValue();
+	    proc = new QueuedProcess(cmdLine);
+	    exitValue = proc.exitValue();
 	}
 	catch (Exception e)
 	{
@@ -171,6 +174,24 @@ public class LameConverter extends Converter
     {
 	File f = new File(Config.getParameter(LAME_EXEC_PROPERTY));
 	return f.exists();
+    }
+
+    /**
+     * @return true if exit successfull
+     */
+    public boolean exitSuccess ()
+    {
+	if (proc == null || isAlive()) throw new IllegalStateException();
+	return exitValue == 0;
+    }
+
+    /**
+     * @return error message
+     */
+    public String getErrorMessage ()
+    {
+	if (proc == null || isAlive()) throw new IllegalStateException();
+	return proc.getErrorLog();
     }
 
     /**

@@ -38,8 +38,13 @@ public class SServlet extends org.scilla.util.Servlet
 	}
 	catch (ScillaNoOutputException ex)
 	{
-	    response.sendError(
-		    HttpServletResponse.SC_INTERNAL_SERVER_ERROR, req.toHTML());
+	    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+		    ex.getMessage());
+	}
+	catch (ScillaConversionFailedException ex)
+	{
+	    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+		    ex.getMessage());
 	}
 	catch (ScillaOutputIOException ex)
 	{
@@ -47,27 +52,31 @@ public class SServlet extends org.scilla.util.Servlet
 	}
 	catch (ScillaNoInputException ex)
 	{
-	    response.sendError(
-		    HttpServletResponse.SC_NOT_FOUND, req.toHTML());
+	    response.sendError(HttpServletResponse.SC_NOT_FOUND,
+		    ex.getMessage());
 	}
 	catch (ScillaInputIOException ex)
 	{
-	    response.sendError(
-		    HttpServletResponse.SC_INTERNAL_SERVER_ERROR, req.toHTML());
+	    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+		    ex.getMessage());
 	}
 	catch (ScillaNoConverterException ex)
 	{
-	    response.sendError(
-		    HttpServletResponse.SC_NOT_IMPLEMENTED, req.toHTML());
+	    response.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED,
+		    ex.getMessage());
 	}
 	catch (ScillaIllegalRequestException ex)
 	{
-	    response.sendError(
-		    HttpServletResponse.SC_FORBIDDEN, ex.getMessage());
+	    response.sendError(HttpServletResponse.SC_FORBIDDEN,
+		    ex.getMessage());
 	}
 	catch (ScillaException ex)
 	{
 	    throw new ServletException("Scilla FAILED!", ex);
+	}
+	catch (Exception ex)
+	{
+	    ex.printStackTrace();
 	}
     }
 }

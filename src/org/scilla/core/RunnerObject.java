@@ -34,7 +34,7 @@ import org.scilla.converter.*;
  * A runner object is a media object currently being converted.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class RunnerObject implements MediaObject
 {
@@ -88,6 +88,26 @@ public class RunnerObject implements MediaObject
     }
 
     /**
+     * A wrapper for Converter.exitSuccess().
+     * @return true if converter exit success
+     * @see org.scilla.converter.Converter#exitSuccess()
+     */
+    public boolean exitSuccess ()
+    {
+	return conv.exitSuccess();
+    }
+
+    /**
+     * A wrapper for Converter.getErrorMessage().
+     * @return conversion error message
+     * @see org.scilla.converter.Converter#getErrorMessage()
+     */
+    public String getErrorMessage()
+    {
+	return conv.getErrorMessage();
+    }
+
+    /**
      * Write data to stream.  First wait for the file to appear then
      * follow it till converter is finished.
      * @param out stream to write to
@@ -109,7 +129,22 @@ public class RunnerObject implements MediaObject
 	    }
 	    catch (InterruptedException ex) { }
 	}
-	if (! f.exists()) throw new ScillaNoOutputException();
+
+	// did converter fail?
+	if (hasFinished() && (! f.exists() || ! exitSuccess()))
+	{
+	    f.delete(); // removed output
+
+	    String err = getErrorMessage();
+	    if (err != null)
+	    {
+		throw new ScillaConversionFailedException(getErrorMessage());
+	    }
+	    else
+	    {
+		throw new ScillaNoOutputException();
+	    }
+	}
 
 	// catch up with output file and write it to out
 	InputStream in = null;
@@ -164,6 +199,14 @@ public class RunnerObject implements MediaObject
 	    cache.removeRunner(filename);
 
 	    if (deleteOutput) f.delete();
+	}
+
+	// did converter fail?
+	if (! exitSuccess())
+	{
+	    f.delete(); // removed output
+
+	    throw new ScillaConversionFailedException(getErrorMessage());
 	}
     }
 

@@ -33,7 +33,7 @@ import org.scilla.util.*;
  * The Request class holds a scilla media object request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class Request
 {
@@ -73,9 +73,19 @@ public class Request
 		it.remove();
 	    }
 	}
+    }
 
-	// get object from cache
-	obj = cache.get(this);
+    /**
+     * Wrapper around obj member.
+     */
+    private synchronized MediaObject getObject ()
+    throws ScillaException
+    {
+	if (obj == null)
+	{
+	    obj = cache.get(this);
+	}
+	return obj;
     }
 
     /**
@@ -86,15 +96,16 @@ public class Request
     public void write (OutputStream out)
     throws ScillaException
     {
-        obj.write(out);
+        getObject().write(out);
     }
 
     /**
      * @return length of requested data or -1 if unknown
      */
     public long getLength ()
+    throws ScillaException
     {
-	return obj.getLength();
+	return getObject().getLength();
     }
 
     /**

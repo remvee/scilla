@@ -118,13 +118,16 @@ import org.scilla.util.*;
  * </DL>
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ImageMagickConverter extends Converter
 {
     /** parameter name to force the use of this converter */
     public final static String THIS_CONVERTER_PARAMETER = "imagick";
     public final static String CONVERT_EXEC_PROPERTY = "ImageMagickConverter.exec";
+
+    QueuedProcess proc = null;
+    int exitValue = -1; // 0 means success
 
     /**
      * Create a ImageMagick converter object.
@@ -174,8 +177,8 @@ public class ImageMagickConverter extends Converter
 	// run system command "convert"
 	try
 	{
-	    QueuedProcess proc = new QueuedProcess(cmdLine);
-	    /* discard */ proc.exitValue();
+	    proc = new QueuedProcess(cmdLine);
+	    exitValue = proc.exitValue();
 	}
 	catch (Exception e)
 	{
@@ -193,6 +196,24 @@ public class ImageMagickConverter extends Converter
     {
 	File f = new File(Config.getParameter(CONVERT_EXEC_PROPERTY));
 	return f.exists();
+    }
+
+    /**
+     * @return true if exit successfull
+     */
+    public boolean exitSuccess ()
+    {
+	if (proc == null || isAlive()) throw new IllegalStateException();
+	return exitValue == 0;
+    }
+
+    /**
+     * @return error message
+     */
+    public String getErrorMessage ()
+    {
+	if (proc == null || isAlive()) throw new IllegalStateException();
+	return proc.getErrorLog();
     }
 
     static Vector noArgsList = new Vector();

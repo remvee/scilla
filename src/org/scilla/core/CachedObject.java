@@ -34,7 +34,7 @@ import org.scilla.*;
  * finished or not.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class CachedObject implements MediaObject
 {
@@ -78,7 +78,19 @@ public class CachedObject implements MediaObject
 		}
 		catch (InterruptedException ex) { }
 	    }
-	    if (! f.exists()) throw new ScillaNoOutputException();
+	}
+	// did it leave any output?
+	if (! f.exists())
+	{
+	    String err = runner != null ? runner.getErrorMessage() : null;
+	    if (err != null)
+	    {
+		throw new ScillaConversionFailedException(err);
+	    }
+	    else
+	    {
+		throw new ScillaNoOutputException();
+	    }
 	}
 
 	// catch up with output file and write it to out

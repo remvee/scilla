@@ -32,7 +32,7 @@ import org.scilla.core.*;
  * Base for converter classes.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public abstract class Converter extends Thread
 {
@@ -96,6 +96,16 @@ public abstract class Converter extends Thread
      * @return true if converter is properly configurated
      */
     public abstract boolean isFunctional ();
+
+    /**
+     * @return true if converter exit status is successfull
+     */
+    public abstract boolean exitSuccess ();
+
+    /**
+     * @return error message
+     */
+    public abstract String getErrorMessage ();
 
     /**
      * @return true if converter has finished

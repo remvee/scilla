@@ -35,7 +35,7 @@ import java.util.StringTokenizer;
  *
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class QueuedProcess
 {
@@ -44,6 +44,8 @@ public class QueuedProcess
 
     int exitValue = -1;
     Process proc;
+    OutputLogger stdout;
+    OutputLogger stderr;
 
     static Semaphore sem = null;
     static int maxRunners = 5;
@@ -131,11 +133,9 @@ public class QueuedProcess
 	}
 
 	// redirect stdout and stderr
-	OutputLogger stdout = new OutputLogger(
-		args[0]+".stdout", proc.getInputStream());
+	stdout = new OutputLogger(proc.getInputStream());
 	stdout.start();
-	OutputLogger stderr = new OutputLogger(
-		args[0]+".stderr", proc.getErrorStream());
+	stderr = new OutputLogger(proc.getErrorStream());
 	stderr.start();
     }
 
@@ -159,10 +159,16 @@ public class QueuedProcess
      * Wait for process to finished and return the exit value.
      * @return exit value
      */
-    public synchronized int exitValue ()
+    public int exitValue ()
     {
 	waitFor();
 	return exitValue;
+    }
+
+    public String getErrorLog ()
+    {
+	waitFor();
+	return stderr.toString();
     }
 }
 
@@ -201,23 +207,24 @@ class Semaphore
 class OutputLogger extends Thread
 {
     InputStream in;
-    String prefix;
+    String data;
 
-    public OutputLogger (String prefix, InputStream in)
+    public OutputLogger (InputStream in)
     {
-	this.prefix = prefix;
 	this.in = in;
     }
 
     public void run ()
     {
 	BufferedReader br = new BufferedReader(new InputStreamReader(in));
+	StringBuffer sb = new StringBuffer();
 	String s;
 	try
 	{
 	    while ((s = br.readLine()) != null)
 	    {
-		System.err.println(prefix+": "+s);
+		sb.append(s);
+		sb.append('\n');
 	    }
 	}
 	catch (IOException e) { /* ignore */ }
@@ -225,5 +232,12 @@ class OutputLogger extends Thread
 	{
 	    try { br.close(); } catch (IOException e ) { /* ignore */ }
 	}
+	data = sb.toString();
+    }
+
+    public String toString ()
+    {
+	try { this.join(); } catch (InterruptedException ex) { /* ignore */ }
+	return data;
     }
 }
