@@ -34,13 +34,18 @@ import org.scilla.util.mp3.*;
 /**
  * This servlet handles media requests.
  *
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  * @author R.W. van 't Veer
  */
 public class Servlet extends HttpServlet
 {
     private static final Logger log = LoggerFactory.get(Servlet.class);
+
     private static final int BUFFER_SIZE = 4096;
+
+    private static String RANGE_HEADER = "range";
+    private static String BYTE_RANGE = "bytes=";
+    private static String CONTENT_RANGE_HEADER = "Content-Range";
 
     /**
      * Initialize scilla.
@@ -73,7 +78,6 @@ public class Servlet extends HttpServlet
 	    log.info("doGet ["+request.getRemoteAddr()+"]: request="+req);
 
 	    long len = req.getLength();
-	    if (len != -1) response.setContentLength((int) len);
 	    response.setContentType(req.getOutputType());
 
 	    if (req.getOutputType().equals("audio/mpeg")
@@ -82,14 +86,75 @@ public class Servlet extends HttpServlet
 		addStreamHeaders(req, response);
 	    }
 
+	    // handle range requests
+	    long offset = 0;
+	    long endpoint = -1;
+	    if (len != -1)
+	    {
+		String rangeHeader = request.getHeader(RANGE_HEADER);
+		if (rangeHeader != null && rangeHeader.startsWith(BYTE_RANGE))
+		{
+		    String byteSpec = rangeHeader.substring(BYTE_RANGE.length());
+		    int sepPos = byteSpec.indexOf('-');
+		    if (sepPos != -1)
+		    {
+			if (sepPos > 0)
+			{
+			    String s = byteSpec.substring(0, sepPos);
+			    log.debug("offset: "+s);
+			    offset = Integer.parseInt(s);
+			}
+			if (sepPos != byteSpec.length()-1)
+			{
+			    String s = byteSpec.substring(sepPos + 1);
+			    log.debug("endpoint: "+s);
+			    endpoint = Integer.parseInt(s);
+			}
+			else
+			{
+			    endpoint = len - 1;
+			}
+
+			// notify receiver this is partial content
+			response.setStatus(response.SC_PARTIAL_CONTENT);
+			String contentRange = offset+"-"+endpoint+"/"+len;
+			response.setHeader(CONTENT_RANGE_HEADER, contentRange);
+			len = endpoint-offset+1;
+			log.debug("content-length: "+len);
+			response.setContentLength((int)len);
+		    }
+		}
+		else
+		{
+		    // no range, normal request
+		    response.setContentLength((int) len);
+		}
+	    }
+
 	    // write request result
 	    {
 		OutputStream out = response.getOutputStream();
 		InputStream in = req.getStream();
+		if (offset > 0) in.skip(offset);
+
 		int n;
+		int count = 0;
 		byte[] b = new byte[BUFFER_SIZE];
 		while ((n = in.read(b)) != -1)
 		{
+		    count += n;
+
+		    // TODO test this code!
+		    if (endpoint != -1)
+		    {
+			if (offset + n > endpoint)
+			{
+			    n = (int) (endpoint - offset) + 1;
+			    if (n > 0) out.write(b, 0, n);
+			    break;
+			}
+			offset += n;
+		    }
 		    out.write(b, 0, n);
 		}
 	    }
