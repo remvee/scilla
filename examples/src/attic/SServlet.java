@@ -18,7 +18,10 @@ public class SServlet extends org.scilla.util.Servlet
 	{
 	    req = RequestFactory.createFromHttpServletRequest(request);
 
+	    long len = req.getLength();
+	    if (len != -1) response.setContentLength((int) len);
 	    response.setContentType(req.getOutputType());
+
 	    if (req.getOutputType().equals("audio/mpeg")
 		    || req.getOutputType().equals("audio/mp3"))
 	    {
