@@ -41,7 +41,7 @@ import org.scilla.util.*;
  * parameter.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class JAIConverter implements Converter {
     private static Log log = LogFactory.getLog(JAIConverter.class);
@@ -88,7 +88,7 @@ public class JAIConverter implements Converter {
     };
     static final String[] parameterList = new String[] {
 	THIS_CONVERTER_PARAMETER, Request.OUTPUT_TYPE_PARAMETER,
-	"scale", "crop", "rotate"
+	"scale", "crop", "rotate", "negate"
     };
 
     public void convert () {
@@ -221,6 +221,8 @@ public class JAIConverter implements Converter {
 	    return crop(img, new GeometryParameter(rp.val));
         } else if (rp.key.equals("rotate")) {
 	    return rotate(img, rp.val);
+        } else if (rp.key.equals("negate")) {
+	    return negate(img);
 	}
 
         log.warn("handleConversion: param '"+rp.key+"' NOT YET IMPLEMENTED");
@@ -333,6 +335,17 @@ public class JAIConverter implements Converter {
         pars.add(y);
         pars.add((float)Math.toRadians(d));
         return JAI.create("rotate", pars);
+    }
+
+    /**
+     * Negate image.
+     * @param img source image
+     * @return result image
+     */
+    PlanarImage negate (PlanarImage img) {
+        ParameterBlock pars = new ParameterBlock();
+        pars.addSource(img);
+        return JAI.create("not", pars);
     }
 }
 
