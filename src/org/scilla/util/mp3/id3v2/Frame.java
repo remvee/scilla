@@ -30,7 +30,7 @@ import org.scilla.util.mp3.ID3v2;
  * Basic representation of a frame.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class Frame
 {
@@ -54,6 +54,44 @@ public class Frame
 
     public byte[] frameData;
 
+    // id3v2.2 to id3v2.3 translation map
+    static Map t2to3Map = null;
+    static
+    {
+	t2to3Map = new HashMap();
+	t2to3Map.put("COM", "COMM"); t2to3Map.put("GEO", "GEOB");
+	t2to3Map.put("IPL", "IPLS"); t2to3Map.put("LNK", "LINK");
+	t2to3Map.put("MCI", "MCDI"); t2to3Map.put("MLL", "MLLT");
+	t2to3Map.put("PIC", "APIC"); t2to3Map.put("POP", "POPM");
+	t2to3Map.put("REV", "RVRB"); t2to3Map.put("RVA", "RVAD");
+	t2to3Map.put("SLT", "SYLT"); t2to3Map.put("STC", "SYTC");
+	t2to3Map.put("TAL", "TALB"); t2to3Map.put("TBP", "TBPM");
+	t2to3Map.put("TCM", "TCOM"); t2to3Map.put("TCO", "TCON");
+	t2to3Map.put("TCR", "TCOP"); t2to3Map.put("TDA", "TDAT");
+	t2to3Map.put("TDY", "TDLY"); t2to3Map.put("TEN", "TENC");
+	t2to3Map.put("TFT", "TFLT"); t2to3Map.put("TIM", "TIME");
+	t2to3Map.put("TKE", "TKEY"); t2to3Map.put("TLA", "TLAN");
+	t2to3Map.put("TLE", "TLEN"); t2to3Map.put("TMT", "TMED");
+	t2to3Map.put("TOA", "TOPE"); t2to3Map.put("TOF", "TOFN");
+	t2to3Map.put("TOL", "TOLY"); t2to3Map.put("TOR", "TORY");
+	t2to3Map.put("TOT", "TOAL"); t2to3Map.put("TP1", "TPE1");
+	t2to3Map.put("TP2", "TPE2"); t2to3Map.put("TP3", "TPE3");
+	t2to3Map.put("TP4", "TPE4"); t2to3Map.put("TPA", "TPOS");
+	t2to3Map.put("TPB", "TPUB"); t2to3Map.put("TRC", "TSRC");
+	t2to3Map.put("TRD", "TRDA"); t2to3Map.put("TRK", "TRCK");
+	t2to3Map.put("TSI", "TSIZ"); t2to3Map.put("TSS", "TSSE");
+	t2to3Map.put("TT1", "TIT1"); t2to3Map.put("TT2", "TIT2");
+	t2to3Map.put("TT3", "TIT3"); t2to3Map.put("TXT", "TEXT");
+	t2to3Map.put("TXX", "TXXX"); t2to3Map.put("TYE", "TYER");
+	t2to3Map.put("UFI", "UFID"); t2to3Map.put("ULT", "USLT");
+	t2to3Map.put("WAF", "WOAF"); t2to3Map.put("WAR", "WOAR");
+	t2to3Map.put("WAS", "WOAS"); t2to3Map.put("WCM", "WCOM");
+	t2to3Map.put("WCP", "WCOP"); t2to3Map.put("WPB", "WPUB");
+	t2to3Map.put("WXX", "WXXX");
+	t2to3Map = Collections.unmodifiableMap(t2to3Map);
+    }
+
+
     /**
      * Empty constructor for creating a frame.
      */
@@ -62,7 +100,8 @@ public class Frame
     }
 
     /**
-     * Constructor for reading an existing frame.
+     * Constructor for reading an existing frame.  All v2.2 frame
+     * IDs will be translated to their v2.3 equivalents.
      * @param data buffer of tag data
      * @param offset offset in buffer
      * @param minor minor version of tag
@@ -76,8 +115,16 @@ public class Frame
 	sb.append((char)data[i++]);
 	sb.append((char)data[i++]);
 	sb.append((char)data[i++]);
-	if (minor > 2) sb.append((char)data[i++]);
-	frameId = sb.toString();
+	if (minor == 2)
+	{
+	    // translate v2.2 ID to v2.3
+	    frameId = (String) t2to3Map.get(sb.toString());
+	}
+	else
+	{
+	    sb.append((char)data[i++]);
+	    frameId = sb.toString();
+	}
 
 	// read frame size
 	switch (minor)
