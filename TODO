@@ -12,10 +12,8 @@
 - Converter: handle command failure
     - let thread test for successful exit
     - if not successful set flag which can be tested in RunnerObject
-	when no file appears and converter nolonger alive
-
-Ideas:
-- type transformation by extension (shorter notation!)
+	when no file appears and converter nolonger alive.  Delete
+	result file if it exists.
 
 Future:
 - database interface for source (blobs?)
