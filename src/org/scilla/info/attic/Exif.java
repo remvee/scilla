@@ -27,7 +27,7 @@ import java.util.*;
 /**
  * EXIF.
  *
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * @author R.W. van 't Veer
  */
 public class Exif extends HashMap {
@@ -36,6 +36,9 @@ public class Exif extends HashMap {
     private static final int EXIF_T_EXIFIFD = 0x8769;
     private static final int EXIF_T_GPSIFD = 0x8825;
     private static final int EXIF_T_INTEROP = 0xa005;
+    
+    private static final int EXIF_T_MAKE = 0x010f;
+    private static final int EXIF_T_MAKERNOTE = 0x927c;
 
     // exif 2.2 tags
     private static Map labels = new HashMap();
@@ -46,7 +49,7 @@ public class Exif extends HashMap {
 	labels.put(new Integer(0x0103), "EXIFCompression");
 	labels.put(new Integer(0x0106), "EXIFPhotometricInterpretation");
 	labels.put(new Integer(0x010a), "EXIFFillOrder");
-	labels.put(new Integer(0x010d), "EXentryocumentName");
+	labels.put(new Integer(0x010d), "EXIFdocumentName");
 	labels.put(new Integer(0x010e), "EXIFImageDescription");
 	labels.put(new Integer(0x010f), "EXIFMake");
 	labels.put(new Integer(0x0110), "EXIFModel");
@@ -61,7 +64,7 @@ public class Exif extends HashMap {
 	labels.put(new Integer(0x0128), "EXIFResolutionUnit");
 	labels.put(new Integer(0x012d), "EXIFTransferFunction");
 	labels.put(new Integer(0x0131), "EXIFSoftware");
-	labels.put(new Integer(0x0132), "EXentryateTime");
+	labels.put(new Integer(0x0132), "EXIFdateTime");
 	labels.put(new Integer(0x013b), "EXIFArtist");
 	labels.put(new Integer(0x013e), "EXIFWhitePoint");
 	labels.put(new Integer(0x013f), "EXIFPrimaryChromaticities");
@@ -88,8 +91,8 @@ public class Exif extends HashMap {
 	labels.put(new Integer(0x8827), "EXIFISOSpeedRatings");
 	labels.put(new Integer(0x8828), "EXIFOECF");
 	labels.put(new Integer(0x9000), "EXIFExifVersion");
-	labels.put(new Integer(0x9003), "EXentryateTimeOriginal");
-	labels.put(new Integer(0x9004), "EXentryateTimeDigitized");
+	labels.put(new Integer(0x9003), "EXIFdateTimeOriginal");
+	labels.put(new Integer(0x9004), "EXIFdateTimeDigitized");
 	labels.put(new Integer(0x9101), "EXIFComponentsConfiguration");
 	labels.put(new Integer(0x9102), "EXIFCompressedBitsPerPixel");
 	labels.put(new Integer(0x9201), "EXIFShutterSpeedValue");
@@ -128,14 +131,14 @@ public class Exif extends HashMap {
 	labels.put(new Integer(0xa401), "EXIFCustomRendered");
 	labels.put(new Integer(0xa402), "EXIFExposureMode");
 	labels.put(new Integer(0xa403), "EXIFWhiteBalance");
-	labels.put(new Integer(0xa404), "EXentryigitalZoomRatio");
+	labels.put(new Integer(0xa404), "EXIFdigitalZoomRatio");
 	labels.put(new Integer(0xa405), "EXIFFocalLenIn35mmFilm");
 	labels.put(new Integer(0xa406), "EXIFSceneCaptureType");
 	labels.put(new Integer(0xa407), "EXIFGainControl");
 	labels.put(new Integer(0xa408), "EXIFContrast");
 	labels.put(new Integer(0xa409), "EXIFSaturation");
 	labels.put(new Integer(0xa40a), "EXIFSharpness");
-	labels.put(new Integer(0xa40b), "EXentryeviceSettingDescr");
+	labels.put(new Integer(0xa40b), "EXIFdeviceSettingDescr");
 	labels.put(new Integer(0xa40c), "EXIFSubjectDistRange");
 	labels.put(new Integer(0xa420), "EXIFImageUniqueID");
 	labels.put(new Integer(0xffff), "EXIFUnknown");
@@ -158,11 +161,24 @@ public class Exif extends HashMap {
         }
         
         // process entrys
+        TiffHeader.Field make = null;
+        TiffHeader.Field makernote = null;
         for (Iterator it = fields.iterator(); it.hasNext();) {
             TiffHeader.Field field = (TiffHeader.Field) it.next();
-            Object key = labels.get(new Integer(field.getTag()));
-            Object val = field.getValue();
-            put(key, val);
+            int tag = field.getTag();
+            
+            switch (tag) {
+                case EXIF_T_MAKE:
+                    make = field;
+                    break;
+                case EXIF_T_MAKERNOTE:
+                    makernote = field;
+                    break;
+                default:
+                    Object key = labels.get(new Integer(field.getTag()));
+                    Object val = field.getValue();
+                    put(key, val);
+            }
         }
     }
 }
