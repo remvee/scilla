@@ -112,7 +112,7 @@ import org.scilla.*;
  * </DL>
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class ExternalConverter implements Converter {
     private static final Log log = LogFactory.getLog(ExternalConverter.class);
@@ -165,14 +165,9 @@ public class ExternalConverter implements Converter {
                     execMap.put(name, val);
 
                     // blacklist it if executable not available
-                    /*
-                    try {
-			// TODO this trick does not work on NT!
-                        Runtime.getRuntime().exec(new String[] { val }).waitFor();
-                    } catch (Throwable ex) {
+                    if (!canExecute(val)) {
                         blacklistSet.add(name);
                     }
-                    */
                 } else if (type.equals("format")) {
                     formatMap.put(name, val);
                 } else if (type.equals("ignore_exitstat")) {
@@ -259,7 +254,7 @@ public class ExternalConverter implements Converter {
         }
 
         if (blacklistSet.size() > 0) {
-            log.error("excutable does not exist for: "+blacklistSet);
+            log.warn("excutable(s) do(es) not exist for: "+blacklistSet);
         }
     }
 
@@ -466,4 +461,22 @@ public class ExternalConverter implements Converter {
         return finished;
     }
 
+    /**
+     * Determine is a OS command can be executed.
+     * @param exec the name of the executable
+     * @return <tt>true</tt> if the command can be executed
+     */
+    private static boolean canExecute(String exec) {
+        String osName = System.getProperty("os.name");
+        if (osName != null && osName.startsWith("Windows")) {
+            try {
+                // TODO this trick does not work on NT!
+                Runtime.getRuntime().exec(new String[] { exec}).waitFor();
+            } catch (Throwable ex) {
+                log.debug("can't execute: '" + exec + "'", ex);
+                return false;
+            }
+        }
+        return true;
+    }
 }
