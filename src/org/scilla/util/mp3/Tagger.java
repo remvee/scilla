@@ -43,7 +43,7 @@ import org.scilla.util.mp3.id3v2.TextFrame;
  * MP3 tag commandline utillity.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class Tagger {
     static Map commandMap = new HashMap();
@@ -62,7 +62,7 @@ public class Tagger {
     static Map optionMap = new HashMap();
     static
     {
-        optionMap.put("-quiet", "Give no informative messages or warnings.");
+        optionMap.put("-verbose", "Give informative messages.");
         optionMap = Collections.unmodifiableMap(optionMap);
     }
 
@@ -73,6 +73,7 @@ public class Tagger {
     private ID3v2 v2tag = null;
     private boolean v1tagModified = false;
     private boolean v2tagModified = false;
+    private boolean verbose = false;
 
     public Tagger (String[] args)
     throws Exception {
@@ -110,6 +111,9 @@ public class Tagger {
                 throw new Exception("option unknown: "+arg);
             }
         }
+        
+        // handle options
+        verbose = options.contains("-verbose");
 
         // determine input file
         if (argI != args.length-1) {
@@ -130,18 +134,20 @@ public class Tagger {
 
     public void execute ()
     throws Exception {
+        // no commands, just show tags
+        if (commands.size() == 0) {
+            display();
+            return;
+        }
+
         // execute commands
-        Iterator it = commands.iterator();
-        while (it.hasNext()) {
+        for (Iterator it = commands.iterator(); it.hasNext();) {
             Command cmd = (Command) it.next();
             cmd.execute(v1tag, v2tag);
         }
 
         // write tags if modified
         if (v1tagModified || v2tagModified) {
-            if (!hasOption("-quiet")) {
-                System.out.println("writing tags");
-            }
             String oldfilename = filename + ".old";
             File oldf = new File(oldfilename);
             File newf = new File(filename);
@@ -150,34 +156,45 @@ public class Tagger {
                         + oldfilename);
             }
 
-            InputStream in = new FileInputStream(oldf);
-            OutputStream out = new FileOutputStream(newf);
-
-            // skip old v2 tag if there is any
-            ID3v2 dummy = new ID3v2(oldf);
-            dummy.readTag(in);
-            if (!dummy.hasTag()) {
+            InputStream in = null;
+            OutputStream out = null;
+            try {
                 in = new FileInputStream(oldf);
-            }
-            
-            // write new v2 tag when there are frames
-            if (v2tag.getFrames().size() > 0) {
-                v2tag.writeTag(out);
-            }
+                out = new FileOutputStream(newf);
 
-            // copy the file
-            byte[] b = new byte[4096];
-            int n;
-            while ((n = in.read(b, 0, b.length)) != -1) {
-                out.write(b, 0, n);
+                // skip old v2 tag if there is any
+                ID3v2 dummy = new ID3v2(oldf);
+                dummy.readTag(in);
+                if (!dummy.hasTag()) {
+                    in = new FileInputStream(oldf);
+                }
+
+                // write new v2 tag when there are frames
+                if (v2tag.getFrames().size() > 0) {
+                    log("writing ID3v2 tag");
+                    v2tag.writeTag(out);
+                }
+
+                // copy the file
+                byte[] b = new byte[4096];
+                int n;
+                while ((n = in.read(b, 0, b.length)) != -1) {
+                    out.write(b, 0, n);
+                }
+            } finally {
+                if (in != null) {
+                    in.close();
+                }
+                if (out != null) {
+                    out.close();
+                }
             }
-            out.close();
-            in.close();
 
             // determine if a v1 tag needs to be appended
             if (v1tag.fileHasTag() || v1tagModified) {
                 RandomAccessFile f = new RandomAccessFile(newf, "rw");
                 try {
+                    log("writing ID3v1 tag");
                     f.seek(v1tag.fileHasTag() ? f.length() - 128 : f.length());
                     f.write(v1tag.getFromID3Tag());
                 } finally {
@@ -186,10 +203,6 @@ public class Tagger {
             }
         }
     }
-
-    public boolean hasOption (String name) {
-        return options.contains(name);
-    }
     
     public void setV1TagModified (boolean v) {
         v1tagModified = v;
@@ -197,6 +210,12 @@ public class Tagger {
     
     public void setV2TagModified (boolean v) {
         v2tagModified = v;
+    }
+
+    public void log (String msg) {
+        if (verbose) {
+            System.out.println(msg);
+        }
     }
 
     public static void main (String[] args)
@@ -209,9 +228,6 @@ public class Tagger {
 
         Tagger tagger = new Tagger(args);
         tagger.execute();
-        if (! tagger.hasOption("-quiet")) {
-            tagger.display();
-	}
     }
 
     public static String getUsage ()
