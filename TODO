@@ -1,5 +1,3 @@
-- get rid of allowCaching and setDeleteOutput methods, useless untill
-  properly implemented
 - implement content-length
 - write INSTALL INSTALL.html (referenced by homepage)
 - JAIConverter
