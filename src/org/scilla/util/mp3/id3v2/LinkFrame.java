@@ -28,7 +28,7 @@ import java.util.*;
  * Representation of link frames (<TT>W000</TT> - <TT>WZZZ</TT>).
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class LinkFrame extends Frame
 {
@@ -116,12 +116,18 @@ public class LinkFrame extends Frame
 	{
 	    int encId = 0;
 	    if (enc.equals("ISO-8859-1")) encId = 0;
-	    else if (enc.equals("UTF-16")) encId = 1;
+	    else if (enc.equals("UTF-16"))
+	    {
+		enc = "ISO-8859-1";
+		encId = 0; 
+		System.err.println("WARNING: converted unicode to latin1");
+	    }
 	    else if (enc.equals("UTF-8")) encId = 3;
 	    else enc = "ISO-8859-1";
 
 	    byte[] descrData = descr.getBytes(enc);
-	    result = new byte[1+descrData.length+1+urlData.length];
+	    int resultLen = 1+descrData.length+1+urlData.length;
+	    result = new byte[resultLen];
 	    result[i++] = (byte) encId;
 	    System.arraycopy(descrData, 0, result, i, descrData.length);
 	    i += descrData.length;

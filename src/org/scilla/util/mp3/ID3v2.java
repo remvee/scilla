@@ -34,7 +34,7 @@ import org.scilla.util.mp3.id3v2.*;
  *
  * @see <a href="http://www.id3.org/id3v2.3.0.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class ID3v2
 {
@@ -320,11 +320,12 @@ public class ID3v2
     {
 	for (int i = 0; i < args.length; i++)
 	{
-	    System.out.print(args[i]+": ");
+	    //System.out.print(args[i]+": ");
 	    try
 	    {
 		ID3v2 tag = new ID3v2(new File(args[i]));
-		System.out.println(""+tag);
+		tag.frames.add(new LinkFrame("WXXX", "Unìcôde", "UTF-16", "http://blup.net"));
+		tag.writeTag(System.out);
 	    }
 	    catch (Throwable ex)
 	    {

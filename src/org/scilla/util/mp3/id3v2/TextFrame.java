@@ -30,7 +30,7 @@ import java.util.*;
  * language and identifier like <TT>COMM</TT> and <TT>USLT</TT>.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class TextFrame extends Frame
 {
@@ -120,7 +120,10 @@ public class TextFrame extends Frame
 	    if (! isUnicode) break;
 	    if (j < data.length-1 && data[j+1] == 0) break;
 	}
-	if (j < data.length && isUnicode) j++;
+	if (j < data.length && isUnicode)
+	{
+	    if (((j - i) % 2) != 0) j++;
+	}
 	return j;
     }
 
@@ -178,7 +181,12 @@ public class TextFrame extends Frame
 	// translate encoding
 	int encId = 0;
 	if (enc.equals("ISO-8859-1")) encId = 0;
-	else if (enc.equals("UTF-16")) encId = 1;
+	else if (enc.equals("UTF-16"))
+	{
+	    enc = "ISO-8859-1";
+	    encId = 0; 
+	    System.err.println("WARNING: converted unicode to latin1");
+	}
 	else if (enc.equals("UTF-8")) encId = 3;
 	else enc = "ISO-8859-1";
 
@@ -206,8 +214,9 @@ public class TextFrame extends Frame
 	}
 	else if (type == TXXX)
 	{
-	    byte[] identData = ident.getBytes();
-	    result = new byte[1+identData.length+1+textData.length];
+	    byte[] identData = ident.getBytes(enc);
+	    int resultLen = 1+identData.length+1+textData.length;
+	    result = new byte[resultLen];
 	    result[i++] = (byte) encId;
 	    System.arraycopy(identData, 0, result, i, identData.length);
 	    i += identData.length;
