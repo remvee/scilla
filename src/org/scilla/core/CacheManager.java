@@ -38,7 +38,7 @@ import org.scilla.util.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.31 $
+ * @version $Revision: 1.32 $
  * @author R.W. van 't Veer
  */
 public class CacheManager implements RunnerChangeListener {
@@ -76,6 +76,10 @@ public class CacheManager implements RunnerChangeListener {
      */
     public MediaObject getMediaObject (Request req)
     throws ScillaException {
+	if (log.isDebugEnabled()) {
+	    log.debug("getMediaObject("+req+")");
+	}
+
 	File ifile = new File(req.getInputFile());
 
 	// does source really exist
@@ -136,7 +140,9 @@ public class CacheManager implements RunnerChangeListener {
 
 	// download object if not availble in cache
 	if (! (new File(fn)).exists()) {
-	    log.debug("fetching: "+url);
+	    if (log.isDebugEnabled()) {
+		log.debug("fetching: "+url);
+	    }
 
 	    InputStream in = null;
 	    OutputStream out = null;
@@ -328,6 +334,10 @@ public class CacheManager implements RunnerChangeListener {
      * @param fn name of file to make directory for
      */
     private static void ensureCacheDirectoryFor (String fn) {
+	if (log.isDebugEnabled()) {
+	    log.debug("ensureCacheDirectoryFor("+fn+")");
+	}
+
         String path = fn.substring(0, fn.lastIndexOf(File.separator));
         (new File(path)).mkdirs();
     }

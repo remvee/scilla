@@ -34,7 +34,7 @@ import org.scilla.Config;
 /**
  * Class for mapping filenames to mime types and visa versa.
  * TODO ugly handling of <tt>param</tt> element..
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * @author R.W. van 't Veer
  */
 public class MimeType {
@@ -80,12 +80,19 @@ public class MimeType {
      * @return mime type
      */
     public static String getTypeFromFileExtension(String ext) {
+	if (log.isDebugEnabled()) {
+	    log.debug("ext="+ext);
+	}
+
         // public methods using param must make sure the propfile is loaded
         if (param == null) {
             readProperties();
 	}
 
         String type = param.getProperty(PROPERTY_PREFIX+"."+ext);
+	if (log.isDebugEnabled()) {
+	    log.debug("type="+type);
+	}
         return type;
     }
 
@@ -102,6 +109,10 @@ public class MimeType {
      * @return filename extension
      */
     public static String getExtensionForType (String type) {
+	if (log.isDebugEnabled()) {
+	    log.debug("type="+type);
+	}
+
         // public methods using param must make sure the propfile is loaded
         if (param == null) {
             readProperties();
@@ -111,10 +122,15 @@ public class MimeType {
 	for (Iterator it = param.keySet().iterator(); it.hasNext();) {
             String key = (String) it.next();
             if (type.equals(param.getProperty(key))) {
-                return getExtensionFromFilename(key);
+		String ext = getExtensionFromFilename(key);
+		if (log.isDebugEnabled()) {
+		    log.debug("ext="+ext);
+		}
+                return ext;
             }
         }
 
+	log.debug("no extension found");
         return null;
     }
 

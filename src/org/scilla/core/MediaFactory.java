@@ -33,7 +33,7 @@ import org.scilla.converter.*;
 /**
  * The MediaFactory creates a runner or file object.
  *
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  * @author R.W. van 't Veer
  */
 public class MediaFactory {
@@ -51,6 +51,10 @@ public class MediaFactory {
      */
     public static MediaObject createObject (Request req, String ofn)
     throws ScillaException {
+	if (log.isDebugEnabled()) {
+	    log.debug("createObject("+req+", "+ofn+")");
+	}
+
         // see if source exists
         String file = req.getInputFile();
         if (file != null && ! (new File(file).exists())) {

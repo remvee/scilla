@@ -38,7 +38,7 @@ import org.scilla.util.*;
  * The Request class holds a scilla media object request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public class Request {
     private final static Log log = LogFactory.getLog(Request.class);
@@ -144,10 +144,12 @@ public class Request {
      * @see #OUTPUT_TYPE_PARAMETER
      */
     public String getOutputType () {
-        String typeP = getParameter(OUTPUT_TYPE_PARAMETER);
-        return typeP != null
-               ? MimeType.getTypeFromFileExtension(typeP)
-               : type;
+        String t = getParameter(OUTPUT_TYPE_PARAMETER);
+	t = t == null ? type : MimeType.getTypeFromFileExtension(t);
+	if (log.isDebugEnabled()) {
+	    log.debug(t);
+	}
+	return t;
     }
 
     /**
@@ -206,6 +208,7 @@ public class Request {
     public String toString () {
         StringBuffer b = new StringBuffer();
         b.append("source=" + source + ", ");
+        b.append("type=" + type + ", ");
         for (Iterator it = param.iterator(); it.hasNext(); ) {
             RequestParameter rp = (RequestParameter) it.next();
             b.append(rp.key + "=" + rp.val + ", ");
