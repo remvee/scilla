@@ -34,7 +34,7 @@ import org.scilla.util.vorbis.*;
 /**
  * Audio info.
  *
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * @author R.W. van 't Veer
  */
 public class AudioInfo extends Info {
@@ -292,39 +292,26 @@ public class AudioInfo extends Info {
 	    setInt(CHANNELS, info.getChannels());
 	    setInt(LENGTH, (int) info.getLength());
 
-	    String t;
-	    t = info.getComment("ALBUM");
-	    if (t != null && t.trim().length() != 0) {
-		setString(ALBUM, t);
+	    String[][] keys = {
+		    { "album", ALBUM },
+		    { "artist", ARTIST },
+		    { "description", COMMENT },
+		    { "genre", GENRE },
+		    { "performer", PERFORMER },
+		    { "date", RECORDING_DATE },
+		    { "location", RECORDING_LOCATION },
+		    { "title", TITLE },
+	    };
+	    for (int i = 0; i < keys.length; i++) {
+		String comment = keys[i][0];
+		String key = keys[i][1];
+
+		String t = info.getComment(comment);
+		if (t != null && t.trim().length() != 0) {
+		    setString(key, t);
+		}
 	    }
-	    t = info.getComment("ARTIST");
-	    if (t != null && t.trim().length() != 0) {
-		setString(ARTIST, t);
-	    }
-	    t = info.getComment("DESCRIPTION");
-	    if (t != null && t.trim().length() != 0) {
-		setString(COMMENT, t);
-	    }
-	    t = info.getComment("GENRE");
-	    if (t != null && t.trim().length() != 0) {
-		setString(GENRE, t);
-	    }
-	    t = info.getComment("PERFORMER");
-	    if (t != null && t.trim().length() != 0) {
-		setString(PERFORMER, t);
-	    }
-	    t = info.getComment("DATE");
-	    if (t != null && t.trim().length() != 0) {
-		setString(RECORDING_DATE, t);
-	    }
-	    t = info.getComment("LOCATION");
-	    if (t != null && t.trim().length() != 0) {
-		setString(RECORDING_LOCATION, t);
-	    }
-	    t = info.getComment("TITLE");
-	    if (t != null && t.trim().length() != 0) {
-		setString(TITLE, t);
-	    }
+
 	    try {
 		setInt(TRKNUM, Integer.parseInt(info.getComment("TRACKNUMBER")));
 	    } catch (Throwable ex) {
