@@ -34,7 +34,7 @@ import org.scilla.util.mp3.id3v2.*;
  *
  * @see <a href="http://www.id3.org/id3v2.3.0.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class ID3v2
 {
@@ -55,7 +55,7 @@ public class ID3v2
     byte[] tagData;
 
     // list of frames
-    List frames;
+    List frames = new Vector();
 
     public ID3v2 (File f)
     throws Exception
@@ -248,7 +248,7 @@ public class ID3v2
      */
 
     /** @return list of frames */
-    public List getFrames () { return frames; }
+    public List getFrames () { return new Vector(frames); }
     /** @return first frame by given id or <TT>null</TT> */
     public Frame getFrame (String id)
     {
@@ -271,6 +271,14 @@ public class ID3v2
 	    if (f.getID().equals(id)) result.add(f);
 	}
 	return result;
+    }
+    public void setFrame (Frame frame)
+    {
+	tagAvailable = true; // we have a frame so we have a tag
+
+	Frame f = getFrame(frame.getID());
+	if (f != null) frames.remove(f);
+	frames.add(frame);
     }
 
     public String toString ()
