@@ -291,6 +291,12 @@
 	    }
 	}
 
+	// no background picture select add only one found; use it
+	if (background == null && imgVec.size() == 1) {
+	    String s = ((String)imgVec.get(0)).replace(' ', '+');
+	    background = urlHead+s+"?scale=300x200&outputtype=jpg";
+	}
+
 	// skip to dir if current only contains 1 dir
 	if (vec.size() + imgVec.size() + m3uVec.size() + htmVec.size() == 0
 		    && dirVec.size() == 1)
@@ -459,7 +465,6 @@
 %>
 					    <BIG><EM> <%= toHTML(mp3List.getProp("TCOM")) %> </EM></BIG>
 <%
-		    if (albumCount == 1 && !  album.equals(artist)) { %> - <% }
 		}
 		o = albumCount == 1 && ! album.equals(artist) ? album : "";
 %>
