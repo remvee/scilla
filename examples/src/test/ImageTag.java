@@ -21,7 +21,7 @@ import org.scilla.info.*;
  * This image tag creates an <tt>img</tt> HTML tag to an
  * optionally transformed image with the proper <tt>width</tt>
  * and <tt>height</tt> attributes set.
- * @version $Id: ImageTag.java,v 1.12 2003/03/19 23:21:44 remco Exp $
+ * @version $Id: ImageTag.java,v 1.13 2003/03/19 23:29:08 remco Exp $
  * @author R.W. van 't Veer
  */
 public class ImageTag extends BodyTagSupport {
@@ -71,6 +71,7 @@ public class ImageTag extends BodyTagSupport {
 
 	// only putting image url in var?
 	if (var != null) {
+	    // TODO scope??
 	    pageContext.setAttribute(var, getImageUrl());
 	    return EVAL_PAGE;
 	}
