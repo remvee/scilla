@@ -1,50 +1,50 @@
 <%@ page import="java.io.*,java.net.*,java.util.*,javax.servlet.*" %>
 <%@ page import="org.scilla.*,org.scilla.util.*,org.scilla.util.mp3.*" %>
 <%!
-private String formatTime (int length)
-{
-    int hours = length / 3600;
-    int minutes = (length / 60) % 60;
-    int seconds = length % 60;
-    return (hours > 0 ? hours + ":" : "")
-	    + (hours > 0 && minutes < 10 ? "0" : "") + minutes + ":"
-	    + (seconds > 9 ? "" : "0") + seconds;
-}
+    private String formatTime (int length)
+    {
+	int hours = length / 3600;
+	int minutes = (length / 60) % 60;
+	int seconds = length % 60;
+	return (hours > 0 ? hours + ":" : "")
+		+ (hours > 0 && minutes < 10 ? "0" : "") + minutes + ":"
+		+ (seconds > 9 ? "" : "0") + seconds;
+    }
 
-void streamLinks (ServletRequest request, JspWriter out, String path)
-throws IOException
-{
-    streamLinks (request, out, path, false);
-}
+    void streamLinks (ServletRequest request, JspWriter out, String path)
+    throws IOException
+    {
+	streamLinks (request, out, path, false);
+    }
 
-void streamLinks (ServletRequest request, JspWriter out, String path, boolean recursive)
-throws IOException
-{
-    String pathEncoded = URLEncoder.encode(path);
-    String encoding = (request.getRemoteHost().equals("localhost")
-	    || request.getRemoteHost().equals("127.0.0.1"))
-	    ? ""
-	    : "&outputtype=mp3&mode=j&resample=16&vbr=1&vbrquality=6&maxbitrate=56";
-    String imgSrc = "servlet/scilla/speaker.png?scale=14x14&outputtype=gif";
-    out.println("<A href=\"servlet/playlist.m3u"+
-	    "?d="+pathEncoded+
-	    (recursive ? "&r=1" : "")+
-	    encoding+
-	    "\">"+
-	    "<IMG src=\""+imgSrc+"\" alt=\"play\" border=0>"+
-	    "</A>");
-}
+    void streamLinks (ServletRequest request, JspWriter out, String path, boolean recursive)
+    throws IOException
+    {
+	String pathEncoded = URLEncoder.encode(path);
+	String encoding = (request.getRemoteHost().equals("localhost")
+		|| request.getRemoteHost().equals("127.0.0.1"))
+		? ""
+		: "&outputtype=mp3&mode=j&resample=16&vbr=1&vbrquality=6&maxbitrate=56";
+	String imgSrc = "servlet/scilla/speaker.png?scale=14x14&outputtype=gif";
+	out.println("<A href=\"servlet/playlist.m3u"+
+		"?d="+pathEncoded+
+		(recursive ? "&r=1" : "")+
+		encoding+
+		"\">"+
+		"<IMG src=\""+imgSrc+"\" alt=\"play\" border=0>"+
+		"</A>");
+    }
 
-static List indexHtmls = new Vector();
-static
-{
-    indexHtmls.add("index.html");
-    indexHtmls.add("index.htm");
-    indexHtmls.add("default.html");
-    indexHtmls.add("default.htm");
-    indexHtmls.add("main.html");
-    indexHtmls.add("main.htm");
-}
+    static List indexHtmls = new Vector();
+    static
+    {
+	indexHtmls.add("index.html");
+	indexHtmls.add("index.htm");
+	indexHtmls.add("default.html");
+	indexHtmls.add("default.htm");
+	indexHtmls.add("main.html");
+	indexHtmls.add("main.htm");
+    }
 %>
 <%
     Config scillaConfig = ConfigProvider.get();
@@ -55,14 +55,14 @@ static
     String urlHead = "servlet/scilla/" + path.replace(' ', '+') + "/";
 
     String background = null;
-    Hashtable tagHash = new Hashtable();
-    Hashtable fhHash = new Hashtable();
-    Hashtable xingHash = new Hashtable();
-    Vector vec = new Vector();
-    Vector imgVec = new Vector();
-    Vector m3uVec = new Vector();
-    Vector htmVec = new Vector();
-    Vector dirVec = new Vector();
+    Map tagMap = new HashMap();
+    Map fhMap = new HashMap();
+    Map xingMap = new HashMap();
+    List vec = new Vector();
+    List imgVec = new Vector();
+    List m3uVec = new Vector();
+    List htmVec = new Vector();
+    List dirVec = new Vector();
     File dir = new File(source+"/"+path);
     if (dir.isDirectory())
     {
@@ -97,13 +97,13 @@ static
 		    }
 		    catch (Mp3Exception e1) { }
 
-		    if (tag != null) tagHash.put(f, tag);
-		    if (fh != null) fhHash.put(f, fh);
-		    if (xing != null) xingHash.put(f, xing);
+		    if (tag != null) tagMap.put(f, tag);
+		    if (fh != null) fhMap.put(f, fh);
+		    if (xing != null) xingMap.put(f, xing);
 
 		    vec.add(f);
 		}
-		catch (Exception e)
+		catch (Exception it)
 		{
 		    // ignore this file..
 		}
@@ -147,45 +147,63 @@ static
 	if (vec.size() + imgVec.size() + m3uVec.size() + htmVec.size() == 0
 		    && dirVec.size() == 1)
 	{
-	    String s = (path + "/" + dirVec.firstElement()).replace(' ', '+');
+	    String s = (path + "/" + dirVec.get(0)).replace(' ', '+');
 	    response.sendRedirect("mp3.jsp?d="+s);
 	}
 
-	// count artist, albums and comments
-	String artist = null, album = null, comment = null, year = null;
-	Hashtable artistHash = new Hashtable();
-	Hashtable albumHash = new Hashtable();
-	Hashtable commentHash = new Hashtable();
-	Hashtable yearHash = new Hashtable();
-	Enumeration e = vec.elements();
-	while (e.hasMoreElements())
+	// redirect to index page if only html files here
+	if (htmVec.size() > 0 && vec.size() == 0 && dirVec.size() == 0)
 	{
-	    File f = (File) e.nextElement();
-	    ID3v1 tag = (ID3v1) tagHash.get(f);
-
-	    if (tag != null)
+	    String url = "servlet/scilla/"+path+"/";
+	    Iterator it = indexHtmls.iterator();
+	    while (it.hasNext())
 	    {
-		artist = tag.getArtist();
-		album = tag.getAlbum();
-		comment = tag.getComment();
-		year = tag.getYear();
-		if (artist != null && artist.trim().length() != 0) artistHash.put(artist, "X");
-		if (album != null && album.trim().length() != 0) albumHash.put(album, "X");
-		if (comment != null && comment.trim().length() != 0) commentHash.put(comment, "X");
-		if (year != null && year.trim().length() != 0) yearHash.put(year, "X");
+		String s = (String) it.next();
+		if (htmVec.contains(s))
+		{
+		    response.sendRedirect(url+s);
+		    return;
+		}
 	    }
 	}
 
+	// determine table layout
+	// count artist, albums and comments
+	String artist = null, album = null, comment = null, year = null;
+	Set artistSet = new HashSet();
+	Set albumSet = new HashSet();
+	Set commentSet = new HashSet();
+	Set yearSet = new HashSet();
+	{
+	    Iterator it = vec.iterator();
+	    while (it.hasNext())
+	    {
+		File f = (File) it.next();
+		ID3v1 tag = (ID3v1) tagMap.get(f);
+
+		if (tag != null)
+		{
+		    artist = tag.getArtist();
+		    album = tag.getAlbum();
+		    comment = tag.getComment();
+		    year = tag.getYear();
+		    if (artist != null && artist.trim().length() != 0) artistSet.add(artist);
+		    if (album != null && album.trim().length() != 0) albumSet.add(album);
+		    if (comment != null && comment.trim().length() != 0) commentSet.add(comment);
+		    if (year != null && year.trim().length() != 0) yearSet.add(year);
+		}
+	    }
+	}
 %>
 <HTML>
     <HEAD>
 	<TITLE>
 	    mp3:
 <%
-	int artistCount = artistHash.size();
-	int albumCount = albumHash.size();
-	int commentCount = commentHash.size();
-	int yearCount = yearHash.size();
+	int artistCount = artistSet.size();
+	int albumCount = albumSet.size();
+	int commentCount = commentSet.size();
+	int yearCount = yearSet.size();
 
 	if (artistCount == 1 && albumCount == 1)
 	{
@@ -239,18 +257,20 @@ static
 <%
 	int colWidth = 0;
 
-	Enumeration e1 = dirVec.elements();
-	Enumeration e2 = m3uVec.elements();
-	Enumeration e3 = htmVec.elements();
-	if (e1.hasMoreElements() || e2.hasMoreElements() || e3.hasMoreElements())
+	// subdirectories, htmls, playlists in this directory
+	Iterator e1 = dirVec.iterator();
+	Iterator e2 = m3uVec.iterator();
+	Iterator e3 = htmVec.iterator();
+	if (e1.hasNext() || e2.hasNext() || e3.hasNext())
 	{
 %>
 		<TD align="left" valign="top">
 		    <TABLE>
 <%
-	    while (e1.hasMoreElements())
+	    // subdirectories in this directory
+	    while (e1.hasNext())
 	    {
-		String s = (String) e1.nextElement();
+		String s = (String) e1.next();
 		String sEncoded = (path + "/" + s).replace(' ', '+');
 %>
 			<TR>
@@ -265,9 +285,11 @@ static
 			</TR>
 <%
 	    }
-	    while (e2.hasMoreElements())
+
+	    // playlists in this directory
+	    while (e2.hasNext())
 	    {
-		String s = (String) e2.nextElement();
+		String s = (String) e2.next();
 %>
 			<TR>
 			    <TD>
@@ -281,24 +303,11 @@ static
 			</TR>
 <%
 	    }
-	    // redirect to index page if only html files here
-	    if (htmVec.size() > 0 && vec.size() == 0 && dirVec.size() == 0)
+
+	    // htmls in this directory
+	    while (e3.hasNext())
 	    {
-		String url = "servlet/scilla/"+path+"/";
-		Iterator it = indexHtmls.iterator();
-		while (it.hasNext())
-		{
-		    String s = (String) it.next();
-		    if (htmVec.contains(s))
-		    {
-			response.sendRedirect(url+s);
-			return;
-		    }
-		}
-	    }
-	    while (e3.hasMoreElements())
-	    {
-		String s = (String) e3.nextElement();
+		String s = (String) e3.next();
 		String url = "servlet/scilla/"+path+"/"+s;
 %>
 			<TR>
@@ -314,6 +323,8 @@ static
 <%
 	    colWidth++;
 	}
+
+	// audio tracks in this directory
 	if (vec.size() > 0)
 	{
 %>
@@ -360,55 +371,56 @@ static
 				<TABLE width="100%" bgcolor="#EEEEEE" cellspacing=4 cellpadding=3>
 <%
 	    // loop through list
-	    int tlength = 0;
-	    e = vec.elements();
-	    for (int num = 1; e.hasMoreElements(); num++)
 	    {
-		File f = (File) e.nextElement();
-		String filepath = path+"/"+f.getName();
-
-		ID3v1 tag = (ID3v1) tagHash.get(f);
-		FrameHeader fh = (FrameHeader) fhHash.get(f);
-		XingInfo xing = (XingInfo) xingHash.get(f);
-		if (xing != null) fh = xing;
-		int length = 0;
-		if (fh != null)
+		int tlength = 0;
+		Iterator it = vec.iterator();
+		for (int num = 1; it.hasNext(); num++)
 		{
-		    length = fh.getLength();
-		    tlength += length;
-		}
+		    File f = (File) it.next();
+		    String filepath = path+"/"+f.getName();
 
-		String artistT = "";
-		String albumT = "";
-		String titleT = "";
-		String commentT = "";
-		String yearT = "";
-		if (tag != null)
-		{
-		    artistT = tag.getArtist();
-		    albumT = tag.getAlbum();
-		    titleT = tag.getTitle();
-		    commentT = tag.getComment();
-		    yearT = tag.getYear();
+		    ID3v1 tag = (ID3v1) tagMap.get(f);
+		    FrameHeader fh = (FrameHeader) fhMap.get(f);
+		    XingInfo xing = (XingInfo) xingMap.get(f);
+		    if (xing != null) fh = xing;
+		    int length = 0;
+		    if (fh != null)
+		    {
+			length = fh.getLength();
+			tlength += length;
+		    }
 
-		    if ((artistT+albumT+titleT).length() == 0)
+		    String artistT = "";
+		    String albumT = "";
+		    String titleT = "";
+		    String commentT = "";
+		    String yearT = "";
+		    if (tag != null)
+		    {
+			artistT = tag.getArtist();
+			albumT = tag.getAlbum();
+			titleT = tag.getTitle();
+			commentT = tag.getComment();
+			yearT = tag.getYear();
+
+			if ((artistT+albumT+titleT).length() == 0)
+			{
+			    titleT = f.getName();
+			    titleT = titleT.substring(0, titleT.lastIndexOf('.'));
+			}
+		    }
+		    else
 		    {
 			titleT = f.getName();
 			titleT = titleT.substring(0, titleT.lastIndexOf('.'));
 		    }
-		}
-		else
-		{
-		    titleT = f.getName();
-		    titleT = titleT.substring(0, titleT.lastIndexOf('.'));
-		}
 
 %>
 				    <TR>
 					<TD align="right"><%=num%></TD>
 <%
-		if (artistHash.size() > 1) out.write("<TD> "+artistT+"</TD>");
-		if (albumHash.size() > 1) out.write("<TD> "+albumT+"</TD>");
+		    if (artistSet.size() > 1) out.write("<TD> "+artistT+"</TD>");
+		    if (albumSet.size() > 1) out.write("<TD> "+albumT+"</TD>");
 %>
 					<TD>
 					    <STRONG>
@@ -416,8 +428,8 @@ static
 					    </STRONG>
 					</TD>
 <%
-		if (commentHash.size() > 1) out.write("<TD>"+commentT+"</TD>");
-		if (yearHash.size() > 1) out.write("<TD> "+yearT+"</TD>");
+		    if (commentSet.size() > 1) out.write("<TD>"+commentT+"</TD>");
+		    if (yearSet.size() > 1) out.write("<TD> "+yearT+"</TD>");
 %>
 					<TD align=right>
 					    <TT>
@@ -427,13 +439,13 @@ static
 					<TD>
 					    <FONT size=-2>
 <%
-		streamLinks(request, out, filepath);
+		    streamLinks(request, out, filepath);
 %>
 					    </FONT>
 					</TD>
 <%
-		if (fh != null)
-		{
+		    if (fh != null)
+		    {
 %>
 <!--
 					<TD align=right>
@@ -451,21 +463,21 @@ static
 					</TD>
 -->
 <%
-		}
+		    }
 %>
 				    </TR>
 <%
-	    }
+		}
 %>
 				    <TR>
 <%
-	    // padding
-	    out.write("<TD></TD>");
-	    if (artistCount > 1) out.write("<TD></TD>");
-	    if (albumCount > 1) out.write("<TD></TD>");
-	    out.write("<TD></TD>");
-	    if (commentCount > 1) out.write("<TD></TD>");
-	    if (yearCount > 1) out.write("<TD></TD>");
+		// padding
+		out.write("<TD></TD>");
+		if (artistCount > 1) out.write("<TD></TD>");
+		if (albumCount > 1) out.write("<TD></TD>");
+		out.write("<TD></TD>");
+		if (commentCount > 1) out.write("<TD></TD>");
+		if (yearCount > 1) out.write("<TD></TD>");
 %>
 					<TD align=right>
 					    <TT>
@@ -475,7 +487,7 @@ static
 					<TD>
 					    <FONT size=-2>
 <%
-	    streamLinks(request, out, path);
+		streamLinks(request, out, path);
 %>
 					    </FONT>
 					</TD>
@@ -486,12 +498,13 @@ static
 		    </TABLE>
 		</TD>
 <%
-	    colWidth++;
+		colWidth++;
+	    }
 	}
 %>
 	    </TR>
 <%
-
+	// images in this directory
 	{
 	    Iterator it = imgVec.iterator();
 	    if (it.hasNext())
