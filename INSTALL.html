@@ -1,153 +1,175 @@
-<HTML>
-  <HEAD>
-    <TITLE>Scilla installation guide</TITLE>
-  </HEAD>
-  <BODY>
-    <H1>Scilla installation guide</H1>
+<html>
+    <head>
+        <title>Scilla installation guide</title>
+    </head>
+    <body>
+        <h1>Scilla installation guide</h1>
 
-    <H2>Requirements</H2>
-    <P>
-      Several applications are needed to run Scilla.  Here is a list
-      of packages needed to fully deploy Scilla.
-      <DL>
-	<DT>Ant</DT>
-	<DD>Used to build and install Scilla.  Available at the
-	  <A href="http://jakarta.apache.org/">Jakarta project</A>.
-	</DD>
-	<DT>Servlet/JSP application server</DT>
-	<DD>Should work with any modern servlet engine.  Tested
-	  with <A href="http://jakarta.apache.org/tomcat">Tomcat</A> and
-	  <A href="http://jetty.mortbay.com/">Jetty</A>.
-	</DD>
-	<DT>ImageMagick</DT>
-	<DD>A image manipulation suite.  Available at the
-	  <A href="http://www.imagemagick.org/">ImageMagick homepage</A>.
-	</DD>
-	<DT>Lame</DT>
-	<DD>A MP3 encoder used to recode MP3 files and encode WAV
-	  files to MP3.  Available at the
-	  <A href="http://www.sulaco.org/mp3/">Lame homepage</A>.
-	</DD>
-	<DT>FFMpeg</DT>
-	<DD>A video format converter.  Available at the
-	  <A href="http://ffmpeg.sourceforge.net/">FFMpeg homepage</A>.
-	</DD>
-	<DT>JAI</DT>
-	<DD>Java Advanced Imaging API.  Available at the
-	  <A href="http://java.sun.com/products/java-media/jai/">Sun
-	  Microsystems</A>.
-	</DD>
-      </DL>
-    </P>
+        <h2>Requirements</h2>
+        <p>
+            Several applications are needed to compile and run Scilla.
+        </p>
+        <p>
+            A list of compile-time dependencies:
+        </p>
+        <dl>
+            <dt>Ant</dt>
+            <dd>
+		Used to build and install Scilla.  Available at the
+                <a href="http://jakarta.apache.org/">Jakarta project</a>.
+            </dd>
+            <dt>Servlet/JSP application server</dt>
+            <dd>
+		Should work with any modern servlet engine.  Tested
+                with <a href="http://jakarta.apache.org/tomcat">Tomcat</a> and
+                <a href="http://jetty.mortbay.com/">Jetty</a>.  Make sure the
+		servlet API is available via your classpath before compilation.
+            </dd>
+            <dt>JAI</dt>
+            <dd>
+		Java Advanced Imaging API.  Available at the
+                <a href="http://java.sun.com/products/java-media/jai/">Sun Microsystems</a>.
+		This imaging package can be omitted when you decided to use
+		<code>ImageMagick</code> instead.
+            </dd>
+        </dl>
+        <p> 
+            A list of run-time dependencies:
+        </p>
+        <dl>
+            <dt>ImageMagick</dt>
+            <dd>
+		A image manipulation suite.  Available at the
+                <a href="http://www.imagemagick.org/">ImageMagick homepage</a>.
+            </dd>
+            <dt>Lame</dt>
+	    <dd>
+		A MP3 encoder used to recode MP3 files and encode WAV
+                files to MP3.  Available at the
+                <a href="http://www.sulaco.org/mp3/">Lame homepage</a>.
+            </dd>
+            <dt>FFMpeg</dt>
+            <dd>
+		A video format converter.  Available at the
+                <a href="http://ffmpeg.sourceforge.net/">FFMpeg homepage</a>.
+            </dd>
+        </dl>
 
-    <H2>Examples installation</H2>
-    <P>
-      Extract the distributed zip or tar.gz file and change directory
-      to the <CODE>examples</CODE> directory.  This directory
-      contains a <CODE>ant</CODE> build file called
-      <A href="examples/build.xml"><CODE>build.xml</CODE></A>.
-      This file is used to compile all the Scilla Java classes,
-      create a deployment hierarchy and a war file.
-    </P>
-    <P>
-      Building Scilla by running Ant.  Here is an example:
-<PRE>
-$ cd examples
-$ ant war
+        <h2>Examples installation</h2>
+        <p>
+            Extract the distributed zip-file and change directory
+            to the newly created <code>scilla</code> directory.  This directory
+            contains a <code>ant</code> build file called
+            <a href="build.xml"><code>build.xml</code></a>.
+            This file is used to compile all the Scilla Java classes,
+            create a deployment hierarchy and a war file.
+        </p>
+        <p>
+	    Build the examples war file by running ant.  Here is an example:
+        </p>
+<pre>
+Script started on Sun Jan  5 15:15:54 2003
+$ cd scilla
+$ ant -Dsource.dir=`pwd`/examples/data/source examples
 Buildfile: build.xml
 
 prepare:
-    [mkdir] Created dir: /tmp/scilla/examples/deploy
-     [copy] Copying 11 files to /tmp/scilla/examples/deploy
-    [mkdir] Created dir: /tmp/scilla/examples/deploy/WEB-INF
-     [copy] Copying 1 file to /tmp/scilla/examples/deploy/WEB-INF
-    [mkdir] Created dir: /tmp/scilla/examples/deploy/WEB-INF/lib
-    [mkdir] Created dir: /tmp/scilla/examples/deploy/WEB-INF/classes
-    [mkdir] Created dir: /tmp/scilla/examples/data/cache
-
-scilla:
-
-prepare:
-    [mkdir] Created dir: /tmp/scilla/examples/deploy/doc
-    [mkdir] Created dir: /tmp/scilla/build
-    [touch] Creating /tmp/scilla/excludes.txt
+    [mkdir] Created dir: /hm/remco/tmp/scilla/doc/apidoc
+    [mkdir] Created dir: /hm/remco/tmp/scilla/build
+    [mkdir] Created dir: /hm/remco/tmp/scilla/lib
+    [mkdir] Created dir: /hm/remco/tmp/scilla/depend
+    [touch] Creating /hm/remco/tmp/scilla/excludes.txt
 
 prepare.jai:
 
-prepare.log4j:
-
 prepare.compile:
 
-compile:
-    [javac] Compiling 34 source files to /tmp/scilla/build
-     [copy] Copying 4 files to /tmp/scilla/build
-
-jar:
-      [jar] Building jar: /tmp/scilla/examples/deploy/WEB-INF/lib/scilla.jar
-
-compile:
-    [javac] Compiling 1 source file to /tmp/scilla/examples/deploy/WEB-INF/classes
-
-apidoc:
-
-prepare:
-   [delete] Deleting: /tmp/scilla/excludes.txt
-    [touch] Creating /tmp/scilla/excludes.txt
-
-apidoc:
-  [javadoc] Generating Javadoc
-  [javadoc] Javadoc execution
-  [javadoc] Loading source files for package org.scilla...
-  [javadoc] Loading source files for package org.scilla.converter...
-  [javadoc] Loading source files for package org.scilla.core...
-  [javadoc] Loading source files for package org.scilla.util...
-  [javadoc] Loading source files for package org.scilla.util.mp3...
-  [javadoc] Constructing Javadoc information...
-  [javadoc] Building tree for all the packages and classes...
-  [javadoc] Building index for all the packages and classes...
-  [javadoc] Generating /tmp/scilla/examples/deploy/doc/stylesheet.css...
+depend:
+    [style] Processing /hm/remco/tmp/scilla/depend.xml to /hm/remco/tmp/scilla/depend-build.xml
+    [style] Loading stylesheet /hm/remco/tmp/scilla/misc/depend-build.xsl
 
 all:
+
+commons-logging.prepare:
+
+commons-logging:
+
+commons-logging.prepare:
+
+commons-logging.download:
+      [get] Getting: http://jakarta.apache.org/builds/jakarta-commons/release/commons-logging/v1.0.2/commons-logging-1.0.2.zip
+    [unzip] Expanding: /hm/remco/tmp/scilla/depend/commons-logging-1.0.2.zip into /hm/remco/tmp/scilla/depend/commons-logging
+     [copy] Copying 1 file to /hm/remco/tmp/scilla/lib
+
+compile:
+    [javac] Compiling 38 source files to /hm/remco/tmp/scilla/build
+     [copy] Copying 4 files to /hm/remco/tmp/scilla/build
+
+jar:
+      [jar] Building jar: /hm/remco/tmp/scilla/scilla.jar
+
+examples:
+     [copy] Copying 1 file to /hm/remco/tmp/scilla/examples/lib
+     [copy] Copying 1 file to /hm/remco/tmp/scilla/examples/lib
+
+prepare:
+    [mkdir] Created dir: /hm/remco/tmp/scilla/examples/deploy
+     [copy] Copying 10 files to /hm/remco/tmp/scilla/examples/deploy
+    [mkdir] Created dir: /hm/remco/tmp/scilla/examples/deploy/WEB-INF
+    [mkdir] Created dir: /hm/remco/tmp/scilla/examples/deploy/WEB-INF/lib
+     [copy] Copying 2 files to /hm/remco/tmp/scilla/examples/deploy/WEB-INF/lib
+     [copy] Copying 1 file to /hm/remco/tmp/scilla/examples/deploy/WEB-INF
+    [mkdir] Created dir: /hm/remco/tmp/scilla/examples/deploy/WEB-INF/classes
+    [mkdir] Created dir: /hm/remco/tmp/scilla/examples/build
+
+compile:
+    [javac] Compiling 6 source files to /hm/remco/tmp/scilla/examples/deploy/WEB-INF/classes
+
+webxml1:
+     [copy] Copying 1 file to /hm/remco/tmp/scilla/examples/deploy/WEB-INF
+  [replace] Replaced 2 occurrences in 1 files.
+
+webxml2:
+
+deploy:
      [echo] FIN
 
 war:
-      [jar] Building jar: /tmp/scilla/examples/scilla.war
+      [jar] Building jar: /hm/remco/tmp/scilla/examples/scilla.war
 
 BUILD SUCCESSFUL
+Total time: 15 seconds
+$ ^D
 
-Total time: 17 seconds
-$
-</PRE>
-    <P>
-      Now copy the war file to the application server deployment
-      directory (typically called <CODE>webapps</CODE>).  Tomcat
-      needs no further configuration, upon restart it will
-      recognize the new application and start it.  Jetty needs to
-      be told a new application is added but that's out of the
-      scope of this document.
-    </P>
-    <P>
-      Now restart the server and point your browser to the scilla
-      examples site; something like:
-      <A href="http://localhost:8080/scilla/">http://localhost:8080/scilla/</A>.
-      A page with links to the examples should be visible now.  Drop
-      some MP3 files (or make symlinks) in the
-      <CODE>examples/data/source</CODE> directory to make them
-      available for the MP3 browser.
-    </P>
+Script done on Sun Jan  5 15:19:49 2003
+</pre>
+        <p>
+            Now copy the war file to the application server deployment
+            directory (typically called <code>webapps</code>).  Tomcat
+            needs no further configuration, upon restart it will
+            recognize the new application and start it.  Jetty needs to
+            be told a new application is added but that's out of the
+            scope of this document.
+        </p>
+        <p>
+            Now restart the server and point your browser to your scilla
+            examples site; something like:
+            <a href="http://localhost:8080/scilla/">http://localhost:8080/scilla/</a>.
+            A page with links to the examples should be visible
+	    now.  Enjoy..
+        </p>
 
-    <H2>Usage</H2>
-    <P>
-      Please look at the included <CODE>build.xml</CODE> files
-      and <CODE>web.xml</CODE> file for
-      details on installation and look at the examples JSPs (and HTML
-      source as generated by the JSPs) for pointers on the usage of
-      the converters.  All converters are documented using
-      <CODE>javadoc</CODE>.  The API documention is included in
-      the example site.
-    </P>
+        <h2>Usage</h2>
+        <p>
+            Please look at the included <code>build.xml</code> files
+            and <code>web.xml</code> file for
+            details on installation and look at the examples JSPs (and HTML
+            source as generated by the JSPs) for pointers on the usage of
+            the converters.  All converters are documented using
+            <code>javadoc</code>.
+        </p>
 
-    <HR>
-    <DIV align="right"><SMALL>$Revision: 1.3 $</SMALL></DIV>
-  </BODY>
-</HTML>
+        <hr/>
+        <div align="right"><small>$Revision: 1.4 $</small></div>
+    </body>
+</html>
