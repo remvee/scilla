@@ -38,7 +38,7 @@ import org.scilla.util.*;
 /**
  * This servlet stream requests.
  *
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @author R.W. van 't Veer
  */
 public class StreamServlet extends HttpServlet {
@@ -208,6 +208,9 @@ public class StreamServlet extends HttpServlet {
         if (source.indexOf("/../") != -1) {
             throw new ScillaIllegalRequestException();
         }
+
+	// get uniq location for this file
+	source = (new File(source)).getCanonicalPath();
 
 	// does source file carry output suffix?
 	String outType = MimeType.getExtensionFromFilename(source);

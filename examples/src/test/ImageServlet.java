@@ -106,6 +106,7 @@ public class ImageServlet extends HttpServlet {
 	} else if (source.startsWith(SCILLA_SOURCE_CTX)) {
 	    String fname = AppConfig.getSourceDir();
 	    fname += source.substring(SCILLA_SOURCE_CTX.length() - 1);
+	    fname = (new File(fname)).getCanonicalPath(); // uniq location for this file
 	    log.debug("fname="+fname);
 	    req = new Request(fname, type, pars);
 	} else {
