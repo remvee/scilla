@@ -27,11 +27,13 @@ import java.util.*;
 import org.scilla.util.mp3.id3v2.*;
 
 /**
- * Representation of a ID3v2 tag.
+ * Representation of a ID3v2 tag.  Currently supports only
+ * readonly access to v2.3 tags and a subset of the allowed
+ * frames.
  *
  * @see <a href="http://www.id3.org/id3v2.3.0.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ID3v2
 {
