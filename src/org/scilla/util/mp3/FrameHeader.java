@@ -33,14 +33,13 @@ import org.scilla.LoggerFactory;
  * Read only access to MP3 frame header information.
  * @see <a href="http://www.mp3-tech.org/programmer/frame_header.html">MP3'Tech - Frame header</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class FrameHeader
 {
-    private static final Logger log = LoggerFactory.get(FrameHeader.class);
-
 /// constants
 ///
+    private static final boolean verbose = true;
 
     /**
      * MPEG Version 2.5 (later extension of MPEG 2)
@@ -436,7 +435,7 @@ public class FrameHeader
 		|| emphasis == 2
 	     )
 	{
-	    log.warn("next: RESERVED VALUES");
+	    if (verbose) System.err.println("next: RESERVED VALUES");
 	    mp3File.seek(mp3File.getFilePointer()-3);
 	    next(forwardToNextFrame);
 	}
@@ -469,7 +468,7 @@ public class FrameHeader
 		|| bitRate == 384 && isSingleChannel()
 	     )
 	{
-	    log.warn("next: ILLEGAL COMBINATION");
+	    if (verbose) System.err.println("next: ILLEGAL COMBINATION");
 	    mp3File.seek(mp3File.getFilePointer()-3);
 	    next(forwardToNextFrame);
 	}
@@ -527,4 +526,4 @@ public class FrameHeader
 }
 
 
-/* end of $Id: FrameHeader.java,v 1.8 2001/11/23 13:37:46 remco Exp $ */
+/* end of $Id: FrameHeader.java,v 1.9 2002/02/16 16:37:41 remco Exp $ */
