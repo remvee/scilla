@@ -38,7 +38,7 @@ import org.apache.log4j.xml.DOMConfigurator;
 /**
  * The scilla log4j logger implementation.
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @author R.W. van 't Veer
  */
 public class LoggerLog4jImpl implements Logger
@@ -66,7 +66,7 @@ public class LoggerLog4jImpl implements Logger
      * fails <CODE>BasicConfigurator</CODE> is used.
      * @see #LOG4J_XML_FILE
      * @see org.apache.log4j.xml.DOMConfigurator
-     * @see #LOG4J_PROPERTIES_FILE
+     * @see #LOG4J_PROPERTY_FILE
      * @see org.apache.log4j.PropertyConfigurator
      * @see org.apache.log4j.BasicConfigurator
      */
