@@ -38,7 +38,7 @@ import org.scilla.util.*;
 /**
  * This servlet stream requests.
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @author R.W. van 't Veer
  */
 public class StreamServlet extends HttpServlet {
@@ -96,10 +96,9 @@ public class StreamServlet extends HttpServlet {
                 addStreamHeaders(req, response);
             }
 
-            // get streams
+            // get stream
             long len = req.getLength();
             InputStream in = req.getStream();
-            OutputStream out = response.getOutputStream();
 
 	    // winamp vorbis hack, winamp can't handle ogg
 	    // streaming with unknown length..
@@ -112,47 +111,12 @@ public class StreamServlet extends HttpServlet {
 		}
 	    }
 
-            // handle range requests
-            PartialContent pc = new PartialContent(request, response, len);
-            if (pc.isPartial) {
-                long offset = pc.offset;
-                long endpoint = pc.endpoint;
-
-                if (offset > 0) {
-                    in.skip(offset);
-		}
-
-                int n;
-                byte[] b = new byte[BUFFER_SIZE];
-                try {
-                    while ((n = in.read(b)) != -1) {
-                        if (endpoint != -1) {
-                            if (offset + n > endpoint) {
-                                n = (int) (endpoint - offset) + 1;
-                                if (n > 0) {
-                                    out.write(b, 0, n);
-				}
-                                break;
-                            }
-                            offset += n;
-                        }
-                        out.write(b, 0, n);
-                    }
-                } finally {
-                    in.close();
-                }
-            } else {
-		// write all content to client
-                int n;
-                byte[] b = new byte[BUFFER_SIZE];
-                try {
-                    while ((n = in.read(b)) != -1) {
-                        out.write(b, 0, n);
-		    }
-                } finally {
-                    in.close();
-                }
-            }
+            // write data
+	    try {
+		PartialContentHandler.process(request, response, in, len);
+	    } finally {
+		in.close();
+	    }
         } catch (ScillaNoOutputException ex) {
             log.info("doGet! ", ex);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
@@ -248,71 +212,6 @@ public class StreamServlet extends HttpServlet {
             log.debug("addStreamHeaders: "+title);
         } catch (Throwable t) {
             log.warn("addStreamHeaders", t);
-        }
-    }
-
-    /**
-     * Helper class to interpet HTTP servlet partial content requests.
-     * TODO make this reusable!
-     */
-    public class PartialContent {
-        /** byte offset to begin writing */
-        public long offset = 0;
-        /** byte endpoint inclusive to stop writing */
-        public long endpoint = -1;
-        /** <TT>true</TT> when requested for parital content and length if known */
-        public boolean isPartial = false;
-
-        /** name of range request header */
-        public static final String RANGE_HEADER = "range";
-        /** byte range spec */
-        public static final String BYTE_RANGE = "bytes=";
-        /** name of range response header */
-        public static final String CONTENT_RANGE_HEADER = "Content-Range";
-
-
-        /**
-         * Prepare a possible partial content request.  If
-         * <TT>len</TT> is not -1, try to get a range spec from
-         * range header, modify response accordingly and set
-         * public fields {@link #offset}, {@link #endpoint} and
-         * {@link #isPartial}.  Otherwise keep {@link #isPartial}
-         * is <TT>false</TT>.
-         * @param request HTTP servlet request object
-         * @param response HTTP servlet response object
-         * @param len length of the requested content or -1 if
-         * length unknown.
-         */
-        public PartialContent (HttpServletRequest request, HttpServletResponse response, long len) {
-            // can only do partial content when length is unkwown
-            if (len != -1L) {
-                String rangeHeader = request.getHeader(RANGE_HEADER);
-                if (rangeHeader != null && rangeHeader.startsWith(BYTE_RANGE)) {
-                    String byteSpec = rangeHeader.substring(BYTE_RANGE.length());
-                    int sepPos = byteSpec.indexOf('-');
-                    if (sepPos != -1) {
-                        if (sepPos > 0) {
-                            String s = byteSpec.substring(0, sepPos);
-                            offset = Integer.parseInt(s);
-                        }
-                        if (sepPos != byteSpec.length()-1) {
-                            String s = byteSpec.substring(sepPos + 1);
-                            endpoint = Integer.parseInt(s);
-                        } else {
-                            endpoint = len - 1;
-                        }
-
-                        // notify receiver this is partial content
-                        response.setStatus(response.SC_PARTIAL_CONTENT);
-                        String contentRange = offset+"-"+endpoint+"/"+len;
-                        response.setHeader(CONTENT_RANGE_HEADER, contentRange);
-                        response.setContentLength((int)(endpoint-offset+1));
-                        isPartial = true;
-                    }
-                } else {
-		    response.setContentLength((int)len);
-		}
-            }
         }
     }
 

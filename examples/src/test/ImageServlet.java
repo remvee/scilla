@@ -28,20 +28,13 @@ public class ImageServlet extends HttpServlet {
         try {
             req = createFromHttpServletRequest(request);
 
+            // get stream
             long len = req.getLength();
-            response.setContentType(req.getOutputType());
-
-            // get streams
             InputStream in = req.getStream();
-            OutputStream out = response.getOutputStream();
 
-	    // write all content to client
-	    int n;
-	    byte[] b = new byte[BUFFER_SIZE];
+            // write data
 	    try {
-		while ((n = in.read(b)) != -1) {
-		    out.write(b, 0, n);
-		}
+		PartialContentHandler.process(request, response, in, len);
 	    } finally {
 		in.close();
 	    }
