@@ -1,4 +1,4 @@
-<project name="Scilla Examples" default="all" basedir=".">
+<project name="Scilla Examples" default="deploy" basedir=".">
 
     <!-- application identifier -->
     <property name="app.name" value="scilla"/>
@@ -20,16 +20,25 @@
     <property name="src.dir" value="src"/>
     <property name="scilla.jar" value="${lib.dir}/scilla.jar"/>
 
+    <property name="cache.dir" value="/tmp"/>
 
 <!-- targets -->
-
-
-    <target name="all" depends="prepare,scilla,compile,apidoc">
+    <target name="deploy" depends="prepare,scilla,compile,apidoc,web.xml">
         <echo>FIN</echo>
     </target>
 
+    <target name="web.xml" depends="prepare" if="source.dir">
+        <delete file="${webinf.dir}/web.xml"/>
+        <copy file="etc/web.xml" tofile="${webinf.dir}/web.xml"/>
+	<replace file="${webinf.dir}/web.xml" summary="yes">
+	    <replacefilter token="@source.dir@" value="${source.dir}"/>
+	    <replacefilter token="@cache.dir@" value="${cache.dir}"/>
+	</replace>
+    </target>
+    <target name="template.web.xml"/>
 
-    <target name="war" depends="all">
+
+    <target name="war" depends="deploy">
         <jar jarfile="${war.file}" basedir="${deploy.dir}"/>
     </target>
 
@@ -50,9 +59,8 @@
             <fileset dir="web" excludes="**/*.swp"/>
         </copy>
 
-        <!-- copy web-app descriptor -->
+        <!-- web-app resources -->
         <mkdir dir="${webinf.dir}"/>
-        <copy file="etc/web.xml" tofile="${webinf.dir}/web.xml"/>
 
         <!-- copy the libraries we depend on -->
         <mkdir  dir="${lib.dir}"/>
