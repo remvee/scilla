@@ -19,9 +19,10 @@
   <property name="excludes.file" value="excludes.txt"/>
 
 <!-- for documentation building -->
-  <property name="doc.dir"      value="doc"/>
-  <property name="doc.title"    value="scilla API documentation"/>
-  <property name="doc.pkgnames" value="org.scilla.*"/>
+  <property name="doc.dir"           value="doc"/>
+  <property name="doc.title"         value="scilla API documentation"/>
+  <property name="doc.pkgnames"      value="org.scilla.*"/>
+  <property name="doc.apidocurl.jdk" value="http://java.sun.com/products/jdk/1.3/docs/api/"/>
 
 <!-- the configuration template -->
   <property name="config.propfile" value="org/scilla/Config.properties"/>
@@ -83,7 +84,9 @@
 
   <target name="doc" depends="prepare">
     <javadoc sourcepath="${src.dir}" destdir="${doc.dir}"
-	windowtitle="${doc.title}" packagenames="${doc.pkgnames}"/>
+	windowtitle="${doc.title}" packagenames="${doc.pkgnames}">
+	<link href="${doc.apidocurl.jdk}"/>
+    </javadoc>
   </target>
 
   <target name="ctags">
