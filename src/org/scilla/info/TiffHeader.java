@@ -26,7 +26,7 @@ import java.util.*;
 /**
  * Tiff header/ Image File Directory (IFD) reader.
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @author R.W. van 't Veer
  */
 public class TiffHeader {
@@ -195,7 +195,8 @@ public class TiffHeader {
                     // TODO IMPLEMENT DOUBLE
                     break;
                 default:
-                // UNKNOWN
+                    // UNKNOWN
+                    throw new TiffException("Unknown field type: " + type);
                 }
             } catch (ArrayIndexOutOfBoundsException ex) {
                 throw new TiffException("corrupt field", ex);
