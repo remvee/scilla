@@ -4,6 +4,8 @@ For version 1.0:
 - taglib
     - put tld in META-INF
     - image and playlist; use info objects instead of beans
+- InfoFactory
+    - get method synchronization (profile performance!)
 - ImageInfo
     - add support for GIF comments and maybe other types (JPEG
       already implemented)
