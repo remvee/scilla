@@ -28,7 +28,7 @@ import java.util.*;
  * Representation of picture frame (<TT>APIC</TT>).
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class PictureFrame extends Frame
 {
@@ -48,7 +48,7 @@ public class PictureFrame extends Frame
     {
 	super(data, offset, minor);
 
-	// optionally get description
+	// encoding for description
 	int i = 0;
 	ByteArrayOutputStream out;
 	String encoding;
@@ -58,7 +58,7 @@ public class PictureFrame extends Frame
 	    case 1:
 	    case 2: encoding = "UTF-16"; break;
 	    case 3: encoding = "UTF-8"; break;
-	    default: throw new Exception("text encoding not supported");
+	    default: throw new RuntimeException("text encoding not supported");
 	}
 
 	// get mime type

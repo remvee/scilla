@@ -28,7 +28,7 @@ import java.util.*;
  * Representation of link frames (<TT>W000</TT> - <TT>WZZZ</TT>).
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class LinkFrame extends Frame
 {
@@ -58,7 +58,7 @@ public class LinkFrame extends Frame
 		case 1:
 		case 2: encoding = "UTF-16"; break;
 		case 3: encoding = "UTF-8"; break;
-		default: throw new Exception("text encoding not supported");
+		default: throw new RuntimeException("text encoding not supported");
 	    }
 
 	    // get description

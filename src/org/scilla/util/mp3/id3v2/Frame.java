@@ -24,11 +24,13 @@ package org.scilla.util.mp3.id3v2;
 import java.io.*;
 import java.util.*;
 
+import org.scilla.util.mp3.ID3v2;
+
 /**
  * Basic representation of a frame.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class Frame
 {
@@ -39,20 +41,28 @@ public class Frame
     /* ID of frame */
     String frameId = null;
     /* frame flags */
-    int frameFlags = -1; // %0abc0000 %0h00kmnp
+    int frameFlags = 0;
 
-    boolean tagAlterPreserv;
-    boolean fileAlterPreserv;
-    boolean readOnly;
-    boolean groupingIdentity;
-    boolean compression;
-    boolean encryption;
-    boolean unsynchronisation;
-    boolean dataLengthIndicator;
+    boolean tagAlterPreserv; // TODO implement support for this!
+    boolean fileAlterPreserv; // TODO implement support for this!
+    boolean readOnly; // TODO implement support for this!
+    boolean groupingIdentity; // TODO implement support for this!
+    boolean compression; // TODO implement support for this!
+    boolean encryption; // TODO implement support for this!
+    boolean unsynchronisation; // TODO implement support for this!
+    boolean dataLengthIndicator; // TODO v2.4.0 support
 
-    byte[] frameData;
+    public byte[] frameData;
 
     /**
+     * Empty constructor for creating a frame.
+     */
+    public Frame ()
+    {
+    }
+
+    /**
+     * Constructor for reading an existing frame.
      * @param data buffer of tag data
      * @param offset offset in buffer
      * @param minor minor version of tag
@@ -71,8 +81,8 @@ public class Frame
 
 	// read frame size
 	frameSize = minor >= 4
-		? unsynchInteger(data, i)
-		: plainInteger(data, i);
+		? ID3v2.readUnsyncInt(data, i)
+		: ID3v2.readPlainInt(data, i);
 	i += 4;
 
 	// read frame flags
@@ -87,15 +97,55 @@ public class Frame
 	dataLengthIndicator = (frameFlags & 0x0001) != 0;
 
 	// calculate frame length
-	frameLength = frameSize + (4 + 4 + 2);
+	frameLength = frameSize + 4 + 4 + 2;
 
 	// copy data
 	frameData = new byte[frameSize];
 	System.arraycopy(data, i, frameData, 0, frameSize);
     }
 
-    public int getLength () { return frameLength; }
+    /**
+     * @throws RuntimeException only specific frame
+     * implementations can create frame data.
+     */
+    public byte[] getBytes ()
+    throws UnsupportedEncodingException
+    {
+	throw new RuntimeException("OPERATION NOT SUPPORTED");
+    }
+
+    public byte[] getByteArray ()
+    throws UnsupportedEncodingException
+    {
+	ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+	// ID
+	out.write(frameId.charAt(0));
+	out.write(frameId.charAt(1));
+	out.write(frameId.charAt(2));
+	out.write(frameId.charAt(3));
+
+	// length
+	byte[] length = new byte[4];
+	byte[] data = getBytes();
+	ID3v2.writeUnsyncInt(data.length, length, 0);
+
+	// flags
+	frameFlags = 0; // TODO TODO
+	out.write(frameFlags >> 8);
+	out.write(frameFlags);
+
+	// data
+	try { out.write(data); }
+	catch (IOException ex) { /* will never happen */ }
+
+	return out.toByteArray();
+    }
+
+    /** @return frame identifier */
     public String getID () { return frameId; }
+    /** @return full length of this frame */
+    public int getLength () { return frameLength; }
 
     public String toString ()
     {
@@ -109,20 +159,5 @@ public class Frame
 	result += unsynchronisation ? " unsynchronisation" : "";
 	result += dataLengthIndicator ? " dataLengthIndicator" : "";
 	return result;
-    }
-
-    public final static int unsynchInteger (byte[] data, int offset)
-    {
-	return (((int) data[offset++]) << 21) +
-		(((int) data[offset++]) << 14) +
-		(((int) data[offset++]) << 7) +
-		((int) data[offset++]);
-    }
-    public final static int plainInteger (byte[] data, int offset)
-    {
-	return (((int) (data[offset++]) & 0xff) << 24) +
-		((((int) data[offset++]) & 0xff) << 16) +
-		((((int) data[offset++]) & 0xff) << 8) +
-		(((int) data[offset++]) & 0xff);
     }
 }

@@ -28,13 +28,13 @@ import org.scilla.util.mp3.id3v2.*;
 
 /**
  * Representation of a ID3v2 tag.  Currently supports only
- * readonly access to v2.3 tags and a subset of the allowed
- * frames.  V2.2 tags are not supported since the format of the
- * frames differs from later versions of the ID3v2 specs.
+ * access to v2.3 tags and a subset of the allowed frames.  V2.2
+ * tags are not supported since the format of the frames differs
+ * from later versions of the ID3v2 specs.
  *
  * @see <a href="http://www.id3.org/id3v2.3.0.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class ID3v2
 {
@@ -58,13 +58,15 @@ public class ID3v2
     List frames;
 
     public ID3v2 (File f)
-    throws IOException, Exception
+    throws Exception
     {
-	readTag(new FileInputStream(f));
+	InputStream in = new FileInputStream(f);
+	readTag(in);
+	in.close();
     }
 
     private void readTag (InputStream in)
-    throws IOException, Exception
+    throws Exception
     {
 	// read header
 	header = new byte[10];
@@ -79,7 +81,7 @@ public class ID3v2
 	extFlag = (bits & 0x40) != 0; // TODO handle extended headers
 	expFlag = (bits & 0x20) != 0;
 	footerFlag = (bits & 0x10) != 0; // TODO handle footer
-	tagLength = Frame.unsynchInteger(header, 6);
+	tagLength = readUnsyncInt(header, 6);
 
 	// read tag data
 	int tagSize = tagLength; // - (footerFlag ? 20 : 10);
@@ -89,7 +91,7 @@ public class ID3v2
 	    for (int last = 0, i = 0, n = 0; n < tagSize; n++)
 	    {
 		int b = in.read();
-		if (b == -1) throw new Exception("file truncated");
+		if (b == -1) throw new IOException("file truncated");
 
 		if (! (last == 0xff && b == 0)) tagData[i++] = (byte) b;
 		last = b;
@@ -99,7 +101,6 @@ public class ID3v2
 	{
 	    in.read(tagData);
 	}
-	in.close();
 
 	// collect frames
 	int bytesRead = 0;
@@ -145,6 +146,59 @@ public class ID3v2
 
 	// tag successfully read
 	tagAvailable = true;
+    }
+
+    private void writeTag (OutputStream out)
+    throws IOException, Exception
+    {
+	// prepare tag properties
+	minor = 3;
+	revis = 0;
+	unsyncFlag = false;
+	extFlag = false;
+	expFlag = false;
+	footerFlag = false;
+
+	// prepare header
+	header = new byte[10];
+	header[0] = 'I'; header[1] = 'D'; header[2] = '3';
+	header[3] = (byte) minor; header[4] = (byte) revis;
+
+	// prepare frames
+	ByteArrayOutputStream bout = new ByteArrayOutputStream();
+	Iterator it = frames.iterator();
+	while (it.hasNext())
+	{
+	    Frame f = (Frame) it.next();
+	    bout.write(f.getByteArray());
+	}
+	byte[] data = bout.toByteArray();
+
+	// see if we need unsyncing
+	for (int i = 0; i < data.length-1; i++)
+	{
+	    if (data[i] == 0xFF && (data[i+1] & 0xE0) == 0xE0)
+	    {
+		unsyncFlag = true;
+		break;
+	    }
+	}
+	if (unsyncFlag) data = unsyncArray(data);
+	// TODO if (padding > 0) data = addPadding(data, padding);
+
+	// prepare bits for header
+	if (unsyncFlag) bits |= 0x80;
+	if (extFlag) bits |= 0x40;
+	if (expFlag) bits |= 0x20;
+	if (footerFlag) bits |= 0x10;
+	header[5] = (byte) bits;
+
+	// prepare length for header
+	writeUnsyncInt(data.length, header, 6);
+
+	// write tag data
+	out.write(header);
+	out.write(data);
     }
 
     public boolean hasTag () { return tagAvailable; }
@@ -216,7 +270,13 @@ public class ID3v2
 	    try
 	    {
 		ID3v2 tag = new ID3v2(new File(args[i]));
+		Frame f = new TextFrame("COMM", null, "eng", "gotya!", "bla die bla");
+		tag.getFrames().add(f);
 		System.out.println(""+tag);
+		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		tag.writeTag(System.out);
+		System.out.println("");
+		System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 	    }
 	    catch (Throwable ex)
 	    {
@@ -224,5 +284,42 @@ public class ID3v2
 	    }
 	}
     }
-}
 
+    public final static int readUnsyncInt (byte[] data, int offset)
+    {
+	return (((int) data[offset++]) << 21) +
+		(((int) data[offset++]) << 14) +
+		(((int) data[offset++]) << 7) +
+		((int) data[offset++]);
+    }
+    public final static int readPlainInt (byte[] data, int offset)
+    {
+	return (((int) (data[offset++]) & 0xff) << 24) +
+		((((int) data[offset++]) & 0xff) << 16) +
+		((((int) data[offset++]) & 0xff) << 8) +
+		(((int) data[offset++]) & 0xff);
+    }
+    public final static void writeUnsyncInt (int val, byte[] data, int offset)
+    {
+	data[offset] = (byte) (val >> 21);
+	data[offset++] &= 0x7f;
+	data[offset] = (byte) (val >> 14);
+	data[offset++] &= 0x7f;
+	data[offset] = (byte) (val >> 7);
+	data[offset++] &= 0x7f;
+	data[offset] = (byte) val;
+	data[offset++] &= 0x7f;
+    }
+    public final static byte[] unsyncArray (byte[] data)
+    {
+	ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+	for (int i = 0; i < data.length; i++)
+	{
+	    out.write(data[i]);
+	    if (data[i] == 0xFF) out.write(0);
+	}
+
+	return out.toByteArray();
+    }
+}
