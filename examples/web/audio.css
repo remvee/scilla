@@ -1,0 +1,55 @@
+body {
+    background-color: #dddddd;
+    color: black;
+}
+
+div.content {
+    background-color: black;
+    padding: 2px;
+}
+
+.tracks {
+    background-color: white;
+    padding: 2%;
+}
+.trackheader {
+    font-size: 125%;
+}
+.tracklist {
+    background-color: #eeeeee;
+}
+.tracklist td {
+    padding: 4px;
+}
+
+.directories {
+    background-color: #eeeeee;
+    font-weight: bold;
+    padding: 2%;
+}
+.directories a {
+    font-weight: bold;
+    text-decoration: none;
+    font-color: blue;
+}
+ul.directories {
+    list-style: none;
+    font-size: 150%;
+}
+
+.artist {
+    font-style: italic;
+}
+.performer {
+    font-style: italic;
+    font-weight: bold;
+}
+.album {
+    font-weight: bold;
+}
+.title {
+    font-weight: bold;
+}
+.year {
+    font-size: 85%;
+}
