@@ -31,7 +31,6 @@ Future:
 - crc url protection
 - LameConverter:
     - enherit ID3v1/ID3v2 info using nl.rveer.mp3.ID3
-    - allow wav input?
     - clips?
 - CacheManager
     - cleaner deamon
