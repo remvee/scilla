@@ -2,290 +2,55 @@
 <%@ page import="java.io.*,java.net.*,java.util.*,javax.servlet.*" %>
 <%@ page import="org.scilla.*,org.scilla.util.*" %>
 <%@ page import="org.scilla.util.mp3.*,org.scilla.util.mp3.id3v2.*" %>
-<%!
-    private String formatTime (int length)
-    {
-	int hours = length / 3600;
-	int minutes = (length / 60) % 60;
-	int seconds = length % 60;
-	return (hours > 0 ? hours + ":" : "")
-		+ (hours > 0 && minutes < 10 ? "0" : "") + minutes + ":"
-		+ (seconds > 9 ? "" : "0") + seconds;
-    }
-
-    String streamLink (ServletRequest request, String path, boolean recursive) {
-	String remote = request.getRemoteHost();
-	String encoding = (remote.equals("localhost") || remote.equals("127.0.0.1"))
-		? "" : "&outputtype=mp3&mode=j&resample=16&vbr=1&vbrquality=6&maxbitrate=56";
-	return "playlist.m3u?d="+URLEncoder.encode(path)+(recursive ? "&r=1" : "")+encoding;
-    }
-
-    String toHTML (Object in)
-    {
-	if (in == null) return "";
-
-	StringBuffer out = new StringBuffer();
-	if (in instanceof List)
-	{
-	    Iterator it = ((List) in).iterator();
-	    while (it.hasNext())
-	    {
-		out.append(it.next()+"");
-		if (it.hasNext()) out.append("<BR>");
-	    }
-	}
-	else
-	{
-	    out.append(in);
-	}
-	// TODO XML escape!!
-	return out.toString();
-    }
-
-    static List indexHtmls = new Vector();
-    static
-    {
-	indexHtmls.add("index.html");
-	indexHtmls.add("index.htm");
-	indexHtmls.add("default.html");
-	indexHtmls.add("default.htm");
-	indexHtmls.add("main.html");
-	indexHtmls.add("main.htm");
-    }
-
-    class Mp3File
-    {
-	ID3v1 tag1;
-	ID3v2 tag2;
-	FrameHeader fh;
-	XingInfo xing;
-	Map props = new HashMap();
-	String name;
-
-	Mp3File (File f)
-	throws Exception
-	{
-	    name = f.getName();
-
-	    // get MP3 frameheader
-	    try { fh = new FrameHeader(f); }
-	    catch (Exception ex) { throw new Exception("NOT A MP3 FILE!"); }
-	    finally { if (fh != null) fh.close(); }
-
-	    // "XING" frameheader
-	    try { xing = new XingInfo(f); }
-	    catch (Exception ex) { /* ignore */ }
-	    finally { if (xing != null) xing.close(); }
-	    if (xing != null) fh = xing;
-
-	    // get ID3 tags
-	    tag1 = new ID3v1(f);
-	    tag2 = new ID3v2(f);
-
-	    // add length property
-	    props.put("playlength", new Integer(fh.getLength()));
-
-	    // get properties from ID3v1 tag
-	    props.put("TPE1", tag1.getArtist());
-	    props.put("TALB", tag1.getAlbum());
-	    props.put("XCOM", tag1.getComment());
-	    props.put("TIT2", tag1.getTitle());
-	    props.put("TYER", tag1.getYear());
-	    if (tag2.hasTag())
-	    {
-		// get properties from ID3v2 tag
-		Object o = null;
-		o = getTextFrame("TPE1"); if (o != null) props.put("TPE1", o);
-		o = getTextFrame("TPE2"); if (o != null) props.put("TPE2", o);
-		o = getTextFrame("TPE3"); if (o != null) props.put("TPE3", o);
-		o = getTextFrame("TALB"); if (o != null) props.put("TALB", o);
-		o = getTextFrame("TIT1"); if (o != null) props.put("TIT1", o);
-		o = getTextFrame("TIT2"); if (o != null) props.put("TIT2", o);
-		o = getTextFrame("TIT3"); if (o != null) props.put("TIT3", o);
-		o = getTextFrame("TYER"); if (o != null) props.put("TYER", o);
-		o = getTextFrame("TCOM"); if (o != null) props.put("TCOM", o);
-	    }
-	}
-
-	String getName() { return name; }
-
-	Object getTextFrame (String id)
-	{
-	    TextFrame f = (TextFrame) tag2.getFrame(id);
-	    if (f == null) return null;
-
-	    String t = f.getText();
-	    if (t.indexOf('/') == -1) return t;
-
-	    List v = new Vector();
-	    StringTokenizer st = new StringTokenizer(t, "/");
-	    while (st.hasMoreTokens()) v.add(st.nextToken().trim());
-	    return v;
-	}
-
-	Object getProp (String key) { return props.get(key); }
-	Set getKeySet () { return props.keySet(); }
-    }
-
-    class Mp3List extends Vector
-    {
-	Mp3List () { super(); }
-
-	Set keySet = null;
-	Set getKeySet ()
-	{
-	    if (keySet == null)
-	    {
-		keySet = new HashSet();
-
-		Iterator it = iterator();
-		while (it.hasNext())
-		{
-		    Mp3File f = (Mp3File) it.next();
-		    keySet.addAll(f.getKeySet());
-		}
-	    }
-	    return keySet;
-	}
-
-	Map countMap = new HashMap();
-	int count (String key)
-	{
-	    if (! getKeySet().contains(key)) return 0;
-
-	    Integer cached = (Integer) countMap.get(key);
-	    if (cached != null) return cached.intValue();
-
-	    Set set = new HashSet();
-	    Iterator it = iterator();
-	    while (it.hasNext())
-	    {
-		Mp3File f = (Mp3File) it.next();
-		set.add(f.getProp(key));
-	    }
-
-	    countMap.put(key, new Integer(set.size()));
-	    return set.size();
-	}
-
-	Map propMap = new HashMap();
-	Object getProp (String key)
-	{
-	    if (! getKeySet().contains(key)) return null;
-
-	    Object cached = (Object) propMap.get(key);
-	    if (cached != null) return cached;
-
-	    Object last = null;
-	    Set set = new HashSet();
-	    Iterator it = iterator();
-	    while (it.hasNext())
-	    {
-		Mp3File f = (Mp3File) it.next();
-		last = (Object) f.getProp(key);
-		set.add(last);
-	    }
-
-	    Object r = set.size() > 1 ? set : last;
-	    propMap.put(key, r);
-	    return r;
-	}
-    }
-%>
 <%
     Config scillaConfig = ConfigProvider.get();
     String source = scillaConfig.getString(Config.SOURCE_DIR_KEY);
 
     String path = "";
-    if (request.getParameter("d") != null) path = request.getParameter("d");
+    if (request.getParameter("d") != null) {
+	path = request.getParameter("d");
+    }
     String urlHead = "scilla/" + path.replace(' ', '+') + "/";
 
     String background = null;
-    Map tagMap = new HashMap();
-    Map fhMap = new HashMap();
-    Map xingMap = new HashMap();
     List vec = new Vector();
-    Mp3List mp3List = new Mp3List();
+    AudioList audioList = new AudioList();
     List imgVec = new Vector();
     List m3uVec = new Vector();
     List htmVec = new Vector();
     List dirVec = new Vector();
     File dir = new File(source+"/"+path);
-    if (dir.isDirectory())
-    {
+    if (dir.isDirectory()) {
 	String[] files = dir.list();
 	Arrays.sort(files);
-	for (int i = 0; i < files.length; i++)
-	{
+	for (int i = 0; i < files.length; i++) {
 	    String fname = files[i];
 	    String type = MimeType.getTypeFromFilename(fname);
 
-	    if (fname.startsWith(".") || fname.equals("CVS"))
-	    {
+	    if (fname.startsWith(".") || fname.equals("CVS")) {
 		continue;
-	    }
-	    else if (fname.endsWith(".mp3"))
-	    {
-		ID3v1 tag = null;
-		FrameHeader fh = null;
-		XingInfo xing = null;
-		String n = source+"/"+path+"/"+fname;
-		File f = new File(n);
-		mp3List.add(new Mp3File(f));
-
-		try
-		{
-		    tag = new ID3v1(f);
-		    fh = new FrameHeader(f);
-		    fh.close();
-		    try
-		    {
-			xing = new XingInfo(f);
-			xing.close();
-		    }
-		    catch (Mp3Exception it1) { }
-
-		    if (tag != null) tagMap.put(f, tag);
-		    if (fh != null) fhMap.put(f, fh);
-		    if (xing != null) xingMap.put(f, xing);
-
-		    vec.add(f);
-		}
-		catch (Exception it)
-		{
-		    // ignore this file..
-		}
-	    }
-	    else if (fname.endsWith(".wav"))
-	    {
+	    } else if (fname.endsWith(".mp3")) {
+		File f = new File(source+"/"+path+"/"+fname);
+		audioList.add(new AudioFile(f));
+		vec.add(f);
+	    } else if (fname.endsWith(".wav")) {
 		File f = new File(source+"/"+path+"/"+fname);
 		vec.add(f);
-	    }
-	    else if (type != null && type.startsWith("image/"))
-	    {
+	    } else if (type != null && type.startsWith("image/")) {
 		String s = fname;
 		if (s.toLowerCase().indexOf("front") != -1
-		    || s.toLowerCase().indexOf("cover") != -1)
-		{
+		    || s.toLowerCase().indexOf("cover") != -1) {
 		    s = s.replace(' ', '+');
 		    background = urlHead+s+"?scale=300x200&outputtype=jpg";
 		}
 		imgVec.add(fname);
-	    }
-	    else if (fname.endsWith(".m3u"))
-	    {
+	    } else if (fname.endsWith(".m3u")) {
 		m3uVec.add(fname);
-	    }
-	    else if (fname.endsWith(".htm") || fname.endsWith(".html"))
-	    {
+	    } else if (fname.endsWith(".htm") || fname.endsWith(".html")) {
 		htmVec.add(fname);
-	    }
-	    else
-	    {
-		String n = source+"/"+path+"/"+fname;
-		File f = new File(n);
-		if (f.isDirectory())
-		{
+	    } else {
+		File f = new File(source+"/"+path+"/"+fname);
+		if (f.isDirectory()) {
 		    dirVec.add(fname);
 		}
 	    }
@@ -299,22 +64,18 @@
 
 	// skip to dir if current only contains 1 dir
 	if (vec.size() + imgVec.size() + m3uVec.size() + htmVec.size() == 0
-		    && dirVec.size() == 1)
-	{
+		    && dirVec.size() == 1) {
 	    String s = (path + "/"+dirVec.get(0)).replace(' ', '+');
 	    response.sendRedirect("mp3.jsp?d="+s);
 	}
 
 	// redirect to index page if only html files here
-	if (htmVec.size() > 0 && vec.size() == 0 && dirVec.size() == 0)
-	{
+	if (htmVec.size() > 0 && vec.size() == 0 && dirVec.size() == 0) {
 	    String url = "scilla/"+path+"/";
 	    Iterator it = indexHtmls.iterator();
-	    while (it.hasNext())
-	    {
+	    while (it.hasNext()) {
 		String s = (String) it.next();
-		if (htmVec.contains(s))
-		{
+		if (htmVec.contains(s)) {
 		    response.sendRedirect(url+s);
 		    return;
 		}
@@ -326,14 +87,11 @@
     <HEAD>
 	<TITLE>
 <%
-	if (mp3List.count("TPE1") != 0 && mp3List.count("TALB") != 0)
-	{
+	if (audioList.count("TPE1") != 0 && audioList.count("TALB") != 0) {
 %>
-	    mp3: <%= mp3List.getProp("TPE1") %> - <%= mp3List.getProp("TALB") %>
+	    mp3: <%= audioList.getProp("TPE1") %> - <%= audioList.getProp("TALB") %>
 <%
-	}
-	else
-	{
+	} else {
 %>
 	    mp3: <%= path %>/
 <%
@@ -349,13 +107,7 @@
 
 	// subdirectories, htmls, playlists in this directory
 	{
-	    List other = new Vector();
-	    other.addAll(dirVec);
-	    other.addAll(htmVec);
-	    other.addAll(m3uVec);
-
-	    if (other.size() > 0)
-	    {
+	    if (dirVec.size() + htmVec.size() + m3uVec.size() > 0) {
 %>
 	    <TR>
 		<TD>
@@ -366,20 +118,22 @@
 		    int cols = 3;
 		    int rows = (dirVec.size() + cols - 1) / cols;
 		    int len = dirVec.size();
-		    for (int y = 0; y < rows; y++)
-		    {
+		    for (int y = 0; y < rows; y++) {
 %>
 			<TR>
 <%
-			for (int x = 0; x < cols; x++)
-			{
+			for (int x = 0; x < cols; x++) {
 			    int i = (x * rows) + y;
-			    if (i >= len) continue;
+			    if (i >= len) {
+				continue;
+			    }
 
 			    String p = (String) dirVec.get(i);
 			    String s = p;
 			    String sEnc = (path + "/" + p).replace(' ', '+');
-			    if (s.length() > 15) s = s.substring(0, 15)+"..";
+			    if (s.length() > 15) {
+				s = s.substring(0, 15)+"..";
+			    }
 %>
 			    <TD align="left">
 				<A href="mp3.jsp?d=<%= sEnc %>"><%= s %></A>/&nbsp;
@@ -400,15 +154,15 @@
 		    int cols = 4;
 		    int rows = (htmVec.size() + cols - 1) / cols;
 		    int len = htmVec.size();
-		    for (int y = 0; y < rows; y++)
-		    {
+		    for (int y = 0; y < rows; y++) {
 %>
 			<TR>
 <%
-			for (int x = 0; x < cols; x++)
-			{
+			for (int x = 0; x < cols; x++) {
 			    int i = (x * rows) + y;
-			    if (i >= len) continue;
+			    if (i >= len) {
+				continue;
+			    }
 
 			    String s = (String) htmVec.get(i);
 			    String sEnc = s.replace(' ', '+');
@@ -432,25 +186,23 @@
 	}
 
 	// audio tracks in this directory
-	if (vec.size() > 0)
-	{
+	if (vec.size() > 0) {
 %>
 	    <TR>
 		<TD align="left" valign="top">
 		    <TABLE>
 <%
-	    Object artist = mp3List.getProp("TPE1");
-	    Object album = mp3List.getProp("TALB");
-	    Object year = mp3List.getProp("TYER");
-	    Object comment = mp3List.getProp("TPE3") != null
-		    ?  mp3List.getProp("TPE3") : mp3List.getProp("XCOM");
+	    Object artist = audioList.getProp("TPE1");
+	    Object album = audioList.getProp("TALB");
+	    Object year = audioList.getProp("TYER");
+	    Object comment = audioList.getProp("TPE3") != null
+		    ?  audioList.getProp("TPE3") : audioList.getProp("XCOM");
 
-	    int artistCount = mp3List.count("TPE1");
-	    int albumCount = mp3List.count("TALB");
-	    int yearCount = mp3List.count("TYER");
-	    int commentCount = mp3List.count("XCOM");
-	    if (artistCount > 0 || albumCount == 1 || yearCount == 1 || commentCount == 1)
-	    {
+	    int artistCount = audioList.count("TPE1");
+	    int albumCount = audioList.count("TALB");
+	    int yearCount = audioList.count("TYER");
+	    int commentCount = audioList.count("XCOM");
+	    if (artistCount > 0 || albumCount == 1 || yearCount == 1 || commentCount == 1) {
 		Object o = null;
 		String txt = null;
 %>
@@ -460,10 +212,9 @@
 				    <TR>
 					<TD valign=top align=left>
 <%
-		if (mp3List.count("TCOM") == 1)
-		{
+		if (audioList.count("TCOM") == 1) {
 %>
-					    <BIG><EM> <%= toHTML(mp3List.getProp("TCOM")) %> </EM></BIG>
+					    <BIG><EM> <%= toHTML(audioList.getProp("TCOM")) %> </EM></BIG>
 <%
 		}
 		o = albumCount == 1 && ! album.equals(artist) ? album : "";
@@ -505,48 +256,41 @@
 	    // loop through list
 	    {
 		List columnList = new Vector();
-		if (mp3List.count("TPE1") > 1) columnList.add("TPE1");
-		if (mp3List.count("TALB") > 1) columnList.add("TALB");
-		if (mp3List.count("TCOM") > 1) columnList.add("TCOM");
-		if (mp3List.count("TIT1") > 1) columnList.add("TIT1");
+		if (audioList.count("TPE1") > 1) columnList.add("TPE1");
+		if (audioList.count("TALB") > 1) columnList.add("TALB");
+		if (audioList.count("TCOM") > 1) columnList.add("TCOM");
+		if (audioList.count("TIT1") > 1) columnList.add("TIT1");
 		columnList.add("TIT2");
-		if (mp3List.count("TIT3") > 1) columnList.add("TIT3");
-		if (mp3List.count("TYER") > 1) columnList.add("TYER");
+		if (audioList.count("TIT3") > 1) columnList.add("TIT3");
+		if (audioList.count("TYER") > 1) columnList.add("TYER");
 
 		int tlength = 0;
-		Iterator it = mp3List.iterator();
+		Iterator it = audioList.iterator();
 		Map lastMap = new HashMap();
-		for (int num = 1; it.hasNext(); num++)
-		{
-		    Mp3File f = (Mp3File) it.next();
+		for (int num = 1; it.hasNext(); num++) {
+		    AudioFile f = (AudioFile) it.next();
 		    String filepath = path+"/"+f.getName();
 %>
 				    <TR>
 					<TD valign="top" align="right" class="num"><%=num%></TD>
 <%
 		    Iterator cit = columnList.iterator();
-		    while (cit.hasNext())
-		    {
+		    while (cit.hasNext()) {
 			String key = (String) cit.next();
 			Object prop = f.getProp(key);
 			Object last = lastMap.get(key);
 			lastMap.put(key, prop);
 			boolean isSameAsLast = last != null && last.equals(prop);
 			boolean isEmpty = prop == null || prop.toString().length() == 0;
-			if (isEmpty)
-			{
+			if (isEmpty) {
 %>
 					<TD valign="top" class="<%= key %>"></TD>
 <%
-			}
-			else if (isSameAsLast)
-			{
+			} else if (isSameAsLast) {
 %>
 					<TD valign="top" class="<%= key %>"><SMALL>,,</SMALL></TD>
 <%
-			}
-			else
-			{
+			} else {
 %>
 					<TD valign="top" class="<%= key %>"><%= toHTML(prop) %></TD>
 <%
@@ -602,19 +346,15 @@
 	// images in this directory
 	{
 	    Iterator it = imgVec.iterator();
-	    if (it.hasNext())
-	    {
+	    if (it.hasNext()) {
 %>
 	    <TR>
 		<TD>
 		    <TABLE>
 <%
-		for (int i = 0; it.hasNext(); i++)
-		{
-		    if (i % 5 == 0)
-		    {
-			if (i > 0)
-			{
+		for (int i = 0; it.hasNext(); i++) {
+		    if (i % 5 == 0) {
+			if (i > 0) {
 %>
 			</TR>
 <%
@@ -662,3 +402,182 @@
 %>
     </BODY>
 </HTML>
+<%!
+    private String formatTime (int length)
+    {
+	int hours = length / 3600;
+	int minutes = (length / 60) % 60;
+	int seconds = length % 60;
+	return (hours > 0 ? hours + ":" : "")
+		+ (hours > 0 && minutes < 10 ? "0" : "") + minutes + ":"
+		+ (seconds > 9 ? "" : "0") + seconds;
+    }
+
+    String streamLink (ServletRequest request, String path, boolean recursive) {
+	String remote = request.getRemoteHost();
+	String encoding = (remote.equals("localhost") || remote.equals("127.0.0.1"))
+		? "" : "&outputtype=mp3&mode=j&resample=16&vbr=1&vbrquality=6&maxbitrate=56";
+	return "playlist.m3u?d="+URLEncoder.encode(path)+(recursive ? "&r=1" : "")+encoding;
+    }
+
+    String toHTML (Object in)
+    {
+	if (in == null) return "";
+
+	StringBuffer out = new StringBuffer();
+	if (in instanceof List) {
+	    Iterator it = ((List) in).iterator();
+	    while (it.hasNext()) {
+		out.append(it.next()+"");
+		if (it.hasNext()) out.append("<BR>");
+	    }
+	} else {
+	    out.append(in);
+	}
+	// TODO XML escape!!
+	return out.toString();
+    }
+
+    static List indexHtmls = new Vector();
+    static
+    {
+	indexHtmls.add("index.html");
+	indexHtmls.add("index.htm");
+	indexHtmls.add("default.html");
+	indexHtmls.add("default.htm");
+	indexHtmls.add("main.html");
+	indexHtmls.add("main.htm");
+    }
+
+    class AudioFile
+    {
+	ID3v1 tag1;
+	ID3v2 tag2;
+	FrameHeader fh;
+	XingInfo xing;
+	Map props = new HashMap();
+	String name;
+
+	AudioFile (File f)
+	throws Exception {
+	    name = f.getName();
+
+	    // get MP3 frameheader
+	    try { fh = new FrameHeader(f); }
+	    catch (Exception ex) { throw new Exception("NOT A MP3 FILE!"); }
+	    finally { if (fh != null) fh.close(); }
+
+	    // "XING" frameheader
+	    try { xing = new XingInfo(f); }
+	    catch (Exception ex) { /* ignore */ }
+	    finally { if (xing != null) xing.close(); }
+	    if (xing != null) fh = xing;
+
+	    // get ID3 tags
+	    tag1 = new ID3v1(f);
+	    tag2 = new ID3v2(f);
+
+	    // add length property
+	    props.put("playlength", new Integer(fh.getLength()));
+
+	    // get properties from ID3v1 tag
+	    props.put("TPE1", tag1.getArtist());
+	    props.put("TALB", tag1.getAlbum());
+	    props.put("XCOM", tag1.getComment());
+	    props.put("TIT2", tag1.getTitle());
+	    props.put("TYER", tag1.getYear());
+	    if (tag2.hasTag()) {
+		// get properties from ID3v2 tag
+		Object o = null;
+		o = getTextFrame("TPE1"); if (o != null) props.put("TPE1", o);
+		o = getTextFrame("TPE2"); if (o != null) props.put("TPE2", o);
+		o = getTextFrame("TPE3"); if (o != null) props.put("TPE3", o);
+		o = getTextFrame("TALB"); if (o != null) props.put("TALB", o);
+		o = getTextFrame("TIT1"); if (o != null) props.put("TIT1", o);
+		o = getTextFrame("TIT2"); if (o != null) props.put("TIT2", o);
+		o = getTextFrame("TIT3"); if (o != null) props.put("TIT3", o);
+		o = getTextFrame("TYER"); if (o != null) props.put("TYER", o);
+		o = getTextFrame("TCOM"); if (o != null) props.put("TCOM", o);
+	    }
+	}
+
+	String getName() { return name; }
+
+	Object getTextFrame (String id) {
+	    TextFrame f = (TextFrame) tag2.getFrame(id);
+	    if (f == null) return null;
+
+	    String t = f.getText();
+	    if (t.indexOf('/') == -1) return t;
+
+	    List v = new Vector();
+	    StringTokenizer st = new StringTokenizer(t, "/");
+	    while (st.hasMoreTokens()) v.add(st.nextToken().trim());
+	    return v;
+	}
+
+	Object getProp (String key) { return props.get(key); }
+	Set getKeySet () { return props.keySet(); }
+    }
+
+    class AudioList extends Vector {
+	AudioList () { super(); }
+
+	Set keySet = null;
+	Set getKeySet () {
+	    if (keySet == null)
+	    {
+		keySet = new HashSet();
+
+		Iterator it = iterator();
+		while (it.hasNext())
+		{
+		    AudioFile f = (AudioFile) it.next();
+		    keySet.addAll(f.getKeySet());
+		}
+	    }
+	    return keySet;
+	}
+
+	Map countMap = new HashMap();
+	int count (String key) {
+	    if (! getKeySet().contains(key)) return 0;
+
+	    Integer cached = (Integer) countMap.get(key);
+	    if (cached != null) return cached.intValue();
+
+	    Set set = new HashSet();
+	    Iterator it = iterator();
+	    while (it.hasNext())
+	    {
+		AudioFile f = (AudioFile) it.next();
+		set.add(f.getProp(key));
+	    }
+
+	    countMap.put(key, new Integer(set.size()));
+	    return set.size();
+	}
+
+	Map propMap = new HashMap();
+	Object getProp (String key) {
+	    if (! getKeySet().contains(key)) return null;
+
+	    Object cached = (Object) propMap.get(key);
+	    if (cached != null) return cached;
+
+	    Object last = null;
+	    Set set = new HashSet();
+	    Iterator it = iterator();
+	    while (it.hasNext())
+	    {
+		AudioFile f = (AudioFile) it.next();
+		last = (Object) f.getProp(key);
+		set.add(last);
+	    }
+
+	    Object r = set.size() > 1 ? set : last;
+	    propMap.put(key, r);
+	    return r;
+	}
+    }
+%>
