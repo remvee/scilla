@@ -24,10 +24,10 @@ package org.scilla;
 import java.util.Enumeration;
 
 /**
- * The scilla configuration.
+ * The scilla configuration interface.
  *
  * @see org.scilla.ConfigFactory#get()
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * @author R.W. van 't Veer
  */
 public interface Config
