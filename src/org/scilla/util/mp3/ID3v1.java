@@ -24,12 +24,13 @@ package org.scilla.util.mp3;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Access to ID3v1 (or v1.1) tag in MP3 file.
  * @see <a href="http://www.id3.org/id3v1.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class ID3v1 {
     /// constants
@@ -40,6 +41,7 @@ public class ID3v1 {
     public static final int MAX_ALBUM_LEN = 30;
     public static final int MAX_YEAR_LEN = 4;
     public static final int MAX_COMMENT_LEN = 30;
+    public static final String CHAR_ENCODING = "ISO-8859-1";
 
     /**
      * This array was taken from <code>lame-3.70/id3tag.c</code>.    It
@@ -277,7 +279,8 @@ public class ID3v1 {
     /**
      * @return binary version of tag
      */
-    public byte[] getFromID3Tag () {
+    public byte[] getFromID3Tag ()
+    throws UnsupportedEncodingException {
         StringBuffer b = new StringBuffer("TAG");
 
         b.append(fixLength(title, MAX_TITLE_LEN));
@@ -294,20 +297,21 @@ public class ID3v1 {
         }
         b.append((char)(genre & 0xff));
 
-        return b.toString().getBytes();
+        return b.toString().getBytes(CHAR_ENCODING);
     }
 
     /**
      * @param b binary version of tag
      */
-    public void setFromID3Tag (byte[] b) {
+    public void setFromID3Tag (byte[] b)
+    throws UnsupportedEncodingException {
         int i = 0;
-        String s = new String(b);
+        String s = new String(b, CHAR_ENCODING);
 
-        title    = s.substring(i, i += MAX_TITLE_LEN).trim();
+        title = s.substring(i, i += MAX_TITLE_LEN).trim();
         artist = s.substring(i, i += MAX_ARTIST_LEN).trim();
-        album    = s.substring(i, i += MAX_ALBUM_LEN).trim();
-        year     = s.substring(i, i += MAX_YEAR_LEN).trim();
+        album = s.substring(i, i += MAX_ALBUM_LEN).trim();
+        year = s.substring(i, i += MAX_YEAR_LEN).trim();
 
         // ID3v1.1
         comment = s.substring(i, i += MAX_COMMENT_LEN-2);
@@ -454,4 +458,4 @@ public class ID3v1 {
 }
 
 
-/* end of $Id: ID3v1.java,v 1.6 2003/02/20 10:49:47 remco Exp $ */
+/* end of $Id: ID3v1.java,v 1.7 2004/04/04 14:50:32 remco Exp $ */
