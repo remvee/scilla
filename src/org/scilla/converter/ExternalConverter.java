@@ -60,6 +60,12 @@ import org.scilla.util.*;
  *     <DD>
  *         <EM>Optional</EM>, ignore process exit status.
  *     </DD>
+ * <DT><CODE>converters.external.NAME.cd_to_output_dir</CODE></DT>
+ *     <DD>
+ *         <EM>Optional</EM>, make converter change directory to
+ *         output directory and add output file to command
+ *         without output directory.
+ *     </DD>
  * <DT><CODE>converters.external.NAME.inputtypes</CODE></DT>
  *     <DD>
  *         Spaces separated allowed input mime-types list.
@@ -104,7 +110,7 @@ import org.scilla.util.*;
  * </DL>
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ExternalConverter implements Converter
 {
@@ -135,13 +141,14 @@ public class ExternalConverter implements Converter
     static Hashtable parameterMap = new Hashtable();
     static Hashtable execMap = new Hashtable();
     static Hashtable formatMap = new Hashtable();
-    static Hashtable ignoreExitstatMap = new Hashtable();
     static Hashtable inputSwitchMap = new Hashtable();
     static Hashtable outputSwitchMap = new Hashtable();
     static Hashtable silentSwitchMap = new Hashtable();
     static Hashtable stringSwitchMap = new Hashtable();
     static Hashtable numberSwitchMap = new Hashtable();
     static Hashtable booleanSwitchMap = new Hashtable();
+    static HashSet ignoreExitstatSet = new HashSet();
+    static HashSet cd2outputDirSet = new HashSet();
     static HashSet blacklistSet = new HashSet();
     static
     {
@@ -171,7 +178,11 @@ public class ExternalConverter implements Converter
 		}
 		else if (type.equals("ignore_exitstat"))
 		{
-		    ignoreExitstatMap.put(name, new Boolean(config.getBoolean(key)));
+		    if (config.getBoolean(key)) ignoreExitstatSet.add(name);
+		}
+		else if (type.equals("cd_to_output_dir"))
+		{
+		    if (config.getBoolean(key)) cd2outputDirSet.add(name);
 		}
 		else if (type.equals("silent_switch"))
 		{
@@ -350,7 +361,15 @@ public class ExternalConverter implements Converter
 			    cmdline.add(outputSwitchMap.get(btype));
 			}
 		    }
-		    cmdline.add(outputFile);
+		    if (cd2outputDirSet.contains(converterName))
+		    {
+			String fn = outputFile.substring(outputFile.lastIndexOf(File.separator)+1);
+			cmdline.add(fn);
+		    }
+		    else
+		    {
+			cmdline.add(outputFile);
+		    }
 		    break;
 		case 's':
 		    // add silent switch
@@ -399,6 +418,11 @@ public class ExternalConverter implements Converter
 	// prepare command
 	String[] cmd = (String[]) cmdline.toArray(new String[0]);
 	File dir = null;
+	if (cd2outputDirSet.contains(converterName))
+	{
+	    String dn = outputFile.substring(0, outputFile.lastIndexOf(File.separator));
+	    dir = new File(dn);
+	}
 
 	// run system command
 	QueuedProcess proc = null;
@@ -467,7 +491,7 @@ public class ExternalConverter implements Converter
     public boolean exitSuccess ()
     {
 	if (! finished) throw new IllegalStateException();
-	return ignoreExitstatMap.containsKey(converterName)
+	return ignoreExitstatSet.contains(converterName)
 		|| (exitValue == 0);
     }
 
