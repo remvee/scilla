@@ -34,7 +34,7 @@ import org.scilla.*;
  * finished or not.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class CachedObject implements MediaObject
 {
@@ -63,14 +63,14 @@ public class CachedObject implements MediaObject
     public void write (OutputStream out)
     throws ScillaException
     {
-	RunnerObject obj = cache.getRunner(filename);
+	RunnerObject runner = cache.getRunner(filename);
 	File f = new File(filename);
 
 	// see if simular request is in running list
-	if (obj != null && ! obj.hasFinished())
+	if (runner != null && ! runner.hasFinished())
 	{
 	    // wait for file to appear
-	    while (! f.exists() && ! obj.hasFinished())
+	    while (! f.exists() && ! runner.hasFinished())
 	    {
 		try
 		{
@@ -90,7 +90,7 @@ public class CachedObject implements MediaObject
 	    byte[] b = new byte[BUFFER_SIZE];
 
 	    // read without going beyond EOF when k
-	    while (obj != null && ! obj.hasFinished())
+	    while (runner != null && ! runner.hasFinished())
 	    {
 		try
 		{
@@ -98,7 +98,7 @@ public class CachedObject implements MediaObject
 		}
 		catch (InterruptedException ex) { }
 
-		while (in.available() > 0 && ! obj.hasFinished())
+		while (in.available() > 0 && ! runner.hasFinished())
 		{
 		    n = in.read(b);
 		    try
@@ -137,6 +137,17 @@ public class CachedObject implements MediaObject
 		catch (IOException ex) { }
 	    }
 	}
+    }
+
+    /**
+     * @return file length or -1 if still being generated
+     */
+    public long getLength ()
+    {
+	if (cache.getRunner(filename) != null) return -1;
+
+	File f = new File(filename);
+	return f.length();
     }
 
     /**

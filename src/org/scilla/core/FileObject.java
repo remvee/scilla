@@ -21,8 +21,9 @@
 
 package org.scilla.core;
 
-import java.io.OutputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.OutputStream;
 import java.io.IOException;
 
 import org.scilla.*;
@@ -31,7 +32,7 @@ import org.scilla.*;
  * A file object is a media object somewhere on disk.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class FileObject implements MediaObject
 {
@@ -83,6 +84,14 @@ public class FileObject implements MediaObject
 		catch (IOException e) { }
 	    }
 	}
+    }
+
+    /**
+     * @return file length
+     */
+    public long getLength ()
+    {
+	return (new File(filename)).length();
     }
 
     /**

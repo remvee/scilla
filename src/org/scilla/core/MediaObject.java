@@ -29,7 +29,7 @@ import org.scilla.*;
  * Interface to a media object.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public interface MediaObject
 {
@@ -39,6 +39,11 @@ public interface MediaObject
      * @throws ScillaException when a read or write problem occures
      */
     public void write (OutputStream out) throws ScillaException;
+
+    /**
+     * @return file size or -1 of unknown
+     */
+    public long getLength ();
 
     /**
      * @return true if this object may be cached

@@ -33,7 +33,7 @@ import org.scilla.*;
 /**
  * This servlet handles media requests.
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @author R.W. van 't Veer
  */
 public class Servlet extends HttpServlet
@@ -50,13 +50,18 @@ public class Servlet extends HttpServlet
 	try
 	{
 	    req = RequestFactory.createFromHttpServletRequest(request);
+
+	    long len = req.getLength();
+	    if (len != -1) response.setContentLength((int) len);
 	    response.setContentType(req.getOutputType());
+
 	    req.write(response.getOutputStream());
 	}
 	catch (ScillaNoOutputException ex)
 	{
 	    response.sendError(
-		    HttpServletResponse.SC_INTERNAL_SERVER_ERROR, req.toHTML());
+		    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+		    ex.getMessage()+": "+req);
 	}
 	catch (ScillaOutputIOException ex)
 	{
@@ -64,23 +69,26 @@ public class Servlet extends HttpServlet
 	}
 	catch (ScillaNoInputException ex)
 	{
-	    response.sendError(
-		    HttpServletResponse.SC_NOT_FOUND, req.toHTML());
+	    response.sendError(HttpServletResponse.SC_NOT_FOUND,
+		    ex.getMessage()+": "+req);
 	}
 	catch (ScillaInputIOException ex)
 	{
 	    response.sendError(
-		    HttpServletResponse.SC_INTERNAL_SERVER_ERROR, req.toHTML());
+		    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+		    ex.getMessage()+": "+req);
 	}
 	catch (ScillaNoConverterException ex)
 	{
 	    response.sendError(
-		    HttpServletResponse.SC_NOT_IMPLEMENTED, req.toHTML());
+		    HttpServletResponse.SC_NOT_IMPLEMENTED,
+		    ex.getMessage()+": "+req);
 	}
 	catch (ScillaIllegalRequestException ex)
 	{
 	    response.sendError(
-		    HttpServletResponse.SC_FORBIDDEN, ex.getMessage());
+		    HttpServletResponse.SC_FORBIDDEN,
+		    ex.getMessage()+": "+req);
 	}
 	catch (ScillaException ex)
 	{
@@ -101,7 +109,7 @@ public class Servlet extends HttpServlet
 	    req = RequestFactory.createFromHttpServletRequest(request);
 	    return req.lastModified();
 	}
-	catch (ScillaIllegalRequestException ex)
+	catch (ScillaException ex)
 	{
 	    // ignore
 	}

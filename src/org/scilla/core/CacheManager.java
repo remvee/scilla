@@ -31,7 +31,7 @@ import org.scilla.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @author R.W. van 't Veer
  */
 public class CacheManager
@@ -125,15 +125,18 @@ public class CacheManager
 	obj = MediaFactory.createObject(req);
 	if (obj.allowCaching())
 	{
-	    // ensure existence of output directory
+	    RunnerObject runner = (RunnerObject) obj;
+
+	    // configure for caching
 	    ensureCacheDirectoryFor(outfilename);
-	    // create CachingObject
-	    return new CachingObject((RunnerObject) obj, outfilename);
+	    runner.setOutputFile(outfilename);
+	    runner.setDeleteOutput(false);
+
+	    // start converter
+	    runner.start();
 	}
-	else
-	{
-	    return obj;
-	}
+
+	return obj;
     }
 
     final static String MAX_FN_LEN_PROPERTY = "CacheManager.maxFileNameLen";

@@ -33,7 +33,7 @@ import org.scilla.util.*;
  * kind of request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class RequestFactory
 {
@@ -45,7 +45,7 @@ public class RequestFactory
      * @return scilla request
      */
     public static Request createFromHttpServletRequest (HttpServletRequest req)
-    throws ScillaIllegalRequestException
+    throws ScillaException
     {
         // source file
         String source = req.getPathInfo();
@@ -85,7 +85,7 @@ public class RequestFactory
      * @return scilla request
      */
     public static Request createFromArgv (String[] args)
-    throws ScillaIllegalRequestException
+    throws ScillaException
     {
         // source file
         String source = args[0];

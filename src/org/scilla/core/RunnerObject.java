@@ -34,7 +34,7 @@ import org.scilla.converter.*;
  * A runner object is a media object currently being converted.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class RunnerObject implements MediaObject
 {
@@ -43,6 +43,7 @@ public class RunnerObject implements MediaObject
     final static int WAIT_FOR_READ_TIMEOUT = 100;
 
     Converter conv;
+    CacheManager cache = CacheManager.getInstance();
     boolean deleteOutput = true;
 
     /**
@@ -55,6 +56,25 @@ public class RunnerObject implements MediaObject
     }
 
     /**
+     * A wrapper for Converter.start().  This runner will be added to
+     * CacheManager runner list.  The write method will remove it upon
+     * completion.
+     * @see org.scilla.converter.Converter#start()
+     * @see org.scilla.core.CacheManager#addRunner(String,RunnerObject)
+     */
+    public void start ()
+    {
+	// are we caching this?
+	if (! deleteOutput)
+	{
+	    cache.addRunner(conv.getOutputFile(), this);
+	}
+
+	// start converter thread
+	conv.start();
+    }
+
+    /**
      * @return true if runner has finished
      */
     public boolean hasFinished ()
@@ -63,19 +83,20 @@ public class RunnerObject implements MediaObject
     }
 
     /**
-     * Write data to stream.  Start converter and follow its output
-     * file meanwhile writing it to stream.
+     * Write data to stream.  First wait for the file to appear then
+     * follow it till converter is finished.  Upon completion remove
+     * this runner from the CacheManager runner list.
      * @param out stream to write to
      * @throws ScillaException when a read or write problem occures
+     * @see #start()
+     * @see org.scilla.core.CacheManager#removeRunner(String)
      */
     public void write (OutputStream out)
     throws ScillaException
     {
-	// start converter thread
-	conv.start();
+	String filename = conv.getOutputFile();
 
 	// wait for file to appear
-	String filename = conv.getOutputFile();
 	File f = new File(filename);
 	while (! f.exists() && ! conv.hasFinished())
 	{
@@ -135,7 +156,12 @@ public class RunnerObject implements MediaObject
 	    throw new ScillaInputIOException(ex);
 	}
 
-	if (deleteOutput)
+	// remove runner if we cached this
+	if (! deleteOutput)
+	{
+	    cache.removeRunner(filename);
+	}
+	else
 	{
 	    // delete file
 	    f.delete();
@@ -156,6 +182,11 @@ public class RunnerObject implements MediaObject
      * finished
      */
     public void setDeleteOutput (boolean flag) { deleteOutput = flag; }
+
+    /**
+     * @return -1 because file length currently unknown
+     */
+    public long getLength () { return -1; }
 
     /**
      * @return always true
