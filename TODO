@@ -1,4 +1,8 @@
 For version 1.0:
+- ImageTag
+    - content negotiation should not use setOutputType; tag
+      objects are reused so setting properties this way will set
+      them for other clients too..
 - Servlet
     - make PartialContent class reuseable
 - taglib
