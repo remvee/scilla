@@ -31,7 +31,7 @@ import org.scilla.util.mp3.id3v2.*;
  *
  * @see <a href="http://www.id3.org/id3v2.3.0.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ID3v2
 {
@@ -81,7 +81,28 @@ public class ID3v2
 	// read tag data
 	int tagSize = tagLength; // - (footerFlag ? 20 : 10);
 	byte[] tagData = new byte[tagSize];
-	in.read(tagData);
+	if (unsyncFlag)
+	{
+	    int last = 0;
+	    int i = 0;
+	    while (i < tagSize)
+	    {
+		int b = in.read();
+		if (b == -1)
+		{
+		    System.out.println("OEPS.. "+tagLength+", "+i);
+		    tagLength = i;
+		    break;
+		}
+
+		if (! (last == 0xff && b == 0)) tagData[i++] = (byte) b;
+		last = b;
+	    }
+	}
+	else
+	{
+	    in.read(tagData);
+	}
 	in.close();
 
 	// collect frames
@@ -112,6 +133,10 @@ public class ID3v2
 	    else if (id.startsWith("W"))
 	    {
 		frame = new LinkFrame(tagData, bytesRead, minor);
+	    }
+	    else if (id.startsWith("APIC"))
+	    {
+		frame = new PictureFrame(tagData, bytesRead, minor);
 	    }
 	    else
 	    {
