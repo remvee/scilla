@@ -1,5 +1,5 @@
 <%@ page import="java.io.*,java.net.*,java.util.*,javax.servlet.*" %>
-<%@ page import="org.scilla.*,org.scilla.util.mp3.*" %>
+<%@ page import="org.scilla.*,org.scilla.util.*,org.scilla.util.mp3.*" %>
 <%!
 
 void streamLinks (ServletRequest request, JspWriter out, String path)
@@ -40,7 +40,8 @@ throws IOException
     Vector imgVec = new Vector();
     Vector m3uVec = new Vector();
     Vector dirVec = new Vector();
-    File dir = new File(scillaConfig.getSourceDir()+"/"+path);
+    String source = scillaConfig.getSourceDir();
+    File dir = new File(source+"/"+path);
     if (dir.isDirectory())
     {
 	String[] files = dir.list();
@@ -48,13 +49,14 @@ throws IOException
 	for (int i = 0; i < files.length; i++)
 	{
 	    String fname = files[i];
+	    String type = MimeTypeFactory.getTypeFromFilename(fname);
 
 	    if (fname.endsWith(".mp3"))
 	    {
 		ID3v1 tag = null;
 		FrameHeader fh = null;
 		XingInfo xing = null;
-		String n = scillaConfig.getSourceDir()+"/"+path+"/"+fname;
+		String n = source+"/"+path+"/"+fname;
 		File f = new File(n);
 
 		try
@@ -82,17 +84,17 @@ throws IOException
 	    }
 	    else if (fname.endsWith(".wav"))
 	    {
-		File f = new File(scillaConfig.getSourceDir()+"/"+path+"/"+fname);
+		File f = new File(source+"/"+path+"/"+fname);
 		vec.add(f);
 	    }
-	    else if (fname.endsWith(".jpg") || fname.endsWith(".gif") || fname.endsWith(".png"))
+	    else if (type != null && type.startsWith("image/"))
 	    {
 		String s = fname;
 		if (s.toLowerCase().indexOf("front") != -1
 		    || s.toLowerCase().indexOf("cover") != -1)
 		{
 		    s = s.replace(' ', '+');
-		    background = urlHead+s+"?scale=640x480";
+		    background = urlHead+s+"?scale=640x480&outputtype=jpg";
 		}
 		imgVec.add(fname);
 	    }
@@ -102,7 +104,7 @@ throws IOException
 	    }
 	    else
 	    {
-		String n = scillaConfig.getSourceDir()+"/"+path+"/"+fname;
+		String n = source+"/"+path+"/"+fname;
 		File f = new File(n);
 		if (f.isDirectory())
 		{
@@ -422,8 +424,6 @@ throws IOException
 	}
 %>
 	    </TR>
-	    <TR>
-		<TD colspan="<%= colWidth %>">
 <%
 
 	{
@@ -431,12 +431,20 @@ throws IOException
 	    if (it.hasNext())
 	    {
 %>
-		    <TABLE bgcolor="#FFFFFF">
+	    <TR>
+		<TD colspan="<%= colWidth %>">
+		    <TABLE>
 <%
 		for (int i = 0; it.hasNext(); i++)
 		{
 		    if (i % 5 == 0)
 		    {
+			if (i > 0)
+			{
+%>
+			</TR>
+<%
+			}
 %>
 			<TR>
 <%
@@ -451,12 +459,12 @@ throws IOException
 		}
 %>
 		    </TABLE>
+		</TD>
+	    </TR>
 <%
 	    }
 	}
 %>
-		</TD>
-	    </TD>
 	</TABLE>
 <%
     }
