@@ -3,7 +3,7 @@
     <property name="build.dir" value="build"/>
     <property name="web.dir" value="web"/>
 
-    <property name="cvsroot"        value="/home/remco/cvsroot"/>
+    <property name="cvsroot"        value="/home/users/remco/cvsroot"/>
     <property name="cvsprefix"      value="projects"/>
     <property name="scilla.project" value="projects/scilla"/>
     <property name="tar.file"       value="scilla-homepage.tar"/>
