@@ -27,7 +27,7 @@ import java.util.*;
 /**
  * EXIF.
  *
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @author R.W. van 't Veer
  */
 public class Exif extends HashMap {
@@ -147,7 +147,7 @@ public class Exif extends HashMap {
         this.tiff = new TiffHeader(data);
 
         // collect exif fields
-        List fields = new ArrayList();
+        List fields = new ArrayList(tiff.getFields());
 	for (Iterator it = tiff.getFields().iterator(); it.hasNext();) {
 	    TiffHeader.Field field = (TiffHeader.Field) it.next();
             int tag = field.getTag();
