@@ -10,7 +10,7 @@
     </servlet>
     <servlet>
 	<servlet-name>playlist.m3u</servlet-name>
-	<servlet-class>M3UServlet</servlet-class>
+	<servlet-class>PlaylistServlet</servlet-class>
     </servlet>
 
 </web-app>

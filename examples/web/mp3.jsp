@@ -14,12 +14,13 @@ throws IOException
     String pathEncoded = URLEncoder.encode(path);
     String encoding = (request.getRemoteHost().equals("localhost")
 	    || request.getRemoteHost().equals("127.0.0.1"))
-	    ? "file" : "stream";
+	    ? ""
+	    : "&outputtype=mp3&mode=j&resample=16&vbr=1&vbrquality=6&maxbitrate=56";
     String imgSrc = "servlet/scilla/speaker.png?scale=14x14&outputtype=gif";
     out.println("<A href=\"servlet/playlist.m3u"+
-	    "?f="+encoding+
-	    "&d="+pathEncoded+
+	    "?d="+pathEncoded+
 	    (recursive ? "&r=1" : "")+
+	    encoding+
 	    "\">"+
 	    "<IMG src=\""+imgSrc+"\" alt=\"play\" border=0>"+
 	    "</A>");
