@@ -38,7 +38,7 @@ import org.scilla.util.mp3.*;
 /**
  * This servlet handles media requests.
  *
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * @author R.W. van 't Veer
  */
 public class Servlet extends HttpServlet
@@ -76,10 +76,15 @@ public class Servlet extends HttpServlet
 		title = title.substring(0, title.lastIndexOf('.'));
 	    }
 
-	    response.setHeader("icy-title", title);
-	    response.setHeader("x-audiocast-title", title);
+	    response.setHeader("icy-name", title);
+	    response.setHeader("x-audiocast-name", title);
+
+	    log.debug("addStreamHeaders: "+title);
 	}
-	catch (Throwable t) { /* nop */ }
+	catch (Throwable t)
+	{
+	    log.warn("addStreamHeaders", t);
+	}
     }
 
     /**
