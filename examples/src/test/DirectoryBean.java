@@ -1,203 +1,213 @@
 package test;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import org.scilla.*;
-import org.scilla.util.*;
-import org.scilla.info.*;
+import org.scilla.info.AudioInfo;
+import org.scilla.info.ImageInfo;
+import org.scilla.info.Info;
+import org.scilla.info.InfoFactory;
 
 public class DirectoryBean {
 
     public final static String LOCATION_KEY = "directoryBeanLocation";
 
-    public DirectoryBean () {
-	// empty
+    public DirectoryBean() {
+        // empty
     }
 
-    public DirectoryBean (String path)
-    throws Exception {
-	if (path == null || path.length() == 0) {
-	    path = "";
-	}
-	this.path = path;
+    public DirectoryBean(String path) throws Exception {
+        if (path == null || path.length() == 0) {
+            path = "";
+        }
+        this.path = path;
 
-	// basename
-	int i = path.lastIndexOf(File.separator);
-	name = i != -1 ? path.substring(i+1) : path;
+        // basename
+        int i = path.lastIndexOf(File.separator);
+        name = i != -1 ? path.substring(i + 1) : path;
 
-	scan(false);
+        scan(false);
     }
 
-    public String getName () {
-	return name;
+    public String getName() {
+        return name;
     }
+
     private String name = null;
 
-    public void setPath (String path)
-    throws Exception {
+    public void setPath(String path) throws Exception {
         this.path = path == null ? "" : path;
-	scan(true);
+        scan(true);
     }
-    public String getPath () {
-	return path;
+
+    public String getPath() {
+        return path;
     }
+
     private String path = null;
 
-    public String getParentPath ()
-    throws Exception {
-	int i = path.lastIndexOf('/');
-	if (i != -1) {
-	    return path.substring(0, i);
-	}
-	return null;
+    public String getParentPath() throws Exception {
+        int i = path.lastIndexOf('/');
+        if (i != -1) { return path.substring(0, i); }
+        return null;
     }
 
-    private void scan (boolean includeDirectories)
-    throws Exception {
-	////////////////////////////////////
-	Map typemap = new HashMap();
-	///////////////////////////////////////
+    private void scan(boolean includeDirectories) throws Exception {
+        ////////////////////////////////////
+        Map typemap = new HashMap();
+        ///////////////////////////////////////
 
-	String pathname = AppConfig.getSourceDir() + File.separator + path;
+        String pathname = AppConfig.getSourceDir() + File.separator + path;
 
-	String[] files = (new File(pathname)).list();
-	Arrays.sort(files);
+        String[] files = (new File(pathname)).list();
+        Arrays.sort(files);
 
-	for (int i = 0; i < files.length; i++) {
-	    if (files[i].startsWith(".")) {
-		continue;
-	    }
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].startsWith(".")) {
+                continue;
+            }
 
-	    String lname = path + File.separator + files[i];
-	    String fname = pathname + File.separator + files[i];
-	    File f = new File(fname);
+            String lname = path + File.separator + files[i];
+            String fname = pathname + File.separator + files[i];
+            File f = new File(fname);
 
-	    //////////////////////////////
-	    // build type-key maps and lists
-	    if (f.isDirectory() && includeDirectories) {
-		String type = "directory";
+            //////////////////////////////
+            // build type-key maps and lists
+            if (f.isDirectory() && includeDirectories) {
+                String type = "directory";
 
-		List list = (List) lists.get(type);
-		if (list == null) {
-		    list = new ArrayList();
-		    lists.put(type, list);
-		}
-		list.add(new DirectoryBean(path + File.separator + files[i]));
-	    } else {
-		Info info = InfoFactory.get(fname);
-		if (info != null) {
-		    info.put(LOCATION_KEY, lname);
+                List list = (List) lists.get(type);
+                if (list == null) {
+                    list = new ArrayList();
+                    lists.put(type, list);
+                }
+                list.add(new DirectoryBean(path + File.separator + files[i]));
+            } else {
+                Info info = InfoFactory.get(fname);
+                if (info != null) {
+                    info.put(LOCATION_KEY, lname);
 
-		    String type = null;
-		    if (info instanceof AudioInfo) {
-			type = "audio";
-		    } else if (info instanceof ImageInfo) {
-			type = "image";
-		    }
+                    String type = null;
+                    if (info instanceof AudioInfo) {
+                        type = "audio";
+                    } else if (info instanceof ImageInfo) {
+                        type = "image";
+                    }
 
-		    List list = (List) lists.get(type);
-		    if (list == null) {
-			list = new ArrayList();
-			lists.put(type, list);
-		    }
-		    list.add(info);
+                    List list = (List) lists.get(type);
+                    if (list == null) {
+                        list = new ArrayList();
+                        lists.put(type, list);
+                    }
+                    list.add(info);
 
-		    List all = (List) lists.get("all");
-		    if (all == null) {
-			all = new ArrayList();
-			lists.put("all", all);
-		    }
-		    all.add(info);
+                    List all = (List) lists.get("all");
+                    if (all == null) {
+                        all = new ArrayList();
+                        lists.put("all", all);
+                    }
+                    all.add(info);
 
-		    Map keymap = (Map) typemap.get(type);
-		    if (keymap == null) {
-			keymap = new HashMap();
-			typemap.put(type, keymap);
-		    }
+                    Map keymap = (Map) typemap.get(type);
+                    if (keymap == null) {
+                        keymap = new HashMap();
+                        typemap.put(type, keymap);
+                    }
 
-		    for (Iterator it = info.entrySet().iterator(); it.hasNext();) {
-			Map.Entry me = (Map.Entry) it.next();
-			Object key = me.getKey();
-			Object val = me.getValue();
+                    for (Iterator it = info.entrySet().iterator(); it.hasNext();) {
+                        Map.Entry me = (Map.Entry) it.next();
+                        Object key = me.getKey();
+                        Object val = me.getValue();
 
-			Set values = (Set) keymap.get(key);
-			if (values == null) {
-			    values = new HashSet();
-			    keymap.put(key, values);
-			}
-			values.add(val);
-		    }
-		}
-	    }
-	}
+                        Set values = (Set) keymap.get(key);
+                        if (values == null) {
+                            values = new HashSet();
+                            keymap.put(key, values);
+                        }
+                        values.add(val);
+                    }
+                }
+            }
+        }
 
-	//////////////////////////////////
-	// count maps for type-key pairs
-	for (Iterator it0 = typemap.entrySet().iterator(); it0.hasNext();) {
-	    Map.Entry me0 = (Map.Entry) it0.next();
-	    String type = (String) me0.getKey();
-	    Map keymap = (Map) me0.getValue();
+        //////////////////////////////////
+        // count maps for type-key pairs
+        for (Iterator it0 = typemap.entrySet().iterator(); it0.hasNext();) {
+            Map.Entry me0 = (Map.Entry) it0.next();
+            String type = (String) me0.getKey();
+            Map keymap = (Map) me0.getValue();
 
-	    Map countmap = (Map) count.get(type);
-	    if (countmap == null) {
-		countmap = new HashMap();
-		count.put(type, countmap);
-	    }
+            Map countmap = (Map) count.get(type);
+            if (countmap == null) {
+                countmap = new HashMap();
+                count.put(type, countmap);
+            }
 
-	    for (Iterator it1 = keymap.entrySet().iterator(); it1.hasNext();) {
-		Map.Entry me1 = (Map.Entry) it1.next();
-		String key = (String) me1.getKey();
-		Set set = (Set) me1.getValue();
+            for (Iterator it1 = keymap.entrySet().iterator(); it1.hasNext();) {
+                Map.Entry me1 = (Map.Entry) it1.next();
+                String key = (String) me1.getKey();
+                Set set = (Set) me1.getValue();
 
-		countmap.put(key, new Integer(set.size()));
-	    }
-	}
+                countmap.put(key, new Integer(set.size()));
+            }
+        }
 
-	//////////////////////////////////
-	// sum maps for type-key pairs of type integer
-	{
-	    // TODO find fast dynamic solution!
-	    int audioLenght = 0;
-	    List audioList = (List) lists.get("audio");
-	    if (audioList != null) {
-		for (Iterator it = audioList.iterator(); it.hasNext();) {
-		    AudioInfo info = (AudioInfo) it.next();
-		    audioLenght += info.getLength();
-		}
-	    }
-	    Map audioSums = new HashMap();
-	    audioSums.put("length", new Integer(audioLenght));
-	    sums.put("audio", audioSums);
-	}
+        //////////////////////////////////
+        // sum maps for type-key pairs of type integer
+        {
+            // TODO find fast dynamic solution!
+            int audioLenght = 0;
+            List audioList = (List) lists.get("audio");
+            if (audioList != null) {
+                for (Iterator it = audioList.iterator(); it.hasNext();) {
+                    AudioInfo info = (AudioInfo) it.next();
+                    audioLenght += info.getLength();
+                }
+            }
+            Map audioSums = new HashMap();
+            audioSums.put("length", new Integer(audioLenght));
+            sums.put("audio", audioSums);
+        }
 
-	//////////////////////////////////
-	// count maps for lists
-	{
-	    Map listCounts = new HashMap();
-	    for (Iterator it = lists.entrySet().iterator(); it.hasNext();) {
-		Map.Entry me = (Map.Entry) it.next();
-		String type = (String) me.getKey();
+        //////////////////////////////////
+        // count maps for lists
+        {
+            Map listCounts = new HashMap();
+            for (Iterator it = lists.entrySet().iterator(); it.hasNext();) {
+                Map.Entry me = (Map.Entry) it.next();
+                String type = (String) me.getKey();
 
-		if (me.getValue() instanceof List) {
-		    List list = (List) me.getValue();
-		    listCounts.put(type, new Integer(list.size()));
-		}
-	    }
-	    lists.put("count", listCounts);
-	}
+                if (me.getValue() instanceof List) {
+                    List list = (List) me.getValue();
+                    listCounts.put(type, new Integer(list.size()));
+                }
+            }
+            lists.put("count", listCounts);
+        }
     }
 
     private Map count = new HashMap();
-    public Map getCount () {
-	return count;
+
+    public Map getCount() {
+        return count;
     }
+
     private Map lists = new HashMap();
-    public Map getList () {
-	return lists;
+
+    public Map getList() {
+        return lists;
     }
+
     private Map sums = new HashMap();
-    public Map getSum () {
-	return sums;
+
+    public Map getSum() {
+        return sums;
     }
 }
