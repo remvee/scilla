@@ -19,7 +19,7 @@
 <!-- for documentation building -->
   <property name="doc.dir"      value="doc"/>
   <property name="doc.title"    value="scilla API documentation"/>
-  <property name="doc.pkgnames" value="nl.rveer.*"/>
+  <property name="doc.pkgnames" value="org.scilla.*"/>
 
 <!-- the configuration template -->
   <property name="config.propfile" value="org/scilla/Config.properties"/>
