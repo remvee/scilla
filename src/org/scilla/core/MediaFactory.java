@@ -19,16 +19,27 @@
  * MA 02111-1307, USA.
  */
 
-package org.scilla;
+package org.scilla.core;
 
 import java.io.File;
 import java.util.Iterator;
 
-import org.scilla.core.*;
+import org.scilla.*;
 import org.scilla.converter.*;
 
+/**
+ * The MediaFactory creates a runner or file object.
+ *
+ * @version $Id: MediaFactory.java,v 1.1 2001/09/21 10:31:45 remco Exp $
+ * @author R.W. van 't Veer
+ */
 public class MediaFactory
 {
+    /**
+     * Create a runner or file object for given request.
+     * @param req media object request
+     * @return runner or file media object
+     */
     public static MediaObject createObject (Request req)
     throws ScillaException
     {
