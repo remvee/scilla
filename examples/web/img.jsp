@@ -100,7 +100,7 @@
 		String filepath = path+"/"+fn;
 %>
 	    <TR>
-		<TD><IMG src="images/film-left.gif"></TD><TD width=100 height=100 bgcolor=black align=center valign=center><A target="viewer" href="imgview.jsp?f=<%=filepath%>"><IMG src="servlet/sservlet/<%=filepath%>?outputtype=jpg&<%=imgScaleEncoded%>" border=0></A></TD><TD><IMG src="images/film-right.gif"></TD>
+		<TD><IMG src="images/film-left.gif"></TD><TD width=100 height=100 bgcolor=black align=center valign=center><A target="viewer" href="imgview.jsp?f=<%=filepath%>"><IMG src="servlet/scilla/<%=filepath%>?outputtype=jpg&<%=imgScaleEncoded%>" border=0></A></TD><TD><IMG src="images/film-right.gif"></TD>
 	    </TR>
 <%
 	    }

@@ -31,7 +31,7 @@
     String imagePar = request.getParameter("f");
     imagePar = imagePar != null ? imagePar : "spam.jpg";
     String image = imagePar;
-    image = "servlet/sservlet/" + (image != null ? image : "spam.jpg");
+    image = "servlet/scilla/" + (image != null ? image : "spam.jpg");
     image = image + "?outputtype=jpg";
 
     int scale = 75;

@@ -61,7 +61,7 @@ public class M3UServlet extends HttpServlet
 	{
 	    urlPrefix = "http://"
 		+request.getServerName()+":"+request.getServerPort()
-		+"/scilla/servlet/sservlet/";
+		+"/scilla/servlet/scilla/";
 	}
 
 	String fn = source+File.separator+path;

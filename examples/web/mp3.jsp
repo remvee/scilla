@@ -15,7 +15,7 @@ throws IOException
     String encoding = (request.getRemoteHost().equals("localhost")
 	    || request.getRemoteHost().equals("127.0.0.1"))
 	    ? "file" : "stream";
-    String imgSrc = "servlet/sservlet/speaker.png?scale=14x14&outputtype=gif";
+    String imgSrc = "servlet/scilla/speaker.png?scale=14x14&outputtype=gif";
     out.println("<A href=\"servlet/playlist.m3u"+
 	    "?f="+encoding+
 	    "&d="+pathEncoded+
@@ -30,7 +30,7 @@ throws IOException
     Config scillaConfig = Config.getInstance();
     String path = "";
     if (request.getParameter("d") != null) path = request.getParameter("d");
-    String urlHead = "servlet/sservlet/" + path.replace(' ', '+') + "/";
+    String urlHead = "servlet/scilla/" + path.replace(' ', '+') + "/";
 
     String background = null;
     Hashtable tagHash = new Hashtable();

@@ -5,8 +5,8 @@
 <web-app>
 
     <servlet>
-	<servlet-name>sservlet</servlet-name>
-	<servlet-class>SServlet</servlet-class>
+	<servlet-name>scilla</servlet-name>
+	<servlet-class>org.scilla.util.Servlet</servlet-class>
     </servlet>
     <servlet>
 	<servlet-name>playlist.m3u</servlet-name>

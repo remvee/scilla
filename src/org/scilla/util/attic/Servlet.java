@@ -33,11 +33,12 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Category;
 
 import org.scilla.*;
+import org.scilla.util.mp3.*;
 
 /**
  * This servlet handles media requests.
  *
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * @author R.W. van 't Veer
  */
 public class Servlet extends HttpServlet
@@ -46,9 +47,39 @@ public class Servlet extends HttpServlet
 
     static { BasicConfigurator.configure(); }
 
-    public void addStreamHeaders (Request req, HttpServletResponse response)
+    void addStreamHeaders (Request req, HttpServletResponse response)
     {
-	/* dummy */
+	try
+	{
+	    ID3v1 id3 = new ID3v1(new File(req.getInputFile()));
+	    String title = "";
+	    if (id3.getArtist() != null && id3.getArtist().length() != 0)
+	    {
+		title += id3.getArtist() + " - ";
+	    }
+	    if (id3.getAlbum() != null && id3.getAlbum().length() != 0)
+	    {
+		title += id3.getAlbum() + " - ";
+	    }
+	    if (id3.getTitle() != null && id3.getTitle().length() != 0)
+	    {
+		title += id3.getTitle();
+	    }
+	    if (title.endsWith(" - "))
+	    {
+		title = title.substring(0, title.lastIndexOf(" - "));
+	    }
+	    if (title.length() == 0)
+	    {
+		title = req.getInputFile();
+		title = title.substring(title.lastIndexOf(File.separator)+1);
+		title = title.substring(0, title.lastIndexOf('.'));
+	    }
+
+	    response.setHeader("icy-title", title);
+	    response.setHeader("x-audiocast-title", title);
+	}
+	catch (Throwable t) { /* nop */ }
     }
 
     /**

@@ -46,7 +46,7 @@
     {
 	urlPrefix = "http://"
 	    +request.getServerName()+":"+request.getServerPort()
-	    +"/scilla/servlet/sservlet/";
+	    +"/scilla/servlet/scilla/";
     }
 
     String fname = scillaConfig.getSourceDir()+"/"+path;
