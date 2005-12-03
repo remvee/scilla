@@ -32,7 +32,7 @@ import org.scilla.converter.*;
 /**
  * The MediaFactory creates a runner or file object.
  *
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  * @author R.W. van 't Veer
  */
 public class MediaFactory {
@@ -50,9 +50,9 @@ public class MediaFactory {
      */
     public static MediaObject createObject (Request req, String ofn)
     throws ScillaException {
-	if (log.isDebugEnabled()) {
-	    log.debug("createObject("+req+", "+ofn+")");
-	}
+        if (log.isDebugEnabled()) {
+            log.debug("createObject("+req+", "+ofn+")");
+        }
 
         // see if source exists
         String file = req.getInputFile();
@@ -62,7 +62,7 @@ public class MediaFactory {
 
         // its a conversionless hit
         if (! req.needConverter()) {
-	    log.debug("createObject: conversionless hit");
+            log.debug("createObject: conversionless hit");
             return new FileObject(req.getInputFile());
         }
 
@@ -85,14 +85,14 @@ public class MediaFactory {
         }
         if (conv == null) {
             throw new ScillaNoConverterException();
-	}
+        }
 
         // configure converter
         conv.setRequest(req);
         conv.setOutputFile(ofn);
 
-	// remove old output
-	(new File(ofn)).delete();
+        // remove old output
+        (new File(ofn)).delete();
 
         // log creation of converter
         if (log.isDebugEnabled()) {

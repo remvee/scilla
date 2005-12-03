@@ -27,7 +27,7 @@ import java.io.*;
  * Read-only access the Xing info tag in an MP3 file.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * @see <CODE>xmms-1.2.4/Input/mpg123/dxhead.c</CODE>
  */
 public class XingInfo extends FrameHeader {
@@ -69,14 +69,14 @@ public class XingInfo extends FrameHeader {
 
         // forward to Xing info
         mp3File.skipBytes(isMpegVersion1()
-		? (isSingleChannel() ? 17 : 32)
-		: (isSingleChannel() ?  9 : 17));
+                ? (isSingleChannel() ? 17 : 32)
+                : (isSingleChannel() ?  9 : 17));
 
         // test if tag is present
         byte[] tag = new byte[4];
         mp3File.read(tag);
         if (! (new String(tag)).equals("Xing")) {
-	    super.close();
+            super.close();
             throw new Mp3Exception("no tag present");
         }
 
@@ -87,10 +87,10 @@ public class XingInfo extends FrameHeader {
 
         if ((flags & FRAMES_FLAG) != 0) {
             frames = extractI4(mp3File);
-	}
+        }
         if ((flags & BYTES_FLAG) != 0) {
             bytes = extractI4(mp3File);
-	}
+        }
         if ((flags & TOC_FLAG) != 0) {
             toc = new byte[100];
             for (int i = 0; i < 100; i++) {
@@ -100,12 +100,12 @@ public class XingInfo extends FrameHeader {
 
         if ((flags & VBR_SCALE_FLAG) != 0) {
             vbrscale = extractI4(mp3File);
-	}
+        }
 
         tpf = tpfbs[layerToInt()] / getSampleRate();
         if (isMpegVersion25() || isMpegVersion2()) {
             tpf /= 2;
-	}
+        }
     }
 
 
@@ -180,4 +180,4 @@ public class XingInfo extends FrameHeader {
     }
 }
 
-/* end of $Id: XingInfo.java,v 1.6 2003/04/14 07:18:53 remco Exp $ */
+/* end of $Id: XingInfo.java,v 1.7 2005/09/30 13:51:06 remco Exp $ */

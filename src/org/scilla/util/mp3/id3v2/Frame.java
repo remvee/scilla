@@ -30,7 +30,7 @@ import org.scilla.util.mp3.ID3v2;
  * Basic representation of a frame.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.13 $
  */
 public class Frame {
     /* length of frame */
@@ -192,7 +192,7 @@ public class Frame {
         byte[] data = getBytes();
         if (data == null) {
             return null;
-	}
+        }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -204,11 +204,11 @@ public class Frame {
 
         // length
         byte[] length = new byte[4];
-        ID3v2.writeUnsyncInt(data.length, length, 0);
+        ID3v2.writePlainInt(data.length, length, 0);
         try {
             out.write(length);
         } catch (IOException ex) {
-	    // will never happen
+            // will never happen
         }
 
         // flags
@@ -220,7 +220,7 @@ public class Frame {
         try {
             out.write(data);
         } catch (IOException ex) {
-	    // will never happen
+            // will never happen
         }
 
         return out.toByteArray();
@@ -257,7 +257,11 @@ public class Frame {
      * @return an ID
      */
     public static String readFrameId (byte[] data, int offset, int minor) {
-        String id = new String(data, offset, minor == 2 ? 3 : 4);
+    		int len = minor == 2 ? 3 : 4;
+    		if (offset + len > data.length) {
+    			return null;
+    		}
+        String id = new String(data, offset, len);
         if (minor == 2) {
             id = (String) t2to3Map.get(id);
         }

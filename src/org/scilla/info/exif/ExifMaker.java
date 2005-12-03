@@ -1,7 +1,7 @@
 /*
  * scilla
  *
- * Copyright (C) 2003  R.W. van 't Veer
+ * Copyright (C) 2005  R.W. van 't Veer
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -19,32 +19,26 @@
  * MA 02111-1307, USA.
  */
 
-package org.scilla.util;
+package org.scilla.info.exif;
+
+import java.util.Map;
+
+import org.scilla.info.TiffHeader;
 
 /**
- * simple semaphore class
+ * Interface for camera specific makernote reading.
+ * @author R.W. van 't Veer
+ * @version $Revision: 1.1 $
  */
-public class Semaphore {
-    int counter;
-
-    public Semaphore (int arg) {
-        counter = arg;
-    }
-
-    public synchronized void incr () {
-        counter++;
-        notify();
-    }
-
-    public synchronized void decr () {
-        while (counter == 0) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                // will never happen
-            }
-        }
-        counter--;
-    }
+public interface ExifMaker {
+    /**
+     * Get camera specific EXIF info.
+     * @param data EXIF data block
+     * @param makernote EXIF makernote field
+     * @param isLittleEndian EXIF block byte order
+     * @return a map of camera specific info
+     * @throws Exception when tags could not be read
+     */
+    Map getTags (byte[] data, TiffHeader.Field makernote, boolean isLittleEndian)
+    throws Exception;
 }
-

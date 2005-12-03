@@ -26,7 +26,7 @@ import java.util.*;
 /**
  * The scilla media info base class.
  *
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.9 $
  * @author R.W. van 't Veer
  */
 public class Info implements Map {
@@ -43,68 +43,82 @@ public class Info implements Map {
      * @param v canonical pathname of the source file
      */
     protected Info (String v) {
-	pathname = v;
-	infoMap.put("pathName", pathname);
+        pathname = v;
+        infoMap.put("pathName", pathname);
     }
 
 // map methods
     public void clear () {
-	throw new RuntimeException("not implemented");
+        throw new RuntimeException("not implemented");
     }
     public boolean containsKey (Object key) {
-	return infoMap.containsKey(key);
+        return infoMap.containsKey(key);
     }
     public boolean containsValue (Object value) {
-	return infoMap.containsValue(value);
+        return infoMap.containsValue(value);
     }
     public Set entrySet () {
-	return infoMap.entrySet();
+        return infoMap.entrySet();
     }
     public Object get (Object key) {
-	return infoMap.get(key);
+        return infoMap.get(key);
     }
     public boolean isEmpty () {
-	return infoMap.isEmpty();
+        return infoMap.isEmpty();
     }
     public Set keySet () {
-	return infoMap.keySet();
+        return infoMap.keySet();
     }
     public Object put (Object key, Object val) {
-	return infoMap.put(key, val);
+        return infoMap.put(key, val);
     }
     public void putAll (Map t) {
-	infoMap.putAll(t);
+        infoMap.putAll(t);
     }
     public Object remove (Object key) {
-	return infoMap.remove(key);
+        return infoMap.remove(key);
     }
     public int size () {
-	return infoMap.size();
+        return infoMap.size();
     }
     public Collection values () {
-	return infoMap.values();
+        return infoMap.values();
     }
 
 // read methods
     /**
      * @return string info value or <tt>null</tt> when property not available
+     * or not a string
      */
-    public String getString (String key) {
-	return (String) infoMap.get(key);
+    public String getString(String key) {
+        Object o = infoMap.get(key);
+        return o != null && o instanceof String ? (String) o : null;
     }
     /**
      * @return integer info value or <tt>-1</tt> when property not available
+     * or not an integer
      */
-    public int getInt (String key) {
-	Integer i = (Integer) infoMap.get(key);
-	return i == null ? -1 : i.intValue();
+    public int getInt(String key) {
+        Object o = infoMap.get(key);
+        return o != null && o instanceof Integer
+                ? ((Integer) o).intValue() : -1;
     }
     /**
      * @return boolean info value or <tt>false</tt> when property not available
+     * or not a boolean
      */
-    public boolean getBoolean (String key) {
-	Boolean b = (Boolean) infoMap.get(key);
-	return b == null ? false : b.booleanValue();
+    public boolean getBoolean(String key) {
+        Object o = infoMap.get(key);
+        return o != null && o instanceof Boolean
+                && ((Boolean) o).booleanValue();
+    }
+    /**
+     * @return date info value or <tt>null</tt> when property not available
+     * or not a date
+     */
+    public Date getDate(String key) {
+        Object o = infoMap.get(key);
+        return o != null && o instanceof Date ? (Date) o : null;
     }
 
 // set methods for extending classes
@@ -114,7 +128,7 @@ public class Info implements Map {
      * @param val property value
      */
     protected void setString (String key, String val) {
-	infoMap.put(key, val);
+        infoMap.put(key, val);
     }
     /**
      * Integer setter method for extending classes.
@@ -122,7 +136,7 @@ public class Info implements Map {
      * @param val property value
      */
     protected void setInt (String key, int val) {
-	infoMap.put(key, new Integer(val));
+        infoMap.put(key, new Integer(val));
     }
     /**
      * Boolean setter method for extending classes.
@@ -130,7 +144,7 @@ public class Info implements Map {
      * @param val property value
      */
     protected void setBoolean (String key, boolean val) {
-	infoMap.put(key, val ? Boolean.TRUE : Boolean.FALSE);
+        infoMap.put(key, val ? Boolean.TRUE : Boolean.FALSE);
     }
 
 // other stuff
@@ -138,13 +152,13 @@ public class Info implements Map {
      * @return canonical pathname of the source file
      */
     public String getPathName () {
-	return pathname;
+        return pathname;
     }
 
     /**
      * Debugging..
      */
     public String toString () {
-	return infoMap.toString();
+        return infoMap.toString();
     }
 }

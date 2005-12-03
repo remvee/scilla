@@ -27,7 +27,7 @@ import java.io.*;
  * Representation of link frames (<TT>W000</TT> - <TT>WZZZ</TT>).
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class LinkFrame extends Frame {
     String url;
@@ -128,7 +128,7 @@ public class LinkFrame extends Frame {
                 encId = 3;
             } else {
                 enc = "ISO-8859-1";
-	    }
+            }
 
             byte[] descrData = descr.getBytes(enc);
             int resultLen = 1+descrData.length+1+urlData.length;

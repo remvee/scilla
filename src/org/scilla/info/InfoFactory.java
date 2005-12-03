@@ -35,7 +35,7 @@ import org.scilla.util.MimeType;
 /**
  * The scilla media info factory.
  *
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @author R.W. van 't Veer
  */
 public class InfoFactory {
@@ -43,65 +43,65 @@ public class InfoFactory {
 
     public static Info get (String fname)
     throws IOException {
-	File f = new File(fname);
-	String pname = f.getCanonicalPath();
+        File f = new File(fname);
+        String pname = f.getCanonicalPath();
 
-	CacheEntry ce = (CacheEntry) infoCache.get(pname);
-	long timestamp = f.lastModified();
+        CacheEntry ce = (CacheEntry) infoCache.get(pname);
+        long timestamp = f.lastModified();
 
-	// see if cache entry valid
-	if (ce != null && ce.timestamp == timestamp) {
-	    if (log.isDebugEnabled()) {
-		log.debug("pull info ("+ce.info+") from cache ("+ce+") for "+pname);
-	    }
-	    return ce.info;
-	}
+        // see if cache entry valid
+        if (ce != null && ce.timestamp == timestamp) {
+            if (log.isDebugEnabled()) {
+                log.debug("pull info ("+ce.info+") from cache ("+ce+") for "+pname);
+            }
+            return ce.info;
+        }
 
-	// determine type of info
-	String type = MimeType.getTypeFromFilename(pname);
-	if (type == null) {
-	    return null;
-	}
+        // determine type of info
+        String type = MimeType.getTypeFromFilename(pname);
+        if (type == null) {
+            return null;
+        }
 
-	// get info
-	Info info = null;
-	if (type.startsWith("audio/")) {
-	    info = new AudioInfo(pname);
-	} else if (type.startsWith("image/")) {
-	    info = new ImageInfo(pname);
-	}
+        // get info
+        Info info = null;
+        if (type.startsWith("audio/")) {
+            info = new AudioInfo(pname);
+        } else if (type.startsWith("image/")) {
+            info = new ImageInfo(pname);
+        }
 
-	// cache it
-	if (info != null) {
-	    ce = new CacheEntry();
-	    ce.info = info;
-	    ce.timestamp = timestamp;
-	    infoCache.put(pname, ce);
+        // cache it
+        if (info != null) {
+            ce = new CacheEntry();
+            ce.info = info;
+            ce.timestamp = timestamp;
+            infoCache.put(pname, ce);
 
-	    if (log.isDebugEnabled()) {
-		log.debug("cached ("+ce+") info ("+info+") for "+pname);
-	    }
-	}
+            if (log.isDebugEnabled()) {
+                log.debug("cached ("+ce+") info ("+info+") for "+pname);
+            }
+        }
 
-	return info;
+        return info;
     }
 
     /** filename to info map for caching media info */
     private static Map infoCache = Collections.synchronizedMap(new HashMap());
     /** simple cache entry */
     private static class CacheEntry {
-	/** media info */
-	Info info = null;
-	/** file timestamp */
-	long timestamp = -1L;
+        /** media info */
+        Info info = null;
+        /** file timestamp */
+        long timestamp = -1L;
     }
 
     /** debugging */
     public static void main (String[] args)
     throws Exception {
-	for (int i = 0; i < args.length; i++) {
-	    Info info = InfoFactory.get(args[i]);
-	    System.out.println(args[i]+": "+info);
-	}
+        for (int i = 0; i < args.length; i++) {
+            Info info = InfoFactory.get(args[i]);
+            System.out.println(args[i]+": "+info);
+        }
     }
 }

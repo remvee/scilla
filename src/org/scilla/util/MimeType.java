@@ -36,7 +36,7 @@ import org.apache.commons.logging.LogFactory;
  * order of the properties is important; from two types with the
  * same extensions the first will be returned by
  * <tt>getTypeFromFilename</tt>.
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  * @author R.W. van 't Veer
  */
 public class MimeType {
@@ -52,99 +52,99 @@ public class MimeType {
     private Map extToType = new HashMap();
 
     private MimeType () {
-	ClassLoader cl = getClass().getClassLoader();
+        ClassLoader cl = getClass().getClassLoader();
 
-	// load properties
-	Properties p = new Properties();
-	{
-	    InputStream in = null;
-	    try {
-		in = cl.getResourceAsStream(PROPERTY_FILE);
-		p.load(in);
-	    } catch (Throwable ex) {
-		final String msg = "unable to load property file \""+PROPERTY_FILE+"\"";
-		log.fatal(msg, ex);
-		throw new RuntimeException(msg);
-	    } finally {
-		if (in != null) {
-		    try { in.close(); } catch (IOException ex) { /* ignore */ }
-		}
-	    }
-	}
+        // load properties
+        Properties p = new Properties();
+        {
+            InputStream in = null;
+            try {
+                in = cl.getResourceAsStream(PROPERTY_FILE);
+                p.load(in);
+            } catch (Throwable ex) {
+                final String msg = "unable to load property file \""+PROPERTY_FILE+"\"";
+                log.fatal(msg, ex);
+                throw new RuntimeException(msg);
+            } finally {
+                if (in != null) {
+                    try { in.close(); } catch (IOException ex) { /* ignore */ }
+                }
+            }
+        }
 
-	// read the key order, HACK HACK HACK..
-	List keys = new ArrayList();
-	{
-	    BufferedReader br = null;
-	    try {
-		InputStream in = cl.getResourceAsStream(PROPERTY_FILE);
-		br = new BufferedReader(new InputStreamReader(in));
-		String l = null;
-		while ((l = br.readLine()) != null) {
-		    if (l.trim().startsWith("#") || l.trim().startsWith("!")) {
-			continue;
-		    }
-		    StringTokenizer st = new StringTokenizer(l, "=: \t\n");
-		    if (st.hasMoreTokens()) {
-			keys.add(st.nextToken());
-		    }
-		}
-	    } catch (Throwable ex) {
-		final String msg = "unable to read key order from \""+PROPERTY_FILE+"\"";
-		log.fatal(msg, ex);
-		throw new RuntimeException(msg);
-	    } finally {
-		if (br != null) {
-		    try { br.close(); } catch (IOException ex) { /* ignore */ }
-		}
-	    }
-	}
+        // read the key order, HACK HACK HACK..
+        List keys = new ArrayList();
+        {
+            BufferedReader br = null;
+            try {
+                InputStream in = cl.getResourceAsStream(PROPERTY_FILE);
+                br = new BufferedReader(new InputStreamReader(in));
+                String l = null;
+                while ((l = br.readLine()) != null) {
+                    if (l.trim().startsWith("#") || l.trim().startsWith("!")) {
+                        continue;
+                    }
+                    StringTokenizer st = new StringTokenizer(l, "=: \t\n");
+                    if (st.hasMoreTokens()) {
+                        keys.add(st.nextToken());
+                    }
+                }
+            } catch (Throwable ex) {
+                final String msg = "unable to read key order from \""+PROPERTY_FILE+"\"";
+                log.fatal(msg, ex);
+                throw new RuntimeException(msg);
+            } finally {
+                if (br != null) {
+                    try { br.close(); } catch (IOException ex) { /* ignore */ }
+                }
+            }
+        }
 
-	// populate maps
-	for (Iterator it = keys.iterator(); it.hasNext();) {
-	    String key = (String) it.next();
-	    String eval = p.getProperty(key);
+        // populate maps
+        for (Iterator it = keys.iterator(); it.hasNext();) {
+            String key = (String) it.next();
+            String eval = p.getProperty(key);
 
-	    // property value to list
-	    List val = new ArrayList();
-	    for (StringTokenizer st = new StringTokenizer(eval); st.hasMoreTokens();) {
-		val.add(st.nextToken());
-	    }
+            // property value to list
+            List val = new ArrayList();
+            for (StringTokenizer st = new StringTokenizer(eval); st.hasMoreTokens();) {
+                val.add(st.nextToken());
+            }
 
-	    // add type to extensions mappings
-	    {
-		List l = (List) typeToExt.get(key);
-		if (l == null) {
-		    l = new ArrayList();
-		    typeToExt.put(key, l);
-		}
-		l.addAll(val);
-	    }
+            // add type to extensions mappings
+            {
+                List l = (List) typeToExt.get(key);
+                if (l == null) {
+                    l = new ArrayList();
+                    typeToExt.put(key, l);
+                }
+                l.addAll(val);
+            }
 
-	    // extensions to type mappings
-	    for (Iterator it1 = val.iterator(); it1.hasNext();) {
-		String ext = (String) it1.next();
+            // extensions to type mappings
+            for (Iterator it1 = val.iterator(); it1.hasNext();) {
+                String ext = (String) it1.next();
                 ext = ext.toLowerCase();
 
-		List l = (List) extToType.get(ext);
-		if (l == null) {
-		    l = new ArrayList();
-		    extToType.put(ext, l);
-		}
-		l.add(key);
-	    }
-	}
-	if (log.isDebugEnabled()) {
-	    log.debug("extension to type mappings="+extToType);
-	    log.debug("type to extension mappings="+typeToExt);
-	}
+                List l = (List) extToType.get(ext);
+                if (l == null) {
+                    l = new ArrayList();
+                    extToType.put(ext, l);
+                }
+                l.add(key);
+            }
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("extension to type mappings="+extToType);
+            log.debug("type to extension mappings="+typeToExt);
+        }
     }
 
     private static synchronized MimeType getInstance () {
-	if (_instance == null) {
-	    _instance = new MimeType();
-	}
-	return _instance;
+        if (_instance == null) {
+            _instance = new MimeType();
+        }
+        return _instance;
     }
     private static MimeType _instance = null;
 
@@ -156,8 +156,8 @@ public class MimeType {
         if (ext == null) {
             return null;
         }
-	List l = (List) getInstance().extToType.get(ext.toLowerCase());
-	return (String) (l != null && l.size() > 0 ? l.get(0) : null);
+        List l = (List) getInstance().extToType.get(ext.toLowerCase());
+        return (String) (l != null && l.size() > 0 ? l.get(0) : null);
     }
 
     /**
@@ -165,7 +165,7 @@ public class MimeType {
      * @return mime type
      */
     public static String getTypeFromFilename (String fname) {
-	return getTypeFromFileExtension(getExtensionFromFilename(fname));
+        return getTypeFromFileExtension(getExtensionFromFilename(fname));
     }
 
     /**
@@ -173,8 +173,8 @@ public class MimeType {
      * @return filename extension
      */
     public static String getExtensionForType (String type) {
-	List l = (List) getInstance().typeToExt.get(type);
-	return (String) (l != null && l.size() > 0 ? l.get(0) : null);
+        List l = (List) getInstance().typeToExt.get(type);
+        return (String) (l != null && l.size() > 0 ? l.get(0) : null);
     }
 
     /**
@@ -190,10 +190,10 @@ public class MimeType {
      * Debugging..
      */
     public static void main (String[] args) {
-	for (int i = 0; i < args.length; i++) {
-	    String t = args[i];
-	    System.out.println("e2t("+t+")=" + getTypeFromFileExtension(t));
-	    System.out.println("t2e("+t+")=" + getExtensionForType(t));
-	}
+        for (int i = 0; i < args.length; i++) {
+            String t = args[i];
+            System.out.println("e2t("+t+")=" + getTypeFromFileExtension(t));
+            System.out.println("t2e("+t+")=" + getExtensionForType(t));
+        }
     }
 }

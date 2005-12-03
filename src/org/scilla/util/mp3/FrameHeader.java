@@ -30,7 +30,7 @@ import java.io.EOFException;
  * Read only access to MP3 frame header information.
  * @see <a href="http://www.mp3-tech.org/programmer/frame_header.html">MP3'Tech - Frame header</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class FrameHeader {
     public static final int MPEG_VERSION_2_5 = 0;
@@ -48,31 +48,31 @@ public class FrameHeader {
     public static final int EMPHASIS_CCIT_J_17 = 3;
 
     private static int[][] bitRateTable = {
-	// V1,L1 V1,L2 V1,L3 V2,L1 V2,L2,L3
-	{   0,    0,    0,    0,     0 },
-	{  32,   32,   32,   32,     8 },
-	{  64,   48,   40,   48,    16 },
-	{  96,   56,   48,   56,    24 },
-	{ 128,   64,   56,   64,    32 },
-	{ 160,   80,   64,   80,    40 },
-	{ 192,   96,   80,   96,    48 },
-	{ 224,  112,   96,  112,    56 },
-	{ 256,  128,  112,  128,    64 },
-	{ 288,  160,  128,  144,    80 },
-	{ 320,  192,  160,  160,    96 },
-	{ 352,  224,  192,  176,   112 },
-	{ 384,  256,  224,  192,   128 },
-	{ 416,  320,  256,  224,   144 },
-	{ 448,  384,  320,  256,   160 },
-	{  -1,   -1,   -1,   -1,    -1 },
+        // V1,L1 V1,L2 V1,L3 V2,L1 V2,L2,L3
+        {   0,    0,    0,    0,     0 },
+        {  32,   32,   32,   32,     8 },
+        {  64,   48,   40,   48,    16 },
+        {  96,   56,   48,   56,    24 },
+        { 128,   64,   56,   64,    32 },
+        { 160,   80,   64,   80,    40 },
+        { 192,   96,   80,   96,    48 },
+        { 224,  112,   96,  112,    56 },
+        { 256,  128,  112,  128,    64 },
+        { 288,  160,  128,  144,    80 },
+        { 320,  192,  160,  160,    96 },
+        { 352,  224,  192,  176,   112 },
+        { 384,  256,  224,  192,   128 },
+        { 416,  320,  256,  224,   144 },
+        { 448,  384,  320,  256,   160 },
+        {  -1,   -1,   -1,   -1,    -1 },
     };
 
     private final static int[][] sampleRateTable = {
-	// MPEG1  MPEG2  MPEG2.5
-	{  44100, 22050, 11025 },
-	{  48000, 24000, 12000 },
-	{  32000, 16000,  8000 },
-	{      0,     0,     0 },
+        // MPEG1  MPEG2  MPEG2.5
+        {  44100, 22050, 11025 },
+        {  48000, 24000, 12000 },
+        {  32000, 16000,  8000 },
+        {      0,     0,     0 },
     };
 
 
@@ -121,17 +121,17 @@ public class FrameHeader {
     public FrameHeader (File f)
     throws IOException, Mp3Exception {
         mp3File = new RandomAccessFile(f, "r");
-	try {
-	    fileLength = mp3File.length();
+        try {
+            fileLength = mp3File.length();
 
-	    next(false); // hit first frame
-	} catch (IOException ex) {
-	    close();
-	    throw ex;
-	} catch (Mp3Exception ex) {
-	    close();
-	    throw ex;
-	}
+            next(false); // hit first frame
+        } catch (IOException ex) {
+            close();
+            throw ex;
+        } catch (Mp3Exception ex) {
+            close();
+            throw ex;
+        }
     }
 
     protected void finalize () throws Throwable {
@@ -238,17 +238,17 @@ public class FrameHeader {
         return channelMode == CHANNEL_MODE_SINGLE_CHANNEL;
     }
     public String channelModeToString () {
-	switch (channelMode) {
-	    case CHANNEL_MODE_STEREO:
-		return "stereo";
-	    case CHANNEL_MODE_JOINT_STEREO:
-		return "j-stereo";
-	    case CHANNEL_MODE_DUAL_CHANNEL:
-		return "dual-ch";
-	    case CHANNEL_MODE_SINGLE_CHANNEL:
-		return "single-ch";
-	}
-	return null;
+        switch (channelMode) {
+            case CHANNEL_MODE_STEREO:
+                return "stereo";
+            case CHANNEL_MODE_JOINT_STEREO:
+                return "j-stereo";
+            case CHANNEL_MODE_DUAL_CHANNEL:
+                return "dual-ch";
+            case CHANNEL_MODE_SINGLE_CHANNEL:
+                return "single-ch";
+        }
+        return null;
     }
 
     public int getModeExtension () {
@@ -293,7 +293,7 @@ public class FrameHeader {
     throws IOException, Mp3Exception {
         if (length != -1 || n == 0) {
             return vbrFlag;
-	}
+        }
 
         mp3File.seek(0);
         next();
@@ -319,8 +319,8 @@ public class FrameHeader {
         try {
             return isVbr(0);
         } catch (Exception e) {
-	    // ignore
-	}
+            // ignore
+        }
         return false;
     }
 
@@ -336,8 +336,8 @@ public class FrameHeader {
             try {
                 mp3File.close();
             } catch (IOException e) {
-		// ignore
-	    } finally {
+                // ignore
+            } finally {
                 mp3File = null;
             }
         }
@@ -369,7 +369,7 @@ public class FrameHeader {
                 b += bitRate;
                 if (bitRate != firstBitRate && !vbrFlag) {
                     vbrFlag = true;
-		}
+                }
 
                 next();
             } catch (EOFException e) {
@@ -388,14 +388,14 @@ public class FrameHeader {
         for (i = 1; i < 15; i++) {
             if (bitRateTable[i][column] > averageBitRate) {
                 break;
-	    }
-	}
+            }
+        }
 
         int d1 = (averageBitRate - bitRateTable[i-1][column]);
         int d2 = (bitRateTable[i][column] - averageBitRate);
         roundBitRate = d1 < d2
-		? bitRateTable[i-1][column]
-		: bitRateTable[i][column];
+                ? bitRateTable[i-1][column]
+                : bitRateTable[i][column];
     }
 
     public String toString () {
@@ -403,34 +403,34 @@ public class FrameHeader {
         b.append("MPEG-" + mpegVersionToString() + " ");
         if (isLayerIII()) {
             b.append("Layer III ");
-	} else if (isLayerII()) {
+        } else if (isLayerII()) {
             b.append("Layer II ");
         } else if (isLayerI()) {
             b.append("Layer I ");
-	}
+        }
         if (hasErrorProtection()) {
             b.append("CRC ");
-	}
+        }
         if (isVbr()) {
             b.append("VBR avg. bitrate ");
-	}
+        }
         b.append(getBitRate() + "Kbit/s ");
         b.append(getSampleRate() + "Hz ");
         if (isPrivate()) {
             b.append("Private ");
-	}
+        }
         b.append(channelModeToString() + " ");
         if (isCopyright()) {
             b.append("Copyright ");
-	}
+        }
         if (isOriginal()) {
             b.append("Original ");
-	}
+        }
         if (getEmphasis() == EMPHASIS_50_15_MS) {
             b.append("50/15 ms ");
-	} else if (getEmphasis() == EMPHASIS_CCIT_J_17) {
+        } else if (getEmphasis() == EMPHASIS_CCIT_J_17) {
             b.append("CCIT J.17 ");
-	}
+        }
         int l = getLength();
         b.append(l / 60 + ":" + (l % 60 < 10 ? "0" : "") + l % 60 + " ");
         return b.toString().trim();
@@ -449,11 +449,11 @@ public class FrameHeader {
     throws IOException, Mp3Exception {
 
         // forward to next header
-	int header = 0;
-	for (int i = 0; (header & 0xffe00000) != 0xffe00000; i++) {
-	    header <<= 8;
-	    header |= mp3File.readByte() & 0xff;
-	}
+        int header = 0;
+        for (int i = 0; (header & 0xffe00000) != 0xffe00000; i++) {
+            header <<= 8;
+            header |= mp3File.readByte() & 0xff;
+        }
 
         // read header
         mpegVersion     = ((header >> 19) & 0x3);
@@ -471,7 +471,7 @@ public class FrameHeader {
 
         // see if it doesn't contain reserved values
         if (mpegVersion == 1 || layer == 0 || bitRateIndex == 0
-		|| bitRateIndex == 15 || sampleRateIndex == 3 || emphasis == 2) {
+                || bitRateIndex == 15 || sampleRateIndex == 3 || emphasis == 2) {
             mp3File.seek(mp3File.getFilePointer()-3);
             next(forwardToNextFrame);
         }
@@ -481,14 +481,14 @@ public class FrameHeader {
 
         // see if it doesn't contain illegal combinations
         if (bitRate ==  32 && isStereo()
-		|| bitRate ==  32 && isDualChannel()
-		|| bitRate ==  48 && isDualChannel()
-		|| bitRate ==  56 && isDualChannel()
-		|| bitRate ==  80 && isDualChannel()
-		|| bitRate == 224 && isSingleChannel()
-		|| bitRate == 256 && isSingleChannel()
-		|| bitRate == 320 && isSingleChannel()
-		|| bitRate == 384 && isSingleChannel()) {
+                || bitRate ==  32 && isDualChannel()
+                || bitRate ==  48 && isDualChannel()
+                || bitRate ==  56 && isDualChannel()
+                || bitRate ==  80 && isDualChannel()
+                || bitRate == 224 && isSingleChannel()
+                || bitRate == 256 && isSingleChannel()
+                || bitRate == 320 && isSingleChannel()
+                || bitRate == 384 && isSingleChannel()) {
             mp3File.seek(mp3File.getFilePointer() - 3);
             next(forwardToNextFrame);
         }
@@ -499,66 +499,66 @@ public class FrameHeader {
         // calculate frame size (including header)
         // derived from mpg123-0.59r/common.c
         switch (layer) {
-	    case LAYER_I:
-		frameSize  = bitRate * 12000;
-		frameSize /= sampleRate;
-		frameSize += (paddingBit ? 1 : 0);
-		frameSize *= 4;
-		break;
-	    case LAYER_II:
-		frameSize  = bitRate * 144000;
-		frameSize /= sampleRate;
-		frameSize += (paddingBit ? 1 : 0);
-		break;
-	    case LAYER_III:
-		frameSize  = bitRate * 144000;
-		frameSize /= sampleRate * (isMpegVersion1() ? 1 : 2);
-		frameSize += (paddingBit ? 1 : 0);
-		break;
+            case LAYER_I:
+                frameSize  = bitRate * 12000;
+                frameSize /= sampleRate;
+                frameSize += (paddingBit ? 1 : 0);
+                frameSize *= 4;
+                break;
+            case LAYER_II:
+                frameSize  = bitRate * 144000;
+                frameSize /= sampleRate;
+                frameSize += (paddingBit ? 1 : 0);
+                break;
+            case LAYER_III:
+                frameSize  = bitRate * 144000;
+                frameSize /= sampleRate * (isMpegVersion1() ? 1 : 2);
+                frameSize += (paddingBit ? 1 : 0);
+                break;
         }
 
         // set file pointer just before next frame header
         if (forwardToNextFrame) {
             mp3File.seek(mp3File.getFilePointer() + frameSize - 4);
-	}
+        }
     }
 
     private int bitRateColumn () {
-	if (isMpegVersion1()) {
-	    if (isLayerI()) {
-		return 0;
-	    }
-	    if (isLayerII()) {
-		return 1;
-	    }
-	    if (isLayerIII()) {
-		return 2;
-	    }
-	    return -1;
-	}
-	if (isMpegVersion2() || isMpegVersion25()) {
-	    if (isLayerI()) {
-		return 3;
-	    }
-	    if (isLayerII() || isLayerIII()) {
-		return 4;
-	    }
-	    return -1;
-	}
-	return -1;
+        if (isMpegVersion1()) {
+            if (isLayerI()) {
+                return 0;
+            }
+            if (isLayerII()) {
+                return 1;
+            }
+            if (isLayerIII()) {
+                return 2;
+            }
+            return -1;
+        }
+        if (isMpegVersion2() || isMpegVersion25()) {
+            if (isLayerI()) {
+                return 3;
+            }
+            if (isLayerII() || isLayerIII()) {
+                return 4;
+            }
+            return -1;
+        }
+        return -1;
     }
 
     private int sampleRateColumn () {
-	if (isMpegVersion1()) {
-	    return 0;
-	}
-	if (isMpegVersion2()) {
-	    return 1;
-	}
-	if (isMpegVersion25()) {
-	    return 2;
-	}
-	return -1;
+        if (isMpegVersion1()) {
+            return 0;
+        }
+        if (isMpegVersion2()) {
+            return 1;
+        }
+        if (isMpegVersion25()) {
+            return 2;
+        }
+        return -1;
     }
 
 
@@ -574,11 +574,11 @@ public class FrameHeader {
             FrameHeader h = new FrameHeader(new File(args[i]));
             if (h.isVbr(20)) {
                 h.examineAll();
-	    }
+            }
             System.out.println(args[i] + ":\n    " + h);
         }
     }
 }
 
 
-/* end of $Id: FrameHeader.java,v 1.14 2003/04/14 07:18:53 remco Exp $ */
+/* end of $Id: FrameHeader.java,v 1.15 2005/09/30 13:51:06 remco Exp $ */

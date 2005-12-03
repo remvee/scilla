@@ -29,7 +29,7 @@ import org.scilla.*;
  * A file object is a media object somewhere on disk.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class FileObject implements MediaObject {
     static final int BUFFER_SIZE = 4096;
@@ -67,6 +67,6 @@ public class FileObject implements MediaObject {
      * @return object filename
      */
     public String getFilename () {
-	return filename;
+        return filename;
     }
 }

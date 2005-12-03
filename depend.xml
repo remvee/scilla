@@ -2,13 +2,19 @@
   <package name="commons-logging" packaged="true" runtime="true">
     <class>org.apache.commons.logging.Log</class>
     <baseurl>http://www.apache.org/dist/jakarta/commons/logging/binaries</baseurl>
-    <zip>commons-logging-1.0.3.zip</zip>
-    <jar>commons-logging-1.0.3/commons-logging.jar</jar>
+    <zip>commons-logging-1.0.4.zip</zip>
+    <jar>commons-logging-1.0.4/commons-logging.jar</jar>
   </package>
   <package name="servlet" packaged="true">
     <class>javax.servlet.Servlet</class>
-    <baseurl>http://dl.sourceforge.net/sourceforge/jetty</baseurl>
-    <zip>Jetty-4.2.4.zip</zip>
-    <jar>Jetty-4.2.4/lib/javax.servlet.jar</jar>
+    <baseurl>http://www.apache.org/dist/jakarta/tomcat-5/v5.0.28/bin</baseurl>
+    <zip>jakarta-tomcat-5.0.28.zip</zip>
+    <jar>jakarta-tomcat-5.0.28/common/lib/servlet-api.jar</jar>
+  </package>
+  <package name="jsp" packaged="true">
+    <class>javax.servlet.jsp.JspPage</class>
+    <baseurl>http://www.apache.org/dist/jakarta/tomcat-5/v5.0.28/bin</baseurl>
+    <zip>jakarta-tomcat-5.0.28.zip</zip>
+    <jar>jakarta-tomcat-5.0.28/common/lib/jsp-api.jar</jar>
   </package>
 </dependencies>

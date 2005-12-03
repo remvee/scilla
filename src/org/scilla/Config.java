@@ -41,7 +41,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * The scilla configuration class.
  *
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  * @author R.W. van 't Veer
  */
 public class Config extends HashMap {
@@ -54,13 +54,13 @@ public class Config extends HashMap {
 
     /** singleton constructor */
     protected Config () {
-	super();
+        super();
 
-	// defaults
-	put(CACHE_DIR_KEY, System.getProperty("java.io.tmpdir"));
+        // defaults
+        put(CACHE_DIR_KEY, System.getProperty("java.io.tmpdir"));
 
-	// property file data
-	Properties prop = new Properties();
+        // property file data
+        Properties prop = new Properties();
         InputStream in = null;
         try {
             ClassLoader cl = getClass().getClassLoader();
@@ -82,35 +82,35 @@ public class Config extends HashMap {
                 }
             }
         }
-	putAll(prop);
+        putAll(prop);
 
-	// env-entry data
-	try {
-	    Context ctx = new InitialContext();
-	    Context env = (Context) ctx.lookup("java:comp/env");
-	    for (Enumeration en = env.list("scilla"); en.hasMoreElements();) {
-		Object v = en.nextElement();
-		if (v instanceof NameClassPair) {
-		    String key = ((NameClassPair) v).getName();
-		    String val = env.lookup("scilla/" + key).toString();
-		    put(key, val);
+        // env-entry data
+        try {
+            Context ctx = new InitialContext();
+            Context env = (Context) ctx.lookup("java:comp/env");
+            for (Enumeration en = env.list("scilla"); en.hasMoreElements();) {
+                Object v = en.nextElement();
+                if (v instanceof NameClassPair) {
+                    String key = ((NameClassPair) v).getName();
+                    String val = env.lookup("scilla/" + key).toString();
+                    put(key, val);
 
-		    log.info("env-entry: " + key + "="+val);
-		}
-	    }
-	} catch (NamingException ex) {
-	    log.info("no env-entries for scilla available");
-	}
+                    log.info("env-entry: " + key + "="+val);
+                }
+            }
+        } catch (NamingException ex) {
+            log.info("no env-entries for scilla available");
+        }
     }
 
     /**
      * @return only instance for current classloader
      */
     public static synchronized Config getInstance () {
-	if (instance == null) {
-	    instance = new Config();
-	}
-	return instance;
+        if (instance == null) {
+            instance = new Config();
+        }
+        return instance;
     }
     private static Config instance = null;
 
@@ -121,8 +121,8 @@ public class Config extends HashMap {
      * @see java.lang.Boolean#valueOf(String)
      */
     public boolean getBoolean (String key) {
-	String v = getString(key);
-	return v != null && Boolean.valueOf(v).booleanValue();
+        String v = getString(key);
+        return v != null && Boolean.valueOf(v).booleanValue();
     }
 
     /**
@@ -135,8 +135,8 @@ public class Config extends HashMap {
      */
     public int getInt (String key)
     throws NumberFormatException {
-	String v = getString(key);
-	return v == null ? -1 : Integer.parseInt(v);
+        String v = getString(key);
+        return v == null ? -1 : Integer.parseInt(v);
     }
 
     /**
@@ -145,7 +145,7 @@ public class Config extends HashMap {
      * @return string value associated with key
      */
     public String getString (String key) {
-	return (String) get(key);
+        return (String) get(key);
     }
 
     /**
@@ -163,7 +163,7 @@ public class Config extends HashMap {
         String v = getString(key);
         if (v == null) {
             return null;
-	}
+        }
 
         StringTokenizer st = new StringTokenizer(v);
         List l = new Vector();

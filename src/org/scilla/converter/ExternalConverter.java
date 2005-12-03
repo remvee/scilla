@@ -112,7 +112,7 @@ import org.scilla.*;
  * </DL>
  * @see org.scilla.Config
  * @author R.W. van 't Veer
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.21 $
  */
 public class ExternalConverter implements Converter {
     private static final Log log = LogFactory.getLog(ExternalConverter.class);
@@ -153,7 +153,7 @@ public class ExternalConverter implements Converter {
     private static Set blacklistSet = new HashSet();
     static
     {
-	for (Iterator it = config.keySet().iterator(); it.hasNext();) {
+        for (Iterator it = config.keySet().iterator(); it.hasNext();) {
             String key = (String) it.next();
             if (key.startsWith(CONVERTER_PREFIX)) {
                 String tail = key.substring(CONVERTER_PREFIX.length()+1);
@@ -351,7 +351,7 @@ public class ExternalConverter implements Converter {
         }
         if (log.isDebugEnabled()) {
             log.debug("cmdline: "+cmdline);
-	}
+        }
 
         // prepare command
         String[] cmd = (String[]) cmdline.toArray(new String[0]);
@@ -384,23 +384,23 @@ public class ExternalConverter implements Converter {
         c = (Collection) inputTypeMap.get(req.getInputType());
         if (c == null) {
             return false;
-	}
+        }
         conv.addAll(c);
-	// TODO remove all references to blacklisted converters at setup
-	conv.removeAll(blacklistSet);
+        // TODO remove all references to blacklisted converters at setup
+        conv.removeAll(blacklistSet);
         if (conv.size() == 0) {
             return false;
-	}
+        }
 
         // can handle output?
         c = (Collection) outputTypeMap.get(req.getOutputType());
         if (c == null) {
             return false;
-	}
+        }
         conv.retainAll(c);
         if (conv.size() == 0) {
             return false;
-	}
+        }
 
         // supports all parameters?
         it = req.getParameterKeys().iterator();
@@ -410,11 +410,11 @@ public class ExternalConverter implements Converter {
                 c = (Collection) parameterMap.get(key);
                 if (c == null) {
                     return false;
-		}
+                }
                 conv.retainAll(c);
                 if (conv.size() == 0) {
                     return false;
-		}
+                }
             }
         }
 
@@ -434,7 +434,7 @@ public class ExternalConverter implements Converter {
     public boolean exitSuccess () {
         if (! finished) {
             throw new IllegalStateException();
-	}
+        }
         return ignoreExitstatSet.contains(converterName)
                || (exitValue == 0);
     }
@@ -442,14 +442,14 @@ public class ExternalConverter implements Converter {
     public String getErrorMessage () {
         if (! finished) {
             throw new IllegalStateException();
-	}
+        }
         return errorMessage;
     }
 
     public void setOutputFile (String fn) {
         if (started) {
             throw new IllegalStateException();
-	}
+        }
         outputFile = fn;
     }
 
@@ -467,16 +467,7 @@ public class ExternalConverter implements Converter {
      * @return <tt>true</tt> if the command can be executed
      */
     private static boolean canExecute(String exec) {
-        String osName = System.getProperty("os.name");
-        if (osName != null && !osName.startsWith("Windows")) {
-            try {
-                // TODO this trick does not work on NT!
-                Runtime.getRuntime().exec(new String[] { exec}).waitFor();
-            } catch (Throwable ex) {
-                log.debug("can't execute: '" + exec + "'", ex);
-                return false;
-            }
-        }
+        // TODO implement me!
         return true;
     }
 }

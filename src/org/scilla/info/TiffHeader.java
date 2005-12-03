@@ -26,7 +26,7 @@ import java.util.*;
 /**
  * Tiff header/ Image File Directory (IFD) reader.
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @author R.W. van 't Veer
  */
 public class TiffHeader {
@@ -60,7 +60,7 @@ public class TiffHeader {
         fields = new ArrayList();
         
         processByteOrder();
-	readIfds(read4ByteInt(data, 4));
+        readIfds(read4ByteInt(data, 4));
     }
 
     /**
@@ -291,63 +291,63 @@ public class TiffHeader {
     }
     
     private int read1ByteInt (byte[] data, int pos) {
-	return data[pos] & 0xff;
+        return data[pos] & 0xff;
     }
 
     private int read2ByteInt (byte[] data, int pos) {
-	int n1 = data[pos++] & 0xff;
-	int n2 = data[pos] & 0xff;
+        int n1 = data[pos++] & 0xff;
+        int n2 = data[pos] & 0xff;
 
-	return littleEndian
-		? ((n2 << 8) | n1)
-		: ((n1 << 8) | n2);
+        return littleEndian
+                ? ((n2 << 8) | n1)
+                : ((n1 << 8) | n2);
     }
 
     private int read4ByteInt (byte[] data, int pos) {
-	int n1 = data[pos++] & 0xff;
-	int n2 = data[pos++] & 0xff;
-	int n3 = data[pos++] & 0xff;
-	int n4 = data[pos] & 0xff;
+        int n1 = data[pos++] & 0xff;
+        int n2 = data[pos++] & 0xff;
+        int n3 = data[pos++] & 0xff;
+        int n4 = data[pos] & 0xff;
 
-	return littleEndian
-		? ((n4 << 24) | (n3 << 16) | (n2 << 8) | n1)
-		: ((n1 << 24) | (n2 << 16) | (n3 << 8) | n4);
+        return littleEndian
+                ? ((n4 << 24) | (n3 << 16) | (n2 << 8) | n1)
+                : ((n1 << 24) | (n2 << 16) | (n3 << 8) | n4);
     }
 
     private void readIfds(int pos)
     throws TiffException {
         int p = pos;
-	while (p != 0) {
-	    int num = read2ByteInt(data, p);
-	    p += 2;
+        while (p != 0) {
+            int num = read2ByteInt(data, p);
+            p += 2;
 
-	    for (int i = 0; i < num; i++, p += 12) {
-		fields.add(new Field(data, p));
-	    }
+            for (int i = 0; i < num; i++, p += 12) {
+                fields.add(new Field(data, p));
+            }
 
-	    p = read4ByteInt(data, p);
-	}
+            p = read4ByteInt(data, p);
+        }
     }
 
     private static boolean isSigned (int type) {
-	switch (type) {
-	    case 6: case 8: case 9: case 10:
-		return true;
+        switch (type) {
+            case 6: case 8: case 9: case 10:
+                return true;
             default:
                 return false;
-	}
+        }
     }
 
     private static long signedLong (long v) {
-	return (v & 0x80000000L) != 0 ?  v | 0xffffffff00000000L : v;
+        return (v & 0x80000000L) != 0 ?  v | 0xffffffff00000000L : v;
     }
 
     private static int signedShort (int v) {
-	return (v & 0x8000) != 0 ?  v | 0xffff0000 : v;
+        return (v & 0x8000) != 0 ?  v | 0xffff0000 : v;
     }
 
     private static short signedByte (short v) {
-	return (v & 0x80) != 0 ? (short) (v | 0xff00) : v;
+        return (v & 0x80) != 0 ? (short) (v | 0xff00) : v;
     }
 
 }

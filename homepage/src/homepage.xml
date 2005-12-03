@@ -1,7 +1,7 @@
 <homepage>
     <title>Scilla - media server</title>
     <location>http://www.xs4all.nl/~rwvtveer/scilla</location>
-    <date>$Date: 2003/10/23 22:18:24 $</date>
+    <date>$Date: 2005/12/04 20:19:10 $</date>
     <description>
 	<html><![CDATA[
 	    <p>
@@ -64,7 +64,7 @@
 
     <section>
 	<title>News</title>
-	<changelog file="../changelog.xml" max="15" dist="changelog.html"/>
+	<changelog file="../build/projects/scilla/ChangeLog.xml" max="15" dist="projects/scilla/ChangeLog.html"/>
     </section>
 
     <section>
@@ -72,6 +72,26 @@
 	<html>
 	    The following releases are considered to be stable.
 	</html>
+	<release tag="RELEASE_0_9_9" filebase="scilla-0_9_9">
+            <html><![CDATA[
+                4.XII.2005
+                <ul>
+                    <li>
+                        bug fixes; robustness EXIF and ID3v2 handling
+                    </li>
+                </ul>
+            ]]></html>
+        </release>
+	<release tag="RELEASE_0_9_8" filebase="scilla-0_9_8">
+            <html><![CDATA[
+                6.II.2005
+                <ul>
+                    <li>
+                        many bug fixes
+                    </li>
+                </ul>
+            ]]></html>
+        </release>
 	<release tag="RELEASE_0_9_7" filebase="scilla-0_9_7">
 	    <html><![CDATA[
 		9.X.2003

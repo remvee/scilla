@@ -38,7 +38,7 @@ import org.scilla.util.Semaphore;
  * taken from the scilla configuration.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  */
 public class QueuedProcess {
     private static final Log log = LogFactory.getLog(QueuedProcess.class);
@@ -112,14 +112,14 @@ public class QueuedProcess {
             log.info("process: "+sb);
         }
 
-	if (log.isDebugEnabled() && envp != null) {
+        if (log.isDebugEnabled() && envp != null) {
             if (envp != null) {
                 StringBuffer sb = new StringBuffer();
                 for (int i = 0; i < envp.length; i++) {
                     sb.append(envp[i]);
                     sb.append(' ');
-    		}
-    		log.debug("env: " + sb);
+                }
+                log.debug("env: " + sb);
             }
             if (dir != null) {
                 log.debug("dir: " + dir);
@@ -127,39 +127,39 @@ public class QueuedProcess {
         }
 
         // execute process
-	final String[] args_ = args;
-	final String[] envp_ = envp;
-	final File dir_ = dir;
-	thrd = new Thread () {
-	    public void run () {
-		try {
-		    sem.decr();
-		    log.debug("process started");
-		    Process proc = Runtime.getRuntime().exec(args_, envp_, dir_);
+        final String[] args_ = args;
+        final String[] envp_ = envp;
+        final File dir_ = dir;
+        thrd = new Thread () {
+            public void run () {
+                try {
+                    sem.decr();
+                    log.debug("process started");
+                    Process proc = Runtime.getRuntime().exec(args_, envp_, dir_);
 
-		    // redirect stdout and stderr
-		    stdout = new OutputLog(proc.getInputStream());
-		    stdout.start();
-		    stderr = new OutputLog(proc.getErrorStream());
-		    stderr.start();
+                    // redirect stdout and stderr
+                    stdout = new OutputLog(proc.getInputStream());
+                    stdout.start();
+                    stderr = new OutputLog(proc.getErrorStream());
+                    stderr.start();
 
-		    // wait for process to finish
-		    proc.waitFor();
-		    // record exit value
-		    exitValue = proc.exitValue();
-		} catch (Throwable ex) {
-		    log.error("process execution failed", ex);
+                    // wait for process to finish
+                    proc.waitFor();
+                    // record exit value
+                    exitValue = proc.exitValue();
+                } catch (Throwable ex) {
+                    log.error("process execution failed", ex);
 
-		    // record exception
-		    crash = ex;
-		} finally {
-		    log.debug("process finished");
-		    sem.incr();
-		}
-	    }
-	};
-	thrd.setDaemon(true);
-	thrd.start();
+                    // record exception
+                    crash = ex;
+                } finally {
+                    log.debug("process finished");
+                    sem.incr();
+                }
+            }
+        };
+        thrd.setDaemon(true);
+        thrd.start();
     }
 
     /**
@@ -170,8 +170,8 @@ public class QueuedProcess {
             try {
                 thrd.join();
             } catch (InterruptedException e) {
-		// will never happen
-	    }
+                // will never happen
+            }
             thrd = null;
         }
     }
@@ -199,7 +199,7 @@ class OutputLog extends Thread {
     String data;
 
     public OutputLog (InputStream in) {
-	super();
+        super();
         this.in = in;
     }
 
@@ -213,12 +213,12 @@ class OutputLog extends Thread {
                 sb.append('\n');
             }
         } catch (IOException e) {
-	    // ignore
+            // ignore
         } finally {
             try {
                 br.close();
             } catch (IOException e ) {
-		// ignore
+                // ignore
             }
         }
         data = sb.toString();
@@ -228,7 +228,7 @@ class OutputLog extends Thread {
         try {
             this.join();
         } catch (InterruptedException ex) {
-	    // ignore
+            // ignore
         }
         return data;
     }

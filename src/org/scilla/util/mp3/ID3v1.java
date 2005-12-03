@@ -30,7 +30,7 @@ import java.io.UnsupportedEncodingException;
  * Access to ID3v1 (or v1.1) tag in MP3 file.
  * @see <a href="http://www.id3.org/id3v1.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class ID3v1 {
     /// constants
@@ -215,12 +215,12 @@ public class ID3v1 {
         try {
             if (f.length() < 129) {
                 throw new IOException("Unexpected EOF");
-	    }
+            }
             f.seek(f.length() - 128);
 
             if (f.read(b) != 3) {
                 throw new IOException("Unexpected EOF");
-	    }
+            }
         } finally {
             f.close();
         }
@@ -253,7 +253,7 @@ public class ID3v1 {
             f.seek(f.length() - 125);
             if (f.read(b) != 125) {
                 throw new IOException("Unexpected EOF");
-	    }
+            }
         } finally {
             f.close();
         }
@@ -290,7 +290,7 @@ public class ID3v1 {
         if (trkn == -1) {
             b.append(fixLength(comment, MAX_COMMENT_LEN));
         } else {
-	    // ID3v1.1
+            // ID3v1.1
             b.append(fixLength(comment, MAX_COMMENT_LEN-2));
             b.append('\0');
             b.append((char)(trkn & 0xff));
@@ -458,4 +458,4 @@ public class ID3v1 {
 }
 
 
-/* end of $Id: ID3v1.java,v 1.7 2004/04/04 14:50:32 remco Exp $ */
+/* end of $Id: ID3v1.java,v 1.8 2005/09/30 13:51:06 remco Exp $ */

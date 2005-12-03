@@ -2,6 +2,7 @@
 
 	<!-- build tool configuration -->
 	<property name="ctags.exec" value="exctags" />
+	<property name="cvs2cl.exec" value="cvs2cl"/>
 
 	<!-- building sites -->
 	<property name="src.dir" value="src" />
@@ -80,7 +81,7 @@
 	</target>
 
 
-	<target name="depend" description="fetch libraries this code depends on from the web">
+	<target name="depend" depends="prepare" description="fetch libraries this code depends on from the web">
 		<style style="misc/depend-build.xsl" in="depend.xml" out="depend-build.xml" />
 		<ant antfile="depend-build.xml">
 			<property name="lib.dir" value="${lib.dir}" />
@@ -114,6 +115,20 @@
 		<ant dir="homepage" />
 	</target>
 
+	<target name="changelog" description="generate changelog from cvs messages">
+		<exec executable="${cvs2cl.exec}">
+			<arg value="-P" />
+		</exec>
+		<exec executable="${cvs2cl.exec}">
+			<arg value="-P" />
+			<arg value="--xml" />
+			<arg value="-f" />
+			<arg value="ChangeLog.xml" />
+		</exec>
+		<!-- hack to prevent interpretation of xmlns in source xml -->
+		<replace file="ChangeLog.xml" token="xmlns" value="dummy" />
+		<style style="misc/changelog-html.xsl" in="ChangeLog.xml" out="ChangeLog.html" />
+	</target>
 
 	<target name="clean" description="delete generated files">
 		<delete quiet="true">

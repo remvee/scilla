@@ -4,6 +4,7 @@
 	<classpathentry kind="src" path="examples/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/runtime/commons-logging.jar"/>
-	<classpathentry kind="lib" path="lib/javax.servlet.jar"/>
+	<classpathentry kind="lib" path="lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="lib/jsp-api.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

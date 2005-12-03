@@ -29,7 +29,7 @@ import java.io.*;
  * language and identifier like <tt>COMM</tt> and <tt>USLT</tt>.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class TextFrame extends Frame {
     private String enc;
@@ -116,18 +116,18 @@ public class TextFrame extends Frame {
         for (; j < data.length; j++) {
             if (data[j] != 0) {
                 continue;
-	    }
+            }
             if (! isUnicode) {
                 break;
-	    }
+            }
             if (j < data.length-1 && data[j+1] == 0) {
                 break;
-	    }
+            }
         }
         if (j < data.length && isUnicode) {
             if (((j - i) % 2) != 0) {
                 j++;
-	    }
+            }
         }
         return j;
     }
@@ -191,7 +191,7 @@ public class TextFrame extends Frame {
             encId = 3;
         } else {
             enc = "ISO-8859-1";
-	}
+        }
 
         // write data to frame
         int i = 0;

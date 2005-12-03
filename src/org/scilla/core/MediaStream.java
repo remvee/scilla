@@ -34,7 +34,7 @@ import org.scilla.*;
  * has finished.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class MediaStream extends InputStream {
     private static final Log log = LogFactory.getLog(MediaStream.class);
@@ -56,17 +56,17 @@ public class MediaStream extends InputStream {
     static {
         // get timeouts from configuration
         try {
-	    if (config.containsKey(TIMEOUT_FOR_FILE_KEY)) {
-		timeoutForFile = config.getInt(TIMEOUT_FOR_FILE_KEY);
-	    }
-	    if (config.containsKey(SLEEP_FOR_FILE_KEY)) {
-		sleepForFile = config.getInt(SLEEP_FOR_FILE_KEY);
-	    }
-	    if (config.containsKey(TIMEOUT_FOR_READ_KEY)) {
-		timeoutForRead = config.getInt(TIMEOUT_FOR_READ_KEY);
-	    }
-	    if (config.containsKey(SLEEP_FOR_READ_KEY)) {
-		sleepForRead = config.getInt(SLEEP_FOR_READ_KEY);
+            if (config.containsKey(TIMEOUT_FOR_FILE_KEY)) {
+                timeoutForFile = config.getInt(TIMEOUT_FOR_FILE_KEY);
+            }
+            if (config.containsKey(SLEEP_FOR_FILE_KEY)) {
+                sleepForFile = config.getInt(SLEEP_FOR_FILE_KEY);
+            }
+            if (config.containsKey(TIMEOUT_FOR_READ_KEY)) {
+                timeoutForRead = config.getInt(TIMEOUT_FOR_READ_KEY);
+            }
+            if (config.containsKey(SLEEP_FOR_READ_KEY)) {
+                sleepForRead = config.getInt(SLEEP_FOR_READ_KEY);
             }
         } catch (Exception ex) {
             log.warn("failed to set timeout from configuration", ex);
@@ -88,17 +88,17 @@ public class MediaStream extends InputStream {
         if (! f.exists()) {
             if (runner != null && ! runner.hasFinished()) {
                 // wait for file to appear
-		int timeout = timeoutForFile / sleepForFile;
+                int timeout = timeoutForFile / sleepForFile;
                 for (; timeout > 0 && ! f.exists() && ! runner.hasFinished(); timeout--) {
                     try {
                         Thread.sleep(sleepForFile);
                     } catch (InterruptedException ex) {
-			// ignore
-		    }
+                        // ignore
+                    }
                 }
-		if (timeout <= 0) {
-		    throw new ScillaException("timeout waiting for output");
-		}
+                if (timeout <= 0) {
+                    throw new ScillaException("timeout waiting for output");
+                }
             }
             // did runner leave any output?
             if (! f.exists()) {
@@ -124,63 +124,63 @@ public class MediaStream extends InputStream {
     public int read ()
     throws IOException {
         // read without going beyond EOF when k
-	int timeout = timeoutForRead / sleepForRead;
-	for (; timeout > 0 && runner != null && ! runner.hasFinished(); timeout--) {
+        int timeout = timeoutForRead / sleepForRead;
+        for (; timeout > 0 && runner != null && ! runner.hasFinished(); timeout--) {
             try {
                 Thread.sleep(sleepForRead);
             } catch (InterruptedException ex) {
-		// ignore
-	    }
+                // ignore
+            }
 
             if (in.available() > 0) {
                 return in.read();
-	    }
+            }
         }
-	if (timeout <= 0) {
-	    throw new IOException("timeout waiting for data");
-	}
+        if (timeout <= 0) {
+            throw new IOException("timeout waiting for data");
+        }
 
         return in.read();
     }
     public int read (byte[] b)
     throws IOException {
         // read without going beyond EOF when k
-	int timeout = timeoutForRead / sleepForRead;
-	for (; timeout > 0 && runner != null && ! runner.hasFinished(); timeout--) {
+        int timeout = timeoutForRead / sleepForRead;
+        for (; timeout > 0 && runner != null && ! runner.hasFinished(); timeout--) {
             try {
                 Thread.sleep(sleepForRead);
             } catch (InterruptedException ex) {
-		// ignore
-	    }
+                // ignore
+            }
 
             if (in.available() > 0) {
                 return in.read(b);
-	    }
+            }
         }
-	if (timeout <= 0) {
-	    throw new IOException("timeout waiting for data");
-	}
+        if (timeout <= 0) {
+            throw new IOException("timeout waiting for data");
+        }
 
         return in.read(b);
     }
     public int read (byte[] b, int off, int len)
     throws IOException {
         // read without going beyond EOF when k
-	int timeout = timeoutForRead / sleepForRead;
-	for (; timeout > 0 && runner != null && ! runner.hasFinished(); timeout--) {
+        int timeout = timeoutForRead / sleepForRead;
+        for (; timeout > 0 && runner != null && ! runner.hasFinished(); timeout--) {
             try {
                 Thread.sleep(sleepForRead);
             } catch (InterruptedException ex) {
-		// ignore
-	    }
+                // ignore
+            }
 
             if (in.available() > 0) {
                 return in.read(b, off, len);
-	    }
+            }
         }
-	if (timeout <= 0) {
-	    throw new IOException("timeout waiting for data");
-	}
+        if (timeout <= 0) {
+            throw new IOException("timeout waiting for data");
+        }
 
         return in.read(b, off, len);
     }
@@ -189,6 +189,6 @@ public class MediaStream extends InputStream {
     throws IOException {
         if (in != null) {
             in.close();
-	}
+        }
     }
 }

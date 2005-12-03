@@ -38,7 +38,7 @@ import org.scilla.util.*;
  * The CacheManager serves cached or fresh objects.  If the requested
  * object is not available in cache, a new conversion will be started.
  *
- * @version $Revision: 1.34 $
+ * @version $Revision: 1.35 $
  * @author R.W. van 't Veer
  */
 public class CacheManager implements RunnerChangeListener {
@@ -62,7 +62,7 @@ public class CacheManager implements RunnerChangeListener {
     public static synchronized CacheManager getInstance () {
         if (_instance == null) {
             _instance = new CacheManager();
-	}
+        }
         return _instance;
     }
 
@@ -76,106 +76,106 @@ public class CacheManager implements RunnerChangeListener {
      */
     public MediaObject getMediaObject (Request req)
     throws ScillaException {
-	if (log.isDebugEnabled()) {
-	    log.debug("getMediaObject("+req+")");
-	}
+        if (log.isDebugEnabled()) {
+            log.debug("getMediaObject("+req+")");
+        }
 
-	File ifile = new File(req.getInputFile());
+        File ifile = new File(req.getInputFile());
 
-	// does source really exist
-	if (!ifile.exists()) {
-	    throw new ScillaNoInputException();
-	}
-	// does request need any conversion?
-	if (!req.needConverter()) {
-	    log.debug("get: original data");
-	    return new FileObject(req.getInputFile());
-	}
+        // does source really exist
+        if (!ifile.exists()) {
+            throw new ScillaNoInputException();
+        }
+        // does request need any conversion?
+        if (!req.needConverter()) {
+            log.debug("get: original data");
+            return new FileObject(req.getInputFile());
+        }
 
-	MediaObject obj = null;
-	String ofn = getCachedObjectFilename(req);
-	File ofile = new File(ofn);
+        MediaObject obj = null;
+        String ofn = getCachedObjectFilename(req);
+        File ofile = new File(ofn);
 
-	// conversion still running?
-	obj = (RunnerObject) runners.get(ofn);
-	if (obj != null) {
-	    log.debug("get: catchup with runner");
-	    return new CachedObject(ofn, (RunnerObject) obj);
-	}
-	// output in cache and source not newer than cache
-	if (ofile.exists() && ifile.lastModified() < ofile.lastModified()) {
-	    log.debug("get: cached data");
-	    return new CachedObject(ofn);
-	}
-	// create new MediaObject
-	obj = MediaFactory.createObject(req, ofn);
-	if (obj instanceof RunnerObject) {
-	    RunnerObject ro = (RunnerObject) obj;
+        // conversion still running?
+        obj = (RunnerObject) runners.get(ofn);
+        if (obj != null) {
+            log.debug("get: catchup with runner");
+            return new CachedObject(ofn, (RunnerObject) obj);
+        }
+        // output in cache and source not newer than cache
+        if (ofile.exists() && ifile.lastModified() < ofile.lastModified()) {
+            log.debug("get: cached data");
+            return new CachedObject(ofn);
+        }
+        // create new MediaObject
+        obj = MediaFactory.createObject(req, ofn);
+        if (obj instanceof RunnerObject) {
+            RunnerObject ro = (RunnerObject) obj;
 
-	    // make sure output file can be writen
-	    ensureCacheDirectoryFor(ofn);
+            // make sure output file can be writen
+            ensureCacheDirectoryFor(ofn);
 
-	    // register change listener
-	    runners.put(ofn, ro);
-	    ro.addRunnerChangeListener(this);
+            // register change listener
+            runners.put(ofn, ro);
+            ro.addRunnerChangeListener(this);
 
-	    // add runner to list and start converter
-	    ro.start();
+            // add runner to list and start converter
+            ro.start();
 
-	    if (log.isDebugEnabled()) {
-		log.debug("get: started runner: "+ro);
-	    }
-	    return obj;
-	}
+            if (log.isDebugEnabled()) {
+                log.debug("get: started runner: "+ro);
+            }
+            return obj;
+        }
 
-	// not a runner probably original
-	log.debug("get: passing object from media factory");
-	return obj;
+        // not a runner probably original
+        log.debug("get: passing object from media factory");
+        return obj;
     }
 
     public String getRemoteObjectFile (URL url)
     throws ScillaException {
-	String suffix = MimeType.getExtensionFromFilename(url.toString());
-	String fn = getCachedRemoteObjectFilename(url, suffix);
+        String suffix = MimeType.getExtensionFromFilename(url.toString());
+        String fn = getCachedRemoteObjectFilename(url, suffix);
 
-	// download object if not availble in cache
-	if (! (new File(fn)).exists()) {
-	    if (log.isDebugEnabled()) {
-		log.debug("fetching: "+url);
-	    }
+        // download object if not availble in cache
+        if (! (new File(fn)).exists()) {
+            if (log.isDebugEnabled()) {
+                log.debug("fetching: "+url);
+            }
 
-	    InputStream in = null;
-	    OutputStream out = null;
-	    try {
-		ensureCacheDirectoryFor(fn);
-		out = new FileOutputStream(fn);
-		in = url.openStream();
-		byte[] b = new byte[BUFFER_SIZE];
-		int n = 0;
-		while ((n = in.read(b)) != -1) {
-		    out.write(b, 0, n);
-		}
-	    } catch (Throwable ex) {
-		log.warn("unable to fetch remote object", ex);
-		throw new ScillaException("unable to fetch remote object", ex);
-	    } finally {
-		if (in != null) {
-		    try {
-			in.close();
-		    } catch (IOException ex) {
-			// ignore
-		    }
-		}
-		if (out != null) {
-		    try {
-			out.close();
-		    } catch (IOException ex) {
-			// ignore
-		    }
-		}
-	    }
-	}
-	return fn;
+            InputStream in = null;
+            OutputStream out = null;
+            try {
+                ensureCacheDirectoryFor(fn);
+                out = new FileOutputStream(fn);
+                in = url.openStream();
+                byte[] b = new byte[BUFFER_SIZE];
+                int n = 0;
+                while ((n = in.read(b)) != -1) {
+                    out.write(b, 0, n);
+                }
+            } catch (Throwable ex) {
+                log.warn("unable to fetch remote object", ex);
+                throw new ScillaException("unable to fetch remote object", ex);
+            } finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException ex) {
+                        // ignore
+                    }
+                }
+                if (out != null) {
+                    try {
+                        out.close();
+                    } catch (IOException ex) {
+                        // ignore
+                    }
+                }
+            }
+        }
+        return fn;
     }
 
     /**
@@ -186,14 +186,14 @@ public class CacheManager implements RunnerChangeListener {
      */
     public void runnerChange (RunnerObject ro, int code) {
         if (code == RUNNER_FINISHED) {
-	    if (log.isDebugEnabled()) {
-		log.debug("runnerChange: runner finished: "+ro);
-	    }
-	    // remove runner for list
+            if (log.isDebugEnabled()) {
+                log.debug("runnerChange: runner finished: "+ro);
+            }
+            // remove runner for list
             runners.remove(ro.getOutputFile());
         } else {
-	    log.warn("runnerChange: unhandled runner change: "+code+": "+ro);
-	}
+            log.warn("runnerChange: unhandled runner change: "+code+": "+ro);
+        }
     }
     /** the runner list */
     private Map runners = new Hashtable();
@@ -240,26 +240,26 @@ public class CacheManager implements RunnerChangeListener {
             result.append(rp.val);
             if (it.hasNext()) {
                 result.append("&");
-	    }
+            }
         }
-	String fn = result.toString();
+        String fn = result.toString();
 
-	// make sure it's a legal filename
-	fn = fnEncodeCharacters(fn);
+        // make sure it's a legal filename
+        fn = fnEncodeCharacters(fn);
 
         // append suffix to fool simple OS converters
-	fn += "." + MimeType.getExtensionForType(req.getOutputType());
+        fn += "." + MimeType.getExtensionForType(req.getOutputType());
 
-	// make sure max filename length is not violated
-	fn = fnChopIntoDirectories(fn);
+        // make sure max filename length is not violated
+        fn = fnChopIntoDirectories(fn);
 
         // prepend cache path
         fn = config.getString(Config.CACHE_DIR_KEY)
-		+ File.separator + CACHE_DIRNAME + File.separator + fn;
+                + File.separator + CACHE_DIRNAME + File.separator + fn;
 
         if (log.isDebugEnabled()) {
             log.debug("getCachedObjectFilename="+fn);
-	}
+        }
         return fn;
     }
 
@@ -269,16 +269,16 @@ public class CacheManager implements RunnerChangeListener {
      * @return absolute filename for object
      */
     private String getCachedRemoteObjectFilename (URL url, String suffix) {
-	// make legal filename from url and suffix
-	String fn = fnChopIntoDirectories(fnEncodeCharacters(url.toString()) + "." + suffix);
+        // make legal filename from url and suffix
+        String fn = fnChopIntoDirectories(fnEncodeCharacters(url.toString()) + "." + suffix);
 
         // prepend cache path
         fn = config.getString(Config.CACHE_DIR_KEY)
-		+ File.separator + REMOTE_DIRNAME + File.separator + fn;
+                + File.separator + REMOTE_DIRNAME + File.separator + fn;
 
         if (log.isDebugEnabled()) {
             log.debug("getCachedRemoteObjectFilename="+fn);
-	}
+        }
         return fn;
     }
 
@@ -293,40 +293,40 @@ public class CacheManager implements RunnerChangeListener {
                 out.append("_" + (int) data[i]);
             }
         }
-	return out.toString();
+        return out.toString();
     }
 
     private static String fnChopIntoDirectories (String in) {
-	// hold suffix
-	int suffixIdx = in.lastIndexOf('.');
-	String suffix = in.substring(suffixIdx);
-	int suffixLen = suffix.length();
+        // hold suffix
+        int suffixIdx = in.lastIndexOf('.');
+        String suffix = in.substring(suffixIdx);
+        int suffixLen = suffix.length();
         String t = in.substring(0, suffixIdx);
 
         // chopup, making directories using maxFilenameLen
-	StringBuffer out = new StringBuffer();
+        StringBuffer out = new StringBuffer();
         char[] data = t.toCharArray();
-	int i = 0;
+        int i = 0;
         for (; i < data.length; i++) {
             if (i % maxFilenameLen == 0) {
                 out.append(File.separator);
-	    }
+            }
             out.append(data[i]);
         }
 
-	// avoid file/ directory clash
-	for (; (i % maxFilenameLen) + suffixLen > maxFilenameLen; i++) {
-	    out.append('x');
-	}
-	if (i % maxFilenameLen == 0) {
-	    out.append(File.separator);
-	    out.append('x');
-	}
+        // avoid file/ directory clash
+        for (; (i % maxFilenameLen) + suffixLen > maxFilenameLen; i++) {
+            out.append('x');
+        }
+        if (i % maxFilenameLen == 0) {
+            out.append(File.separator);
+            out.append('x');
+        }
 
-	// reintroduce suffix
-	out.append(suffix);
+        // reintroduce suffix
+        out.append(suffix);
 
-	return out.toString();
+        return out.toString();
     }
 
     /**
@@ -334,9 +334,9 @@ public class CacheManager implements RunnerChangeListener {
      * @param fn name of file to make directory for
      */
     private static void ensureCacheDirectoryFor (String fn) {
-	if (log.isDebugEnabled()) {
-	    log.debug("ensureCacheDirectoryFor("+fn+")");
-	}
+        if (log.isDebugEnabled()) {
+            log.debug("ensureCacheDirectoryFor("+fn+")");
+        }
 
         String path = fn.substring(0, fn.lastIndexOf(File.separator));
         (new File(path)).mkdirs();
@@ -346,9 +346,9 @@ public class CacheManager implements RunnerChangeListener {
      * Debugging..
      */
     public static void main (String[] args) {
-	for (int i = 0; i < args.length; i++) {
-	    String fn = fnChopIntoDirectories(fnEncodeCharacters(args[i])+".bla");
-	    System.out.println(""+fn);
-	}
+        for (int i = 0; i < args.length; i++) {
+            String fn = fnChopIntoDirectories(fnEncodeCharacters(args[i])+".bla");
+            System.out.println(""+fn);
+        }
     }
 }

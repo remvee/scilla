@@ -40,7 +40,7 @@ import org.scilla.util.*;
  * parameter.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 public class JAIConverter implements Converter {
     private static Log log = LogFactory.getLog(JAIConverter.class);
@@ -76,18 +76,18 @@ public class JAIConverter implements Converter {
     volatile boolean started = false;
 
     static final String[] inputTypeList = new String[] {
-	"image/gif", "image/jpeg", "image/pjpeg", "image/png", "image/tiff",
-	"image/x-ms-bmp", "image/x-portable-anymap",
-	"image/x-portable-graymap"
+        "image/gif", "image/jpeg", "image/pjpeg", "image/png", "image/tiff",
+        "image/x-ms-bmp", "image/x-portable-anymap",
+        "image/x-portable-graymap"
     };
     static final String[] outputTypeList = new String[] {
-	"image/jpeg", "image/pjpeg", "image/png", "image/tiff",
-	"image/x-ms-bmp", "image/x-portable-anymap",
-	"image/x-portable-graymap"
+        "image/jpeg", "image/pjpeg", "image/png", "image/tiff",
+        "image/x-ms-bmp", "image/x-portable-anymap",
+        "image/x-portable-graymap"
     };
     static final String[] parameterList = new String[] {
-	THIS_CONVERTER_PARAMETER, Request.OUTPUT_TYPE_PARAMETER,
-	"scale", "crop", "rotate", "negate"
+        THIS_CONVERTER_PARAMETER, Request.OUTPUT_TYPE_PARAMETER,
+        "scale", "crop", "rotate", "negate"
     };
     static Map typeMap = new HashMap();
     static {
@@ -104,8 +104,8 @@ public class JAIConverter implements Converter {
     public void convert () {
         started = true;
         try {
-	    sem.decr();
-	    log.debug("converter started");
+            sem.decr();
+            log.debug("converter started");
 
             // lets hope JAI will recognized the input type
             PlanarImage img = JAI.create("fileload", request.getInputFile());
@@ -114,13 +114,13 @@ public class JAIConverter implements Converter {
             for (Iterator it = request.getParameters().iterator(); it.hasNext(); ) {
                 RequestParameter rp = (RequestParameter) it.next();
 
-		// outputtype is handled outside this loop
-		// thisconverter is skipped
+                // outputtype is handled outside this loop
+                // thisconverter is skipped
                 if (rp.key.equals(Request.OUTPUT_TYPE_PARAMETER)
-			|| rp.key.equals(THIS_CONVERTER_PARAMETER)) {
+                        || rp.key.equals(THIS_CONVERTER_PARAMETER)) {
                     continue;
                 }
-		img = handleConversion(img, rp);
+                img = handleConversion(img, rp);
             }
 
             // recode to output format
@@ -130,34 +130,34 @@ public class JAIConverter implements Converter {
             img.dispose();
             nimg.dispose();
         } catch (Exception ex) {
-	    log.warn("conversion failed", ex);
+            log.warn("conversion failed", ex);
             exitValue = 1;
             errorMessage = ex.getMessage();
         } finally {
-	    log.debug("converter finished");
-	    sem.incr();
-	}
+            log.debug("converter finished");
+            sem.incr();
+        }
         finished = true;
     }
 
     public boolean exitSuccess () {
         if (! finished) {
             throw new IllegalStateException();
-	}
+        }
         return exitValue == 0;
     }
 
     public String getErrorMessage () {
         if (! finished) {
             throw new IllegalStateException();
-	}
+        }
         return errorMessage;
     }
 
     public void setOutputFile (String fn) {
         if (started) {
             throw new IllegalStateException();
-	}
+        }
         outputFile = fn;
     }
 
@@ -183,7 +183,7 @@ public class JAIConverter implements Converter {
         }
         if (! flag) {
             return false;
-	}
+        }
 
         // can handle output?
         final String outType = req.getOutputType();
@@ -196,13 +196,13 @@ public class JAIConverter implements Converter {
         }
         if (! flag) {
             return false;
-	}
+        }
 
         // supports all parameters?
         Iterator it = req.getParameterKeys().iterator();
         while (it.hasNext()) {
             String key = (String) it.next();
-	    flag = false;
+            flag = false;
             for (int i = 0; i < parameterList.length; i++) {
                 if (key.equals(parameterList[i])) {
                     flag = true;
@@ -210,7 +210,7 @@ public class JAIConverter implements Converter {
             }
             if (! flag) {
                 return false;
-	    }
+            }
         }
 
         return true;
@@ -231,15 +231,15 @@ public class JAIConverter implements Converter {
         if (rp.key.equals("scale")) {
             nimg = scale(img, new GeometryParameter(rp.val));
         } else if (rp.key.equals("crop")) {
-	    nimg = crop(img, new GeometryParameter(rp.val));
+            nimg = crop(img, new GeometryParameter(rp.val));
         } else if (rp.key.equals("rotate")) {
-	    nimg = rotate(img, rp.val);
+            nimg = rotate(img, rp.val);
         } else if (rp.key.equals("negate")) {
-	    nimg = negate(img);
-	} else {
-	    // TODO should throw exception here!
-	    log.warn("handleConversion: param '"+rp.key+"' NOT YET IMPLEMENTED");
-	}
+            nimg = negate(img);
+        } else {
+            // TODO should throw exception here!
+            log.warn("handleConversion: param '"+rp.key+"' NOT YET IMPLEMENTED");
+        }
         
         // drop old version
         img.dispose();
@@ -262,10 +262,10 @@ public class JAIConverter implements Converter {
 
         if (geom.hasOption('<') && w < iw && h < ih) {
             return img;
-	}
+        }
         if (geom.hasOption('>') && w > iw && h > ih) {
             return img;
-	}
+        }
 
         if (geom.hasOption('%')) {
             w = (float) w / 100;
@@ -279,9 +279,9 @@ public class JAIConverter implements Converter {
             // keep ratio
             if (w < h) {
                 h = w;
-	    } else {
+            } else {
                 w = h;
-	    }
+            }
         }
 
         float x = geom.x;
@@ -321,31 +321,31 @@ public class JAIConverter implements Converter {
      * @return result image
      */
     PlanarImage rotate (PlanarImage img, String val) {
-	// determine degrees
-	double d = 0;
-	int p1 = val.indexOf('+');
-	if (p1 == -1) {
-	    d = Double.parseDouble(val);
-	} else {
-	    d = Double.parseDouble(val.substring(0, p1));
-	}
-	// determine rotation point
-	float x = 0;
-	float y = 0;
-	int p2 = val.indexOf('+', p1+1);
-	if (p1 == -1) {
-	    x = img.getWidth() / 2;
-	    y = img.getHeight() / 2;
-	} else if (p2 == -1) {
-	    x = Float.parseFloat(val.substring(p1+1));
-	    y = x;
-	} else {
-	    x = Float.parseFloat(val.substring(p1+1, p2));
-	    y = Float.parseFloat(val.substring(p2+1));
-	}
-	if (log.isDebugEnabled()) {
-	    log.debug("rotate "+d+"+"+x+"+"+y);
-	}
+        // determine degrees
+        double d = 0;
+        int p1 = val.indexOf('+');
+        if (p1 == -1) {
+            d = Double.parseDouble(val);
+        } else {
+            d = Double.parseDouble(val.substring(0, p1));
+        }
+        // determine rotation point
+        float x = 0;
+        float y = 0;
+        int p2 = val.indexOf('+', p1+1);
+        if (p1 == -1) {
+            x = img.getWidth() / 2;
+            y = img.getHeight() / 2;
+        } else if (p2 == -1) {
+            x = Float.parseFloat(val.substring(p1+1));
+            y = x;
+        } else {
+            x = Float.parseFloat(val.substring(p1+1, p2));
+            y = Float.parseFloat(val.substring(p2+1));
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("rotate "+d+"+"+x+"+"+y);
+        }
 
         ParameterBlock pars = new ParameterBlock();
         pars.addSource(img);
@@ -393,12 +393,12 @@ class GeometryParameter {
             }
             if (b.length() > 0) {
                 width = Integer.parseInt(b.toString());
-	    }
+            }
 
             // height
             if (i >= d.length) {
                 break;
-	    }
+            }
             if (d[i] == 'x' || d[i] == 'X') {
                 b = new StringBuffer();
                 for (i++; i < d.length && Character.isDigit(d[i]); i++) {
@@ -406,35 +406,35 @@ class GeometryParameter {
                 }
                 if (b.length() > 0) {
                     height = Integer.parseInt(b.toString());
-		}
+                }
             }
 
             // x
             if (i >= d.length) {
                 break;
-	    }
+            }
             if (d[i] == '+' || d[i] == '-') {
                 b = new StringBuffer();
-		if (d[i] == '-') {
-		    b.append(d[i]);
-		}
+                if (d[i] == '-') {
+                    b.append(d[i]);
+                }
                 for (i++; i < d.length && Character.isDigit(d[i]); i++) {
-		    b.append(d[i]);
+                    b.append(d[i]);
                 }
                 if (b.length() > 0) {
                     x = Integer.parseInt(b.toString());
-		}
+                }
             }
 
             // y
             if (i >= d.length) {
                 break;
-	    }
+            }
             if (d[i] == '+' || d[i] == '-') {
                 b = new StringBuffer();
-		if (d[i] == '-') {
-		    b.append(d[i]);
-		}
+                if (d[i] == '-') {
+                    b.append(d[i]);
+                }
                 for (i++; i < d.length && Character.isDigit(d[i]); i++) {
                     b.append(d[i]);
                 }
@@ -444,7 +444,7 @@ class GeometryParameter {
             // options
             if (i < d.length) {
                 options = new String(d, i, d.length-i);
-	    }
+            }
         } while (false); // only ones
     }
 

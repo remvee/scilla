@@ -38,7 +38,7 @@ import org.scilla.util.*;
  * The Request class holds a scilla media object request.
  *
  * @author R.W. van 't Veer
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public class Request {
     private final static Log log = LogFactory.getLog(Request.class);
@@ -55,9 +55,9 @@ public class Request {
 
     /**
      * Construct a new request object.
-     * @param source	media source identifier
-     * @param type	source mime-type
-     * @param param	conversion parameters
+     * @param source    media source identifier
+     * @param type      source mime-type
+     * @param param     conversion parameters
      * @throws ScillaException when object not retrievable
      */
     public Request (String source, String type, List param)
@@ -69,9 +69,9 @@ public class Request {
 
     /**
      * Construct a new request object for a remote object.
-     * @param url	location of media source
-     * @param type	source mime-type
-     * @param param	conversion parameters
+     * @param url       location of media source
+     * @param type      source mime-type
+     * @param param     conversion parameters
      * @throws ScillaException when object not retrievable
      */
     public Request (URL url, String type, List param)
@@ -80,8 +80,8 @@ public class Request {
         this.type = type;
         this.param = param;
 
-	// fetch remote object
-	source = cache.getRemoteObjectFile(url);
+        // fetch remote object
+        source = cache.getRemoteObjectFile(url);
     }
 
     /**
@@ -117,7 +117,7 @@ public class Request {
      * @return full path to source file
      */
     public String getInputFile () {
-	return source;
+        return source;
     }
 
     /**
@@ -127,7 +127,7 @@ public class Request {
      */
     public String getOutputFile ()
     throws ScillaException {
-	return getObject().getFilename();
+        return getObject().getFilename();
     }
 
     /**
@@ -143,11 +143,11 @@ public class Request {
      */
     public String getOutputType () {
         String t = getParameter(OUTPUT_TYPE_PARAMETER);
-	t = t == null ? type : MimeType.getTypeFromFileExtension(t);
-	if (log.isDebugEnabled()) {
-	    log.debug(t);
-	}
-	return t;
+        t = t == null ? type : MimeType.getTypeFromFileExtension(t);
+        if (log.isDebugEnabled()) {
+            log.debug(t);
+        }
+        return t;
     }
 
     /**
@@ -188,7 +188,7 @@ public class Request {
             rp = (RequestParameter) it.next();
             if (key.equals(rp.key)) {
                 return rp.val;
-	    }
+            }
         }
         return null;
     }

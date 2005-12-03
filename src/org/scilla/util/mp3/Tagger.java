@@ -43,7 +43,7 @@ import org.scilla.util.mp3.id3v2.TextFrame;
  * MP3 tag commandline utillity.
  *
  * @author Remco van 't Veer
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.17 $
  */
 public class Tagger {
     static Map commandMap = new HashMap();
@@ -83,14 +83,14 @@ public class Tagger {
             String arg = args[argI];
             if (! arg.startsWith("-")) {
                 break;
-	    }
+            }
 
             if (commandMap.containsKey(arg)) {
                 // get command
                 Class clazz = (Class) commandMap.get(arg);
                 if (clazz == null) {
                     throw new Exception("command unknown: "+arg);
-		}
+                }
                 Command cmd = (Command) clazz.newInstance();
                 cmd.setTagger(this);
 
@@ -99,7 +99,7 @@ public class Tagger {
                     argI++;
                     if (argI >= args.length) {
                         throw new Exception("param expected for: "+arg);
-		    }
+                    }
                     cmd.addParameter(args[argI]);
                 }
 
@@ -118,7 +118,7 @@ public class Tagger {
         // determine input file
         if (argI != args.length-1) {
             throw new Exception("input file expected");
-	}
+        }
         filename = args[argI];
 
         // determine current tag info
@@ -238,7 +238,7 @@ public class Tagger {
         out.append("Available commands:\n");
         l = new Vector(commandMap.keySet());
         Collections.sort(l);
-	for (Iterator it = l.iterator(); it.hasNext();) {
+        for (Iterator it = l.iterator(); it.hasNext();) {
             String name = (String) it.next();
             Class clazz = (Class) commandMap.get(name);
             Command cmd = (Command) clazz.newInstance();
@@ -253,7 +253,7 @@ public class Tagger {
         out.append("Available options:\n");
         l = new Vector(optionMap.keySet());
         Collections.sort(l);
-	for (Iterator it = l.iterator(); it.hasNext();) {
+        for (Iterator it = l.iterator(); it.hasNext();) {
             String name = (String) it.next();
             String descr = (String) optionMap.get(name);
             out.append("  ");
@@ -286,7 +286,7 @@ public class Tagger {
         }
     }
 
-    private static class HelpCommand extends Command {
+    public static class HelpCommand extends Command {
         public String getDescription () {
             return "Display help message.";
         }
@@ -296,7 +296,7 @@ public class Tagger {
         }
     }
 
-    private static class V1ToV2Command extends Command {
+    public static class V1ToV2Command extends Command {
         public String getDescription () {
             return "Write ID3v2 tag from available ID3v1 tag.";
         }
@@ -313,7 +313,7 @@ public class Tagger {
         }
     }
 
-    private static class V2ToV1Command extends Command {
+    public static class V2ToV1Command extends Command {
         public String getDescription () {
             return "Write ID3v1 tag from available ID3v2 tag.";
         }
@@ -345,7 +345,7 @@ public class Tagger {
         }
     }
 
-    private static class V2SetTextFrameCommand extends Command {
+    public static class V2SetTextFrameCommand extends Command {
         public V2SetTextFrameCommand () {
             args = new String[2];
         }
@@ -361,7 +361,7 @@ public class Tagger {
         }
     }
 
-    private static class V2AddTextFrameCommand extends Command {
+    public static class V2AddTextFrameCommand extends Command {
         public V2AddTextFrameCommand () {
             args = new String[2];
         }
@@ -375,7 +375,7 @@ public class Tagger {
         }
     }
 
-    private static class V2DelFrameCommand extends Command {
+    public static class V2DelFrameCommand extends Command {
         public V2DelFrameCommand () {
             args = new String[1];
         }
@@ -389,7 +389,7 @@ public class Tagger {
         }
     }
 
-    private static class V2DeleteCommand extends Command {
+    public static class V2DeleteCommand extends Command {
         public String getDescription () {
             return "Delete ID3v2 tag.";
         }

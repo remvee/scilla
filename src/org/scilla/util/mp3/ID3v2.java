@@ -34,7 +34,7 @@ import org.scilla.util.mp3.id3v2.*;
  *
  * @see <a href="http://www.id3.org/id3v2.3.0.html">ID3 made easy</a>
  * @author Remco van 't Veer
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.27 $
  */
 public class ID3v2 {
     boolean tagAvailable = false;
@@ -64,11 +64,11 @@ public class ID3v2 {
     public ID3v2 (File f)
     throws Exception {
         InputStream in = new FileInputStream(f);
-	try {
-	    readTag(in);
-	} finally {
-	    in.close();
-	}
+        try {
+            readTag(in);
+        } finally {
+            in.close();
+        }
     }
 
     public void readTag (InputStream in)
@@ -78,7 +78,7 @@ public class ID3v2 {
         in.read(header);
         if (header[0] != 'I' || header[1] != 'D' || header[2] != '3') {
             return;
-	}
+        }
 
         // extract header info
         minor = (int) header[3];
@@ -98,10 +98,10 @@ public class ID3v2 {
                 int b = in.read();
                 if (b == -1) {
                     throw new IOException("file truncated");
-		}
+                }
                 if (! (last == 0xff && b == 0)) {
                     tagData[i++] = (byte) b;
-		}
+                }
                 last = b;
             }
         } else {
@@ -170,7 +170,7 @@ public class ID3v2 {
             byte[] b = f.getByteArray();
             if (b != null) {
                 bout.write(b);
-	    }
+            }
         }
         byte[] data = bout.toByteArray();
 
@@ -279,7 +279,7 @@ public class ID3v2 {
             Frame f = (Frame) it.next();
             if (f.getID().equals(id)) {
                 return f;
-	    }
+            }
         }
         return null;
     }
@@ -291,7 +291,7 @@ public class ID3v2 {
             Frame f = (Frame) it.next();
             if (f.getID().equals(id)) {
                 result.add(f);
-	    }
+            }
         }
         return result;
     }
@@ -301,7 +301,7 @@ public class ID3v2 {
      * kind.
      */
     public void setFrame (Frame frame) {
-	removeFrames(frame.getID());
+        removeFrames(frame.getID());
         frames.add(frame);
     }
     /**
@@ -309,11 +309,11 @@ public class ID3v2 {
      * @param id id of frames to be removed.
      */
     public void removeFrames (String id) {
-	for (Iterator it = frames.iterator(); it.hasNext();) {
+        for (Iterator it = frames.iterator(); it.hasNext();) {
             Frame f = (Frame) it.next();
             if (f.getID().equals(id)) {
                 it.remove();
-	    }
+            }
         }
     }
     /**
@@ -336,16 +336,16 @@ public class ID3v2 {
         sb.append(" v2."+minor+"."+revis);
         if (unsyncFlag) {
             sb.append(" unsync");
-	}
+        }
         if (extFlag) {
             sb.append(" extended");
-	}
+        }
         if (expFlag) {
             sb.append(" experimental");
-	}
+        }
         if (footerFlag) {
             sb.append(" footer");
-	}
+        }
 
         sb.append(" (");
 
@@ -356,7 +356,7 @@ public class ID3v2 {
 
             if (it.hasNext()) {
                 sb.append(',');
-	    }
+            }
         }
 
         sb.append(')');
@@ -365,15 +365,15 @@ public class ID3v2 {
     }
 
     public final static int readUnsyncInt (byte[] data, int offset) {
-        return (((int) data[offset++]) << 21) +
-               (((int) data[offset++]) << 14) +
-               (((int) data[offset++]) << 7) +
-               ((int) data[offset++]);
+        return (((int) data[offset++] & 0xff) << 21) +
+               (((int) data[offset++] & 0xff) << 14) +
+               (((int) data[offset++] & 0xff) << 7) +
+               ((int) data[offset++] & 0xff);
     }
     public final static int readUnsyncInt3 (byte[] data, int offset) {
-        return (((int) data[offset++]) << 14) +
-               (((int) data[offset++]) << 7) +
-               ((int) data[offset++]);
+        return (((int) data[offset++] & 0xff) << 14) +
+               (((int) data[offset++] & 0xff) << 7) +
+               ((int) data[offset++] & 0xff);
     }
     public final static int readPlainInt (byte[] data, int offset) {
         return (((int) (data[offset++]) & 0xff) << 24) +
@@ -391,6 +391,12 @@ public class ID3v2 {
         data[offset] = (byte) val;
         data[offset++] &= 0x7f;
     }
+    public final static void writePlainInt (int val, byte[] data, int offset) {
+        data[offset++] = (byte) (val >> 24);
+        data[offset++] = (byte) (val >> 16);
+        data[offset++] = (byte) (val >> 8);
+        data[offset++] = (byte) val;
+    }
     public final static byte[] unsyncArray (byte[] data) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -398,7 +404,7 @@ public class ID3v2 {
             out.write(data[i]);
             if (data[i] == 0xFF) {
                 out.write(0);
-	    }
+            }
         }
 
         return out.toByteArray();
@@ -408,8 +414,7 @@ public class ID3v2 {
         try {
             out.write(data);
             out.write(new byte[n]);
-        } catch (IOException ex) {
-	    // will never happen..
+        } catch (IOException ex) { // will never happen..
         }
         return out.toByteArray();
     }
