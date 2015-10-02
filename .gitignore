@@ -3,7 +3,6 @@ doc
 ChangeLog
 ChangeLog.xml
 ChangeLog.html
-*/*.swp
 depend-build.xml
 excludes.txt
 scilla.jar
